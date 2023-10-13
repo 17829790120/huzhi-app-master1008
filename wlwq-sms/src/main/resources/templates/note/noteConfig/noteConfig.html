@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('短信配置列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            access_key：
+                            <input type="text" name="accessKeyId"/>
+                        </li>
+                        <li>
+                            短信类型：
+                            <select name="noteConfigType" th:with="type=${@dict.getType('note_config_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="note:noteConfig:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="note:noteConfig:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="note:noteConfig:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="note:noteConfig:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+            <span style="color: red;margin-left: 50px">目前仅支持阿里云/腾讯云短信</span>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var signFlag = [[${@permission.hasPermi('note:noteSign:view')}]];
+    var templateFlag = [[${@permission.hasPermi('note:noteTemplate:view')}]];
+    var noteValidFlag = [[${@permission.hasPermi('note:noteValidConfig:view')}]];
+    var editFlag = [[${@permission.hasPermi('note:noteConfig:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('note:noteConfig:remove')}]];
+    var noteConfigTypeDatas = [[${@dict.getType('note_config_type')}]];
+    var prefix = ctx + "note/noteConfig";
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "短信配置",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'noteConfigId',
+                    title: '短信配置ID'
+                },
+                {
+                    field: 'noteConfigName',
+                    title: '短信配置名字'
+                },
+                {
+                    field: 'accessKeyId',
+                    title: 'access_key(SECRET_KEY)'
+                },
+                {
+                    field: 'accessKeySecret',
+                    title: 'access_key_secret(SECRET_ID)'
+                },
+                {
+                    field: 'sdkAppId',
+                    align: 'center',
+                    title: 'SDK_APP_ID(腾讯云短信需要此参数)'
+                },
+                {
+                    field: 'noteConfigType',
+                    title: '短信类型',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(noteConfigTypeDatas, value);
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                },
+                {
+                    field: 'updateTime',
+                    title: '修改时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs ' + signFlag + '" href="javascript:void(0)" onclick="toSign(\'' + row.noteConfigId + '\')"><i class="fa fa-eyedropper"></i> 短信签名</a> ');
+                        actions.push('<a class="btn btn-warning btn-xs ' + templateFlag + '" href="javascript:void(0)" onclick="toTemplate(\'' + row.noteConfigId + '\')"><i class="fa fa-th"></i> 短信模版</a> ');
+                        actions.push('<a class="btn btn-info btn-xs ' + noteValidFlag + '" href="javascript:void(0)" onclick="toNoteValid(\'' + row.noteConfigId + '\')"><i class="fa fa-child"></i> 人机验证配置</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.noteConfigId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.noteConfigId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 短信签名
+    function toSign(noteConfigId) {
+        $.modal.openTab("短信签名", ctx + "note/noteSign?noteConfigId=" + noteConfigId);
+    }
+    // 短信模版
+    function toTemplate(noteConfigId) {
+        $.modal.openTab("短信模版", ctx + "note/noteTemplate?noteConfigId=" + noteConfigId);
+    }
+
+    // 短信模版
+    function toNoteValid(noteConfigId) {
+        $.modal.openTab("人机验证", ctx + "note/noteValidConfig?noteConfigId=" + noteConfigId);
+    }
+</script>
+</body>
+</html>

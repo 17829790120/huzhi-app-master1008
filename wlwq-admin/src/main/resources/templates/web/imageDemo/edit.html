@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改图片视频上传示例')"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <!--导入下面这三玩意-->
+    <script th:src="@{/editor/jq.js}"></script>
+    <script th:src="@{/editor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/editor/editor.js}"></script>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-imageDemo-edit" th:object="${imageDemo}">
+        <input name="id" th:field="*{id}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">排序(排序越大，越靠前)：</label>
+            <div class="col-sm-8">
+                <input name="sortNum" class="form-control" type="number" th:field="*{sortNum}" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">单图片：</label>
+            <div class="col-sm-8">
+                <input id="image" name="image" class="form-control" type="hidden" th:field="*{image}"
+                       required>
+                <div class="file-loading">
+                    <input id="fileInput" name="file" type="file" multiple>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">多图片：</label>
+            <div class="col-sm-8">
+                <input id="images" name="images" th:field="*{images}" class="form-control"
+                       type="hidden" required>
+                <div class="file-loading">
+                    <input id="filesInput" name="file" type="file" multiple>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">单视频：</label>
+            <div class="col-sm-8">
+                <input id="video" name="video" th:field="*{video}" class="form-control"
+                       type="hidden" required>
+                <div class="file-loading">
+                    <input id="videoInput" name="file" type="file" multiple>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">多视频：</label>
+            <div class="col-sm-8">
+                <input id="videos" name="videos" th:field="*{videos}" class="form-control"
+                       type="hidden" required>
+                <div class="file-loading">
+                    <input id="videosInput" name="file" type="file" multiple>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">编辑器1：</label>
+            <div class="col-sm-8">
+                <h1 onclick="GetTinyMceContent()">TinyMCE快速开始示例</h1>
+                <form method="post">
+                    <textarea id="mytextareaone" style="visibility: inherit;">Hello, World!</textarea>
+                </form>
+                <input id="content" name="content" class="form-control" type="hidden" th:field="*{content}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">编辑器2：</label>
+            <div class="col-sm-8">
+                <h1 onclick="GetTinyMceContents()">TinyMCE快速开始示例</h1>
+                <form method="post">
+                    <textarea id="mytextareatwo" style="visibility: inherit;">Hello, World!</textarea>
+                </form>
+                <input id="contentone" name="contentone" class="form-control" type="hidden" >
+            </div>
+        </div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<script th:inline="javascript">
+    window.onload=function () {
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaone');
+        setMytextareaIdName('mytextareatwo');
+    }
+function GetTinyMceContent() {
+        console.log(tinyMCE);
+        alert(tinyMCE.editors[0].getContent());
+        console.log(tinyMCE.activeEditor.getContent());
+        $("#content").val(tinyMCE.activeEditor.getContent());
+    }
+
+    function GetTinyMceContents() {
+        console.log(tinyMCE);
+        alert(tinyMCE.editors[1].getContent());
+        console.log(tinyMCE.activeEditor.getContent());
+        $("#contentone").val(tinyMCE.activeEditor.getContent());
+    }
+
+    var content = $("#content").val();
+    $("#mytextarea").val(content);
+
+    var prefix = ctx + "web/imageDemo";
+
+    $("#form-imageDemo-edit").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        var image = $("#image").val();
+        if(image == "" || image == null){
+            $.modal.msgError("请上传单图片！");
+            return;
+        }
+        GetTinyMceContent();
+        GetTinyMceContents();
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-imageDemo-edit').serialize());
+        }
+    }
+
+    ///////////////单图片上传开始/////////////////////
+    // 取传过来的图片值
+    // 单图片上传成功后回调值存储到这个变量中
+    var imageUploadResult = $("#image").val();
+    // 单图片上传组件
+    $(document).ready(function () {
+        $("#fileInput").fileinput({
+            theme: 'explorer-fas',
+            uploadUrl: ctx + 'app/upload',
+            deleteUrl: ctx + 'app/upload',
+            overwriteInitial: true,
+            initialPreviewAsData: true,
+            uploadAsync: true, // 异步上传
+            maxFileCount: 1, //上传最大数量
+            autoReplace: true, // 自动替换当前图片
+            // allowedFileTypes: ['jpg','png'], // 图片上传格式限制
+            maxFileSize: 20480, // 文件大小限制 最大20M
+            initialPreview: [
+                imageUploadResult
+            ]
+        });
+    });
+    $("#fileinput").on('filebeforedelete', function (event, key) {
+        $("#image").val("");
+    });
+    // 单图片上传成功后回调
+    $("#fileInput").on("fileuploaded", function (event, data, previewId, index) {
+        if (data.response.status === 'success') {
+            $("#image").val("");
+            imageUploadResult = data.response.message;
+            $("#image").val(imageUploadResult);
+            $.modal.msgSuccess("上传成功！");
+        } else {
+            $.modal.msgError("上传错误！");
+        }
+    });
+    ///////////////单图片上传结束/////////////////////
+
+
+    ///////////////多图片上传开始/////////////////////
+    // 多图片上传成功后回调值存储到这个变量中
+    // 多图片上传组件
+    $(document).ready(function () {
+        var pics = $("#images").val();
+        var arr = pics.split(",");
+        var obj = arr.map(function (item, index) {
+                return {
+                    key: item
+                }
+            }
+        )
+        $("#filesInput").fileinput({
+            theme: 'explorer-fas',
+            uploadUrl: ctx + 'app/upload',
+            deleteUrl: ctx + 'app/upload',
+            initialPreviewAsData: true,
+            uploadAsync: true, // 异步上传
+            minFileCount: 1, // 上传最小数量
+            // maxFileCount: 20, //上传最大数量
+            autoReplace: true, // 自动替换当前图片
+            overwriteInitial: false, // 覆盖初始预览内容和标题设置
+            maxFileSize: 20480, // 文件大小限制 最大20M
+            // layoutTemplates: {
+            //     actionUpload: '', //去除上传预览缩略图中的上传图片；
+            //     actionZoom: '' //去除上传预览缩略图中的查看详情预览的缩略图标
+            // },
+            initialPreview: arr,
+            initialPreviewConfig: obj // 默认缩略图
+        });
+    });
+    $("#filesInput").on('filebeforedelete', function (event, key) {
+        var arr = $("#images").val().split(',');
+        var index = arr.indexOf(key);
+        arr.splice(index, 1);
+        $("#images").val(arr.join(','))
+    });
+    // 多图片上传成功后回调
+    $("#filesInput").on("fileuploaded", function (event, data, previewId, index) {
+        var pics = $("#images").val();
+        if (data.response.status === 'success') {
+            if (pics == '') {
+                pics = data.response.message;
+                $("#images").val(pics);
+            } else {
+                pics += ',' + data.response.message;
+                $("#images").val(pics);
+            }
+            $.modal.msgSuccess("上传成功！");
+        } else {
+            $.modal.msgError("上传错误！");
+        }
+    });
+    ///////////////多图片上传结束/////////////////////
+
+
+    ///////////////单视频上传开始/////////////////////
+    // 单视频上传成功后回调值存储到这个变量中
+    var videoUploadResult = $("#video").val();
+    // 单视频上传组件
+    $(document).ready(function () {
+        $("#videoInput").fileinput({
+            theme: 'explorer-fas',
+            uploadUrl: ctx + 'app/upload',
+            deleteUrl: ctx + 'app/upload',
+            overwriteInitial: true,
+            initialPreviewAsData: true,
+            uploadAsync: true, // 异步上传
+            maxFileCount: 1, //上传最大数量
+            autoReplace: true, // 自动替换当前图片
+            previewFileType: 'video', // 预览类型
+            allowedFileTypes: 'mp4', // 图片上传格式限制
+            maxFileSize: 2048000, // 文件大小限制 最大2000M
+            initialPreview: [
+                videoUploadResult
+            ],
+            initialPreviewConfig: [{
+                type: "video",
+                filetype: 'video/mp4'
+            }]
+        });
+    });
+    $("#videoInput").on('filebeforedelete', function (event, key) {
+        $("#video").val("");
+    });
+    // 单视频上传成功后回调
+    $("#videoInput").on("fileuploaded", function (event, data, previewId, index) {
+        if (data.response.status === 'success') {
+            $("#video").val("");
+            videoUploadResult = data.response.message;
+            $("#video").val(videoUploadResult);
+            $.modal.msgSuccess("上传成功！");
+        } else {
+            $.modal.msgError("上传错误！");
+        }
+    });
+    ///////////////单视频上传结束/////////////////////
+
+
+    ///////////////多视频上传开始/////////////////////
+    // 多视频上传成功后回调值存储到这个变量中
+    // 多视频上传组件
+    $(document).ready(function () {
+        var videos = $("#videos").val();
+        var arr = videos.split(",");
+        var obj = arr.map(function (item, index) {
+                return {
+                    key: item,
+                    type: "video",
+                    filetype: 'video/mp4'
+                }
+            }
+        )
+        $("#videosInput").fileinput({
+            theme: 'explorer-fas',
+            uploadUrl: ctx + 'app/upload',
+            deleteUrl: ctx + 'app/upload',
+            initialPreviewAsData: true,
+            uploadAsync: true, // 异步上传
+            minFileCount: 1, // 上传最小数量
+            maxFileCount: 3, //上传最大数量
+            autoReplace: true, // 自动替换当前图片
+            overwriteInitial: false, // 覆盖初始预览内容和标题设置
+            maxFileSize: 2048000, // 文件大小限制 最大2000M
+            previewFileType: 'video', // 预览类型
+            allowedFileTypes: 'mp4',
+            // 回显类型配置(重要)
+            initialPreview: arr,
+            initialPreviewConfig: obj // 默认缩略图
+        });
+    });
+    $("#videosInput").on('filebeforedelete', function (event, key) {
+        var arr = $("#videos").val().split(',');
+        var index = arr.indexOf(key);
+        arr.splice(index, 1);
+        $("#videos").val(arr.join(','))
+    });
+    // 视频上传成功后回调
+    $("#videosInput").on("fileuploaded", function (event, data, previewId, index) {
+        var videos = $("#videos").val();
+        if (data.response.status === 'success') {
+            if (videos == '') {
+                videos = data.response.message;
+                $("#videos").val(videos);
+            } else {
+                videos += ',' + data.response.message;
+                $("#videos").val(videos);
+            }
+            $.modal.msgSuccess("上传成功！");
+        } else {
+            $.modal.msgError("上传错误！");
+        }
+    });
+    ///////////////多视频上传结束/////////////////////
+
+
+</script>
+</body>
+</html>

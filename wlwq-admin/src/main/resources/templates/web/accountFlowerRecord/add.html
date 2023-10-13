@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增红花记录')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-accountFlowerRecord-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">记录名称：</label>
+            <div class="col-sm-8">
+                <input name="recordName" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">记录数量：</label>
+            <div class="col-sm-8">
+                <input name="recordNum" class="form-control" placeholder="请输入大于0或小于0的整数，大于0的为奖励，小于0的为扣除" type="number" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">接收用户：</label>
+            <div class="col-sm-8">
+                <select name="accountId" class="form-control select2-multiple" multiple required>
+                    <option th:each="account : ${accountList}" th:text="${account.accountName}"
+                            th:value="${account.accountId}"></option>
+                </select>
+            </div>
+        </div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/accountFlowerRecord"
+    $("#form-accountFlowerRecord-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-accountFlowerRecord-add').serialize());
+        }
+    }
+</script>
+</body>
+</html>

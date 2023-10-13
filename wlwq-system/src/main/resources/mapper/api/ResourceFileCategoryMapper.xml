@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ResourceFileCategoryMapper">
+
+    <resultMap type="ResourceFileCategory" id="ResourceFileCategoryResult">
+        <result property="resourceFileCategoryId" column="resource_file_category_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="categoryTitle" column="category_title"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="level" column="level"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="companyId" column="company_id"/>
+    </resultMap>
+
+    <sql id="selectResourceFileCategoryVo">
+        select resource_file_category_id, dept_id, user_id, parent_id, category_title, sort_num, del_status, show_status, create_time,
+            update_time, level, ancestors , company_id
+        from resource_file_category
+    </sql>
+
+    <select id="selectResourceFileCategoryList" parameterType="ResourceFileCategory"
+            resultMap="ResourceFileCategoryResult">
+        <include refid="selectResourceFileCategoryVo"/>
+        <where>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="categoryTitle != null  and categoryTitle != ''">and category_title like concat('%',
+                #{categoryTitle}, '%')
+            </if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="level != null ">and level = #{level}</if>
+            <if test="ancestors != null  and ancestors != ''">and ancestors = #{ancestors}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+<!--            <if test="companyId != null and tag == 1"> and (n.company_id = 100 or n.company_id = #{companyId})</if>
+            <if test="companyId == null and tag == 1"> and n.company_id = 100 </if>
+
+            <if test="companyId != null and tag == 2"> and n.company_id = #{companyId}</if>-->
+        </where>
+        order by parent_id
+    </select>
+
+    <select id="selectResourceFileCategoryById" parameterType="Long" resultMap="ResourceFileCategoryResult">
+        select t.resource_file_category_id, t.dept_id, t.user_id, t.parent_id, t.category_title, t.sort_num, t.del_status, t.show_status,
+            t.create_time, t.update_time, t.level, t.ancestors, p.category_title as parent_name, t.company_id
+        from resource_file_category t
+        left join resource_file_category p on p.resource_file_category_id = t.parent_id
+        where t.resource_file_category_id = #{resourceFileCategoryId}
+    </select>
+
+    <insert id="insertResourceFileCategory" parameterType="ResourceFileCategory" useGeneratedKeys="true"
+            keyProperty="resourceFileCategoryId">
+        insert into resource_file_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="categoryTitle != null">category_title,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="level != null">level,</if>
+            <if test="ancestors != null">ancestors,</if>
+            <if test="companyId != null">company_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="categoryTitle != null">#{categoryTitle},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="level != null">#{level},</if>
+            <if test="ancestors != null">#{ancestors},</if>
+            <if test="companyId != null">#{companyId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateResourceFileCategory" parameterType="ResourceFileCategory">
+        update resource_file_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="categoryTitle != null">category_title = #{categoryTitle},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="ancestors != null">ancestors = #{ancestors},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+        </trim>
+        where resource_file_category_id = #{resourceFileCategoryId}
+    </update>
+
+    <delete id="deleteResourceFileCategoryById" parameterType="Long">
+        delete from resource_file_category where resource_file_category_id = #{resourceFileCategoryId}
+    </delete>
+
+    <delete id="deleteResourceFileCategoryByIds" parameterType="String">
+        delete from resource_file_category where resource_file_category_id in
+        <foreach item="resourceFileCategoryId" collection="array" open="(" separator="," close=")">
+            #{resourceFileCategoryId}
+        </foreach>
+    </delete>
+
+</mapper>

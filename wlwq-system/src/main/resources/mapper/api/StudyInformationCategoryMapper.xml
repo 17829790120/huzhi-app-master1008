@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.StudyInformationCategoryMapper">
+
+    <resultMap type="StudyInformationCategory" id="StudyInformationCategoryResult">
+        <result property="studyInformationCategoryId" column="study_information_category_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="informationCategoryTitle" column="information_category_title"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="parentName" column="parent_name"/>
+    </resultMap>
+
+    <sql id="selectStudyInformationCategoryVo">
+        select c.study_information_category_id,
+               c.dept_id,
+               c.user_id,
+               c.parent_id,
+               c.information_category_title,
+               c.sort_num,
+               c.del_status,
+               c.create_time,
+               c.update_time
+        from study_information_category c left join sys_dept d on c.dept_id = d.dept_id
+        left join sys_user u on c.user_id = u.user_id
+    </sql>
+    <sql id="selectStudyInformationCategory">
+        select study_information_category_id,
+               dept_id,
+               user_id,
+               parent_id,
+               information_category_title,
+               sort_num,
+               del_status,
+               create_time,
+               update_time
+        from study_information_category
+    </sql>
+
+    <select id="selectStudyInformationCategoryList" parameterType="StudyInformationCategory"
+            resultMap="StudyInformationCategoryResult">
+        <include refid="selectStudyInformationCategory"/>
+        <where>
+            <if test="studyInformationCategoryId != null">
+                and study_information_category_id = #{studyInformationCategoryId}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="deptId != null">
+                and dept_id = #{deptId}
+            </if>
+            <if test="informationCategoryTitle != null  and informationCategoryTitle != ''">
+                and information_category_title = #{informationCategoryTitle}
+            </if>
+            <if test="sortNum != null">
+                and sort_num = #{sortNum}
+            </if>
+            <if test="delStatus != null">
+                and del_status = #{delStatus}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+    <select id="selectStudyInformationCategoryVoList" parameterType="StudyInformationCategory"
+            resultMap="StudyInformationCategoryResult">
+        <include refid="selectStudyInformationCategoryVo"/>
+        <where>
+            <if test="studyInformationCategoryId != null">
+                and c.study_information_category_id = #{studyInformationCategoryId}
+            </if>
+            <if test="parentId != null">
+                and c.parent_id = #{parentId}
+            </if>
+            <if test="deptId != null">and c.dept_id = #{deptId}</if>
+            <if test="informationCategoryTitle != null  and informationCategoryTitle != ''">
+                and c.information_category_title = #{informationCategoryTitle}
+            </if>
+            <if test="sortNum != null">
+                and c.sort_num = #{sortNum}
+            </if>
+            <if test="delStatus != null">
+                and c.del_status = #{delStatus}
+            </if>
+            <if test="createTime != null">
+                and c.create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and c.update_time = #{updateTime}
+            </if>
+        </where>
+        /*${params.dataScope}*/
+        order by create_time desc
+    </select>
+
+    <select id="selectStudyInformationCategoryById" parameterType="Long" resultMap="StudyInformationCategoryResult">
+        select t.study_information_category_id,
+               t.parent_id,
+               t.dept_id,
+               t.user_id,
+               t.information_category_title,
+               t.sort_num,
+               t.del_status,
+               t.create_time,
+               t.update_time,
+               p.information_category_title as parent_name
+        from study_information_category t
+                     left join study_information_category p on p.study_information_category_id = t.parent_id
+        where t.study_information_category_id = #{studyInformationCategoryId}
+    </select>
+
+    <insert id="insertStudyInformationCategory" parameterType="StudyInformationCategory" useGeneratedKeys="true"
+            keyProperty="studyInformationCategoryId">
+        insert into study_information_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="informationCategoryTitle != null and informationCategoryTitle != ''">information_category_title,
+            </if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="informationCategoryTitle != null and informationCategoryTitle != ''">
+                #{informationCategoryTitle},
+            </if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStudyInformationCategory" parameterType="StudyInformationCategory">
+        update study_information_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="informationCategoryTitle != null and informationCategoryTitle != ''">information_category_title =
+                #{informationCategoryTitle},
+            </if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where study_information_category_id = #{studyInformationCategoryId}
+    </update>
+    <update id="deleteStudyInformationCategoryById" parameterType="Long">
+        update study_information_category set del_status = 1  where study_information_category_id = #{studyInformationCategoryId}
+    </update>
+
+    <update id="deleteStudyInformationCategoryByIds" parameterType="String">
+        update study_information_category set del_status = 1 where study_information_category_id in
+        <foreach item="studyInformationCategoryId" collection="array" open="(" separator="," close=")">
+            #{studyInformationCategoryId}
+        </foreach>
+    </update>
+    <!--    <delete id="deleteStudyInformationCategoryById" parameterType="Long">
+            delete from study_information_category where study_information_category_id = #{studyInformationCategoryId}
+        </delete>
+
+        <delete id="deleteStudyInformationCategoryByIds" parameterType="String">
+            delete from study_information_category where study_information_category_id in
+            <foreach item="studyInformationCategoryId" collection="array" open="(" separator="," close=")">
+                #{studyInformationCategoryId}
+            </foreach>
+        </delete>-->
+
+    <!--    获取子集数量-->
+    <select id="countSonNumberByParentId" resultType="int">
+        select ifnull(count(study_information_category_id),0) from study_information_category where parent_id = #{studyInformationCategoryId} and del_status = 0
+    </select>
+
+</mapper>

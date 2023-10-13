@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.system.mapper.SysNoticeMapper">
+
+    <resultMap type="SysNotice" id="SysNoticeResult">
+        <result property="noticeId" column="notice_id"/>
+        <result property="noticeTitle" column="notice_title"/>
+        <result property="noticeType" column="notice_type"/>
+        <result property="noticeContent" column="notice_content"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+    </resultMap>
+
+    <sql id="selectNoticeVo">
+        select s.notice_id,
+               s.notice_title,
+               s.notice_type,
+               s.notice_content,
+               s.status,
+               s.create_by,
+               s.create_time,
+               s.update_by,
+               s.update_time,
+               s.remark,
+               s.dept_id,
+               d.dept_name,
+               s.dept_id
+        from sys_notice s
+                         left join sys_dept d on s.dept_id = d.dept_id
+    </sql>
+    <sql id="selectNotice">
+        select notice_id,
+               notice_title,
+               notice_type,
+               notice_content,
+               status,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               dept_id,
+               remark
+        from sys_notice
+    </sql>
+    <select id="selectNoticeById" parameterType="String" resultMap="SysNoticeResult">
+        <include refid="selectNoticeVo"/>
+        where s.notice_id = #{noticeId}
+    </select>
+
+    <select id="selectNoticeList" parameterType="SysNotice" resultMap="SysNoticeResult">
+        <include refid="selectNoticeVo"/>
+        <where>
+            1=1
+            <if test="noticeTitle != null and noticeTitle != ''">
+                AND s.notice_title like concat('%', #{noticeTitle}, '%')
+            </if>
+            <if test="noticeType != null and noticeType != ''">
+                AND s.notice_type = #{noticeType}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                AND s.create_by like concat('%', #{createBy}, '%')
+            </if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="deptId != null ">and s.dept_id = #{deptId}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by s.create_time desc
+    </select>
+
+    <select id="selectApiNoticeList" resultMap="SysNoticeResult">
+        <include refid="selectNotice"/>
+        <where>
+            1=1
+            <if test="noticeTitle != null and noticeTitle != ''">
+                AND notice_title like concat('%', #{noticeTitle}, '%')
+            </if>
+            <if test="noticeType != null and noticeType != ''">
+                AND notice_type = #{noticeType}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                AND create_by like concat('%', #{createBy}, '%')
+            </if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="deptId != null ">and (dept_id = #{deptId} or dept_id = 100)
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertNotice" parameterType="SysNotice">
+        insert into sys_notice (
+        <if test="noticeId != null and noticeId != '' ">notice_id,</if>
+        <if test="noticeTitle != null and noticeTitle != '' ">notice_title,</if>
+        <if test="noticeType != null and noticeType != '' ">notice_type,</if>
+        <if test="noticeContent != null and noticeContent != '' ">notice_content,</if>
+        <if test="status != null and status != '' ">status,</if>
+        <if test="remark != null and remark != ''">remark,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        <if test="deptId != null">dept_id,</if>
+        create_time
+        )values(
+        <if test="noticeId != null and noticeId != ''">#{noticeId},</if>
+        <if test="noticeTitle != null and noticeTitle != ''">#{noticeTitle},</if>
+        <if test="noticeType != null and noticeType != ''">#{noticeType},</if>
+        <if test="noticeContent != null and noticeContent != ''">#{noticeContent},</if>
+        <if test="status != null and status != ''">#{status},</if>
+        <if test="remark != null and remark != ''">#{remark},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        <if test="deptId != null">#{deptId},</if>
+        sysdate()
+        )
+    </insert>
+
+    <update id="updateNotice" parameterType="SysNotice">
+        update sys_notice
+        <set>
+            <if test="noticeTitle != null and noticeTitle != ''">notice_title = #{noticeTitle},</if>
+            <if test="noticeType != null and noticeType != ''">notice_type = #{noticeType},</if>
+            <if test="noticeContent != null">notice_content = #{noticeContent},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            update_time = sysdate()
+        </set>
+        where notice_id = #{noticeId}
+    </update>
+
+    <delete id="deleteNoticeByIds" parameterType="String">
+        delete from sys_notice where notice_id in
+        <foreach item="noticeId" collection="array" open="(" separator="," close=")">
+            #{noticeId}
+        </foreach>
+    </delete>
+
+</mapper>

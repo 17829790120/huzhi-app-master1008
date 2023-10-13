@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CounsellingTheoreticalCategoryMapper">
+
+    <resultMap type="CounsellingTheoreticalCategory" id="CounsellingTheoreticalCategoryResult">
+        <result property="counsellingTheoreticalCategoryId" column="counselling_theoretical_category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="description" column="description"/>
+        <result property="showStatus" column="show_status"/>
+    </resultMap>
+
+    <sql id="selectCounsellingTheoreticalCategoryVo">
+        select counselling_theoretical_category_id, category_name, create_time, sort_num, del_status,
+            description, show_status
+        from counselling_theoretical_category
+    </sql>
+
+    <select id="selectCounsellingTheoreticalCategoryList" parameterType="CounsellingTheoreticalCategory"
+            resultMap="CounsellingTheoreticalCategoryResult">
+        <include refid="selectCounsellingTheoreticalCategoryVo"/>
+        <where>
+            del_status = 0
+            <if test="categoryName != null  and categoryName != ''">and category_name like concat('%', #{categoryName},
+                '%')
+            </if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="description != null  and description != ''">and description = #{description}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+        </where>
+        order by sort_num asc
+    </select>
+
+    <select id="selectCounsellingTheoreticalCategoryById" parameterType="String"
+            resultMap="CounsellingTheoreticalCategoryResult">
+        <include refid="selectCounsellingTheoreticalCategoryVo"/>
+        where counselling_theoretical_category_id = #{counsellingTheoreticalCategoryId}
+    </select>
+
+    <insert id="insertCounsellingTheoreticalCategory" parameterType="CounsellingTheoreticalCategory">
+        insert into counselling_theoretical_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="counsellingTheoreticalCategoryId != null">counselling_theoretical_category_id,</if>
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="description != null">description,</if>
+            <if test="showStatus != null">show_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="counsellingTheoreticalCategoryId != null">#{counsellingTheoreticalCategoryId},</if>
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="description != null">#{description},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCounsellingTheoreticalCategory" parameterType="CounsellingTheoreticalCategory">
+        update counselling_theoretical_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+        </trim>
+        where counselling_theoretical_category_id = #{counsellingTheoreticalCategoryId}
+    </update>
+
+    <update id="deleteCounsellingTheoreticalCategoryById" parameterType="String">
+        update counselling_theoretical_category set del_status = 1 where counselling_theoretical_category_id = #{counsellingTheoreticalCategoryId}
+    </update>
+
+    <update id="deleteCounsellingTheoreticalCategoryByIds" parameterType="String">
+        update counselling_theoretical_category set del_status = 1 where counselling_theoretical_category_id in
+        <foreach item="counsellingTheoreticalCategoryId" collection="array" open="(" separator="," close=")">
+            #{counsellingTheoreticalCategoryId}
+        </foreach>
+    </update>
+<!--    <delete id="deleteCounsellingTheoreticalCategoryById" parameterType="String">
+        delete from counselling_theoretical_category where counselling_theoretical_category_id = #{counsellingTheoreticalCategoryId}
+    </delete>
+
+    <delete id="deleteCounsellingTheoreticalCategoryByIds" parameterType="String">
+        delete from counselling_theoretical_category where counselling_theoretical_category_id in
+        <foreach item="counsellingTheoreticalCategoryId" collection="array" open="(" separator="," close=")">
+            #{counsellingTheoreticalCategoryId}
+        </foreach>
+    </delete>-->
+
+</mapper>

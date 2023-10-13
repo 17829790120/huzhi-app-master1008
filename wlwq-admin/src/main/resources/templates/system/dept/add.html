@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增公司')"/>
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-dept-add">
+        <input id="treeId" name="parentId" type="hidden" th:value="${dept.deptId}"/>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">上级公司：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input class="form-control" type="text" onclick="selectDeptTree()" id="treeName" readonly="true"
+                           th:value="${dept.deptName}">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">名称：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="deptName" id="deptName" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">公司图片：</label>
+            <input class="form-control" id="companyImg" name="companyImg" required type="hidden">
+            <div class="col-sm-8">
+                <div class="file-loading">
+                    <input id="fileInput" multiple name="file" type="file">
+                </div>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 建议尺寸：800px * 350px</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">公司/部门等级：</label>
+            <div class="col-sm-8">
+                <select class="form-control m-b" id="deptLevel" name="deptLevel"
+                        th:with="type=${@dict.getType('city_level')}">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" required>
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">显示排序：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="orderNum" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">负责人：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="leader">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">联系电话：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="phone">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">邮箱：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" name="email">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">状态：</label>
+            <div class="col-sm-8">
+                <div class="radio-box" th:each="dict : ${@dict.getType('sys_normal_disable')}">
+                    <input type="radio" th:id="${dict.dictCode}" name="status" th:value="${dict.dictValue}"
+                           th:checked="${dict.default}">
+                    <label th:for="${dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<script th:inline="javascript">
+    // 单图片上传成功后回调值存储到这个变量中
+    var imageUploadResult = '';
+    // 单图片上传组件
+    $(document).ready(function () {
+        $("#fileInput").fileinput({
+            theme: 'explorer-fas',
+            uploadUrl: ctx + 'app/upload',
+            overwriteInitial: false,
+            initialPreviewAsData: true,
+            uploadAsync: true, // 异步上传
+            minFileCount: 1, // 上传最小数量
+            maxFileCount: 1, //上传最大数量
+            autoReplace: true, // 自动替换当前图片
+            maxFileSize: 20480 // 文件大小限制 最大2M
+        });
+    });
+    // 单图片上传成功后回调
+    $("#fileInput").on("fileuploaded", function (event, data, previewId, index) {
+        if (data.response.status === 'success') {
+            imageUploadResult = data.response.message;
+            $("#companyImg").val(imageUploadResult);
+            $.modal.msgSuccess("上传成功！");
+        } else {
+            $.modal.msgError("上传错误！");
+        }
+    });
+
+    var prefix = ctx + "system/dept";
+
+    $("#form-dept-add").validate({
+        onkeyup: false,
+        rules: {
+            deptName: {
+                remote: {
+                    url: prefix + "/checkDeptNameUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "parentId": function () {
+                            return $("input[name='parentId']").val();
+                        },
+                        "deptName": function () {
+                            return $.common.trim($("#deptName").val());
+                        }
+                    },
+                    dataFilter: function (data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+            },
+            orderNum: {
+                digits: true
+            },
+            email: {
+                email: true,
+            },
+            phone: {
+                isPhone: true,
+            },
+        },
+        messages: {
+            "deptName": {
+                remote: "公司已经存在"
+            }
+        },
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-dept-add').serialize());
+        }
+    }
+
+    /*公司管理-新增-选择父公司树*/
+    function selectDeptTree() {
+        var options = {
+            title: '公司选择',
+            width: "380",
+            url: prefix + "/selectDeptTree/" + $("#treeId").val(),
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero) {
+        var body = layer.getChildFrame('body', index);
+        $("#treeId").val(body.find('#treeId').val());
+        $("#treeName").val(body.find('#treeName').val());
+        layer.close(index);
+    }
+
+</script>
+</body>
+</html>

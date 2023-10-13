@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('虚拟号码列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            虚拟号码：
+                            <input type="text" name="virtualNumber"/>
+                        </li>
+                        <li>
+                            真实号码：
+                            <input type="text" name="realNumber"/>
+                        </li>
+                        <li>
+                            华为云绑定ID：
+                            <input type="text" name="subId"/>
+                        </li>
+                        <li>
+                            状态：
+                            <select name="status"  class="form-control m-b">
+                                <option value="">所有</option>
+                                <option value="0">空闲</option>
+                                <option value="1">绑定</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="privatePhone:virtualNumber:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="privatePhone:virtualNumber:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="privatePhone:virtualNumber:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()"
+               shiro:hasPermission="privatePhone:virtualNumber:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('privatePhone:virtualNumber:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('privatePhone:virtualNumber:remove')}]];
+    var prefix = ctx + "privatePhone/virtualNumber";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "虚拟号码",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'virtualNumberId',
+                    title: '虚拟号码ID'
+                },
+                {
+                    field: 'virtualNumber',
+                    title: '虚拟号码'
+                },
+                {
+                    field: 'realNumber',
+                    title: '真实号码'
+                },
+                {
+                    field: 'subId',
+                    title: '华为云绑定ID'
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    formatter: function (value, row, index) {
+                        if (value === 0) {
+                            return "<span class=\"badge badge-primary\">空闲</span>";
+                        }
+                        if (value === 1) {
+                            return "<span class=\"badge badge-danger\">绑定</span>";
+                        }
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (row.status === 1) {
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="unBindNumber(\'' + row.virtualNumberId + '\')"><i class="fa fa-unlock"></i>解绑</a> ');
+                        }
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.virtualNumberId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function unBindNumber(virtualNumberId) {
+        $.modal.confirm("确认要解绑吗？", function () {
+            $.operate.post(prefix + "/unBindNumber", {"virtualNumberId": virtualNumberId});
+        })
+    }
+</script>
+</body>
+</html>

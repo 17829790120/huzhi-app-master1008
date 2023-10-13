@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountMedalRecordMapper">
+
+    <resultMap type="AccountMedalRecord" id="AccountMedalRecordResult">
+        <result property="accountMedalRecordId" column="account_medal_record_id"/>
+        <result property="medalName" column="medal_name"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="alreadyIcon" column="already_icon"/>
+        <result property="score" column="score"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="accountMedalId" column="account_medal_id"/>
+        <result property="medalParentId" column="medal_parent_id"/>
+    </resultMap>
+
+    <sql id="selectAccountMedalRecordVo">
+        select account_medal_record_id,
+               medal_name,
+               account_id,
+               account_name,
+               account_phone,
+               account_head,
+               already_icon,
+               score,
+               dept_id,
+               company_id,
+               post_ids,
+               del_status,
+               create_time,
+               update_time,
+               remark,
+               account_medal_id,
+               medal_parent_id
+        from account_medal_record
+    </sql>
+
+    <select id="selectAccountMedalRecordList" parameterType="AccountMedalRecord" resultMap="AccountMedalRecordResult">
+        <include refid="selectAccountMedalRecordVo"/>
+        <where>
+            del_status = 0
+            <if test="medalName != null  and medalName != ''">and medal_name like concat('%', #{medalName}, '%')</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone  like concat('%', #{accountPhone},
+                '%')</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="alreadyIcon != null  and alreadyIcon != ''">and already_icon = #{alreadyIcon}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="accountMedalId != null ">and account_medal_id = #{accountMedalId}</if>
+            <if test="medalParentId != null "> and medal_parent_id = #{medalParentId}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAccountMedalRecordById" parameterType="String" resultMap="AccountMedalRecordResult">
+        <include refid="selectAccountMedalRecordVo"/>
+        where del_status = 0 and account_medal_record_id = #{accountMedalRecordId}
+    </select>
+
+    <insert id="insertAccountMedalRecord" parameterType="AccountMedalRecord">
+        insert into account_medal_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountMedalRecordId != null">account_medal_record_id,</if>
+            <if test="medalName != null">medal_name,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="alreadyIcon != null">already_icon,</if>
+            <if test="score != null">score,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="accountMedalId != null">account_medal_id,</if>
+            <if test="medalParentId != null">medal_parent_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountMedalRecordId != null">#{accountMedalRecordId},</if>
+            <if test="medalName != null">#{medalName},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="alreadyIcon != null">#{alreadyIcon},</if>
+            <if test="score != null">#{score},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="accountMedalId != null">#{accountMedalId},</if>
+            <if test="medalParentId != null">#{medalParentId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountMedalRecord" parameterType="AccountMedalRecord">
+        update account_medal_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="medalName != null">medal_name = #{medalName},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="alreadyIcon != null">already_icon = #{alreadyIcon},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="accountMedalId != null">account_medal_id = #{accountMedalId},</if>
+            <if test="medalParentId != null">medal_parent_id = #{medalParentId},</if>
+        </trim>
+        where account_medal_record_id = #{accountMedalRecordId}
+    </update>
+
+    <update id="deleteAccountMedalRecordById" parameterType="String">
+        update account_medal_record
+        set del_status = 1
+        where account_medal_record_id = #{accountMedalRecordId}
+    </update>
+
+    <update id="deleteAccountMedalRecordByIds" parameterType="String">
+        update account_medal_record set del_status = 1 where account_medal_record_id in
+        <foreach item="accountMedalRecordId" collection="array" open="(" separator="," close=")">
+            #{accountMedalRecordId}
+        </foreach>
+    </update>
+
+
+    <select id="selectAccountMedalRecordCountByParentId" parameterType="AccountMedalRecord" resultType="Integer">
+        select
+        count(*)
+        from account_medal_record
+        <where>
+            del_status = 0
+            <if test="tag != null  and tag == 0">and medal_parent_id = 0</if>
+            <if test="tag != null  and tag == 1">and medal_parent_id != 0</if>
+            <if test="medalParentId != null "> and account_medal_id in (select account_medal_id from account_medal where del_status = 0 and show_status = 1 and parent_id = #{medalParentId})</if>
+            <if test="medalName != null  and medalName != ''">and medal_name like concat('%', #{medalName}, '%')</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="alreadyIcon != null  and alreadyIcon != ''">and already_icon = #{alreadyIcon}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="accountMedalId != null ">and account_medal_id = #{accountMedalId}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectApiAccountMedalRecordList" parameterType="AccountMedalRecord" resultMap="AccountMedalRecordResult">
+        <include refid="selectAccountMedalRecordVo"/>
+        <where>
+            del_status = 0
+            <if test="medalName != null  and medalName != ''">and medal_name like concat('%', #{medalName}, '%')</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="alreadyIcon != null  and alreadyIcon != ''">and already_icon = #{alreadyIcon}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="accountMedalId != null ">and account_medal_id = #{accountMedalId}</if>
+            <if test="medalParentId != null "> and medal_parent_id = #{medalParentId}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+            order by create_time desc
+        </where>
+    </select>
+
+
+    <!--   查询勋章排行榜-->
+    <select id="selectApiMedalAccountList" parameterType="ApiAccount"
+            resultType="com.wlwq.api.resultVO.score.AccountScoreResultVO">
+        select
+        a.account_id as accountId,
+        a.head_portrait as accountHead,
+        a.nick_name as accountName,
+        a.phone as accountPhone,
+        d.dept_name as deptName,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, a.post_ids)) as postNames,
+        ifnull((select sum(score) from account_medal_record
+        where
+        a.account_id = account_id
+        <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+            <![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+            <![CDATA[ <= ]]> #{endTime}
+        </if>
+        ),0) totalScore
+        from api_account a
+        left join sys_dept d on d.dept_id = a.dept_id
+        <where>
+            a.del_status = 0
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+        </where>
+        order by totalScore desc
+    </select>
+
+<!--    根据条件查询二级勋章数量（去重）-->
+    <select id="selectDistinctAccountMedalRecordCountByParentId" parameterType="AccountMedalRecord" resultType="Integer">
+        select
+        count(*)
+        from account_medal_record
+        <where>
+            del_status = 0
+            <if test="tag != null  and tag == 0">and medal_parent_id = 0</if>
+            <if test="medalParentId != null "> and account_medal_id in (select account_medal_id from account_medal where del_status = 0 and show_status = 1 and parent_id = #{medalParentId})</if>
+            <if test="medalName != null  and medalName != ''">and medal_name like concat('%', #{medalName}, '%')</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="alreadyIcon != null  and alreadyIcon != ''">and already_icon = #{alreadyIcon}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="accountMedalId != null ">and account_medal_id = #{accountMedalId}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        group by account_medal_id
+    </select>
+</mapper>

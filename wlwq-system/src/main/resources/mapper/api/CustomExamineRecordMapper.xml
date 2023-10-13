@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CustomExamineRecordMapper">
+
+    <resultMap type="CustomExamineRecord" id="CustomExamineRecordResult">
+        <result property="customExamineRecordId" column="custom_examine_record_id"/>
+        <result property="customExamineUserId" column="custom_examine_user_id"/>
+        <result property="customExamineUserName" column="custom_examine_user_name"/>
+        <result property="customInfoId" column="custom_info_id"/>
+        <result property="customInfoName" column="custom_info_name"/>
+        <result property="customUserId" column="custom_user_id"/>
+        <result property="customUserName" column="custom_user_name"/>
+        <result property="customExamineStatus" column="custom_examine_status"/>
+        <result property="customeStrikeMoney" column="custome_strike_money"/>
+        <result property="examineTime" column="examine_time"/>
+        <result property="customAnnex" column="custom_annex"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+    </resultMap>
+
+    <sql id="selectCustomExamineRecordVo">
+        select custom_examine_record_id, custom_examine_user_id, custom_examine_user_name, custom_info_id, custom_info_name, custom_user_id, custom_user_name,
+        custom_examine_status, custome_strike_money, examine_time,custom_annex,dept_id,company_id from custom_examine_record
+    </sql>
+
+    <select id="selectCustomExamineRecordList" parameterType="CustomExamineRecord"
+            resultMap="CustomExamineRecordResult">
+        <include refid="selectCustomExamineRecordVo"/>
+        <where>
+            <if test="customExamineUserId != null  and customExamineUserId != ''">and custom_examine_user_id =
+                #{customExamineUserId}
+            </if>
+            <if test="customExamineUserName != null  and customExamineUserName != ''">and custom_examine_user_name like
+                concat('%', #{customExamineUserName}, '%')
+            </if>
+            <if test="customInfoId != null ">and custom_info_id = #{customInfoId}</if>
+            <if test="customInfoName != null  and customInfoName != ''">and custom_info_name like concat('%',
+                #{customInfoName}, '%')
+            </if>
+            <if test="customUserId != null ">and custom_user_id = #{customUserId}</if>
+            <if test="customUserName != null  and customUserName != ''">and custom_user_name like concat('%',
+                #{customUserName}, '%')
+            </if>
+            <if test="customExamineStatus != null  and customExamineStatus != ''">and custom_examine_status =
+                #{customExamineStatus}
+            </if>
+            <if test="customeStrikeMoney != null ">and custome_strike_money = #{customeStrikeMoney}</if>
+            <if test="examineTime != null ">and examine_time = #{examineTime}</if>
+            <if test="customAnnex != null ">and custom_annex = #{customAnnex}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+        </where>
+    </select>
+
+    <select id="selectCustomExamineRecordById"  resultMap="CustomExamineRecordResult">
+        <include refid="selectCustomExamineRecordVo"/>
+        where custom_examine_record_id = #{customExamineRecordId}
+    </select>
+
+    <insert id="insertCustomExamineRecord" parameterType="CustomExamineRecord">
+        insert into custom_examine_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customExamineRecordId != null">custom_examine_record_id,</if>
+            <if test="customExamineUserId != null">custom_examine_user_id,</if>
+            <if test="customExamineUserName != null">custom_examine_user_name,</if>
+            <if test="customInfoId != null">custom_info_id,</if>
+            <if test="customInfoName != null">custom_info_name,</if>
+            <if test="customUserId != null">custom_user_id,</if>
+            <if test="customUserName != null">custom_user_name,</if>
+            <if test="customExamineStatus != null">custom_examine_status,</if>
+            <if test="customeStrikeMoney != null">custome_strike_money,</if>
+            <if test="examineTime != null">examine_time,</if>
+            <if test="customAnnex != null">custom_annex,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customExamineRecordId != null">#{customExamineRecordId},</if>
+            <if test="customExamineUserId != null">#{customExamineUserId},</if>
+            <if test="customExamineUserName != null">#{customExamineUserName},</if>
+            <if test="customInfoId != null">#{customInfoId},</if>
+            <if test="customInfoName != null">#{customInfoName},</if>
+            <if test="customUserId != null">#{customUserId},</if>
+            <if test="customUserName != null">#{customUserName},</if>
+            <if test="customExamineStatus != null">#{customExamineStatus},</if>
+            <if test="customeStrikeMoney != null">#{customeStrikeMoney},</if>
+            <if test="examineTime != null">#{examineTime},</if>
+            <if test="customAnnex != null">#{customAnnex},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCustomExamineRecord" parameterType="CustomExamineRecord">
+        update custom_examine_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customExamineUserId != null">custom_examine_user_id = #{customExamineUserId},</if>
+            <if test="customExamineUserName != null">custom_examine_user_name = #{customExamineUserName},</if>
+            <if test="customInfoId != null">custom_info_id = #{customInfoId},</if>
+            <if test="customInfoName != null">custom_info_name = #{customInfoName},</if>
+            <if test="customUserId != null">custom_user_id = #{customUserId},</if>
+            <if test="customUserName != null">custom_user_name = #{customUserName},</if>
+            <if test="customExamineStatus != null">custom_examine_status = #{customExamineStatus},</if>
+            <if test="customeStrikeMoney != null">custome_strike_money = #{customeStrikeMoney},</if>
+            <if test="examineTime != null">examine_time = #{examineTime},</if>
+            <if test="customAnnex != null">custom_annex = #{customAnnex},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+        </trim>
+        where custom_examine_record_id = #{customExamineRecordId}
+    </update>
+
+    <delete id="deleteCustomExamineRecordById" parameterType="Long">
+        delete from custom_examine_record where custom_examine_record_id = #{customExamineRecordId}
+    </delete>
+
+    <delete id="deleteCustomExamineRecordByIds" parameterType="String">
+        delete from custom_examine_record where custom_examine_record_id in
+        <foreach item="customExamineRecordId" collection="array" open="(" separator="," close=")">
+            #{customExamineRecordId}
+        </foreach>
+    </delete>
+
+    <resultMap type="com.wlwq.api.resultVO.CustomExamineVO" id="CustomExamineResult">
+        <result property="customId" column="custom_id"/>
+        <result property="customName" column="custom_name"/>
+        <result property="customPhone" column="custom_phone"/>
+        <result property="creatTime" column="create_time"/>
+        <result property="customLabel" column="custom_label"/>
+        <result property="customFollowLastTime" column="custom_follow_last_time"/>
+        <result property="customClaimId" column="custom_claim_id"/>
+    </resultMap>
+    <select id="getCustomExamineVO" resultMap="CustomExamineResult">
+        select custom_id,custom_name,custom_phone,cci.create_time,custom_label,custom_follow_last_time,custom_claim_id
+        from custom_custom_info cci
+        left join custom_user_claim cuc on cci.custom_id=cuc.custom_info_id
+        where custom_claim_id=#{customClaimId}
+    </select>
+</mapper>

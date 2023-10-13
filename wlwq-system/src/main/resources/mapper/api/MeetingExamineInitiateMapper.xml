@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.MeetingExamineInitiateMapper">
+
+    <resultMap type="MeetingExamineInitiate" id="MeetingExamineInitiateResult">
+        <result property="examineInitiateId" column="examine_initiate_id"/>
+        <result property="examineModuleId" column="examine_module_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="reason" column="reason"/>
+        <result property="pics" column="pics"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="content" column="content"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+
+        <result property="meetingTrainingId" column="meeting_training_id"/>
+        <result property="title" column="title"/>
+        <result property="meetintBeginTime" column="meetint_begin_time"/>
+        <result property="meetintEndTime" column="meetint_end_time"/>
+        <result property="address" column="address"/>
+        <result property="meetingStatus" column="meeting_status"/>
+        <result property="joinAccountId" column="join_account_id"/>
+        <result property="joinAccountNickName" column="join_account_nick_name"/>
+        <result property="joinAccountDeptName" column="join_account_dept_name"/>
+        <result property="joinAccountDeptId" column="join_account_dept_id"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="organizerAccountId" column="organizer_account_id"/>
+        <result property="organizerHeadPortrait" column="organizer_head_portrait"/>
+        <result property="organizerNickName" column="organizer_nick_name"/>
+
+        <result property="evaluate" column="evaluate"/>
+        <result property="meetingBenefits" column="meeting_benefits"/>
+        <result property="meetingDisadvantages" column="meeting_disadvantages"/>
+        <result property="improvement" column="improvement"/>
+        <result property="evaluateStatus" column="evaluate_status"/>
+
+        <result property="deptName" column="dept_name"/>
+        <result property="selfIntroduction" column="self_introduction"/>
+        <result property="targetId" column="target_id"/>
+
+        <result property="parentTitle" column="parent_title"/>
+        <result property="subTitle" column="sub_title"/>
+        <result property="subContent" column="sub_content"/>
+        <result property="documentationUrl" column="documentation_url"/>
+        <result property="targetTrainingRecordContentId" column="target_training_record_content_id"/>
+
+        <result property="customId" column="custom_id"/>
+        <result property="customName" column="custom_name"/>
+        <result property="customHeadPortrait" column="custom_head_portrait"/>
+        <result property="customPhone" column="custom_phone"/>
+        <result property="customeStrikeMoney" column="custome_strike_money"/>
+        <result property="customEnclosure" column="custom_enclosure"/>
+        <result property="meetingType" column="meeting_type"/>
+        <result property="examineTag" column="examine_tag"/>
+    </resultMap>
+
+    <sql id="selectMeetingExamineInitiateVo">
+        select examine_initiate_id,
+               examine_module_id,
+               start_time,
+               end_time,
+               reason,
+               pics,
+               parent_id,
+               content,
+               del_status,
+               create_time,
+               update_time,
+               examine_status,
+               read_status,
+               account_id,
+               account_name,
+               account_phone,
+               account_head,
+               dept_id,
+               company_id,
+               meeting_training_id,
+               title,
+               meetint_begin_time,
+               meetint_end_time,
+               address,
+               meeting_status,
+               join_account_id,
+               join_account_nick_name,
+               join_account_dept_name,
+               join_account_dept_id,
+               synopsis,
+               organizer_account_id,
+               organizer_head_portrait,
+               organizer_nick_name,
+               evaluate,
+               meeting_benefits,
+               meeting_disadvantages,
+               improvement,
+               evaluate_status,
+               dept_name,
+               self_introduction,
+               target_id,
+               parent_title,
+               sub_title,
+               sub_content,
+               documentation_url,
+               target_training_record_content_id,
+               custom_id,
+               custom_name,
+               custom_head_portrait,
+               custom_phone,
+               custome_strike_money,
+               custom_enclosure,
+               meeting_type,
+               examine_tag
+        from meeting_examine_initiate
+    </sql>
+
+    <select id="selectMeetingExamineInitiateList" parameterType="MeetingExamineInitiate"
+            resultMap="MeetingExamineInitiateResult">
+        <include refid="selectMeetingExamineInitiateVo"/>
+        <where>
+            del_status = 0
+            <if test="examineModuleId != null ">and examine_module_id = #{examineModuleId}</if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="reason != null  and reason != ''">and reason like concat('%', #{reason}, '%')</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="parentId != null  and parentId != ''">and parent_id = #{parentId}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+
+            <if test="meetingTrainingId != null  and meetingTrainingId != ''">and meeting_training_id =
+                #{meetingTrainingId}
+            </if>
+            <if test="title != null  and title != ''">and title = #{title}</if>
+            <if test="meetintBeginTime != null ">and meetint_begin_time = #{meetintBeginTime}</if>
+            <if test="meetintEndTime != null ">and meetint_end_time = #{meetintEndTime}</if>
+            <if test="address != null  and address != ''">and address = #{address}</if>
+            <if test="meetingStatus != null ">and meeting_status = #{meetingStatus}</if>
+            <if test="joinAccountId != null  and joinAccountId != ''">and join_account_id = #{joinAccountId}</if>
+            <if test="joinAccountNickName != null  and joinAccountNickName != ''">and join_account_nick_name like
+                concat('%', #{joinAccountNickName}, '%')
+            </if>
+            <if test="joinAccountDeptName != null  and joinAccountDeptName != ''">and join_account_dept_name like
+                concat('%', #{joinAccountDeptName}, '%')
+            </if>
+            <if test="joinAccountDeptId != null  and joinAccountDeptId != ''">and join_account_dept_id =
+                #{joinAccountDeptId}
+            </if>
+            <if test="synopsis != null  and synopsis != ''">and synopsis = #{synopsis}</if>
+            <if test="organizerAccountId != null  and organizerAccountId != ''">and organizer_account_id =
+                #{organizerAccountId}
+            </if>
+            <if test="organizerHeadPortrait != null  and organizerHeadPortrait != ''">and organizer_head_portrait =
+                #{organizerHeadPortrait}
+            </if>
+            <if test="organizerNickName != null  and organizerNickName != ''">and organizer_nick_name like concat('%',
+                #{organizerNickName}, '%')
+            </if>
+
+            <if test="evaluate != null ">and evaluate = #{evaluate}</if>
+            <if test="meetingBenefits != null  and meetingBenefits != ''">and meeting_benefits = #{meetingBenefits}</if>
+            <if test="meetingDisadvantages != null  and meetingDisadvantages != ''">and meeting_disadvantages =
+                #{meetingDisadvantages}
+            </if>
+            <if test="improvement != null  and improvement != ''">and improvement = #{improvement}</if>
+            <if test="evaluateStatus != null ">and evaluate_status = #{evaluateStatus}</if>
+            <if test="deptName != null  and deptName != ''">and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="selfIntroduction != null  and selfIntroduction != ''">and self_introduction =
+                #{selfIntroduction}
+            </if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+            <if test="parentTitle != null  and parentTitle != ''">and parent_title = #{parentTitle}</if>
+            <if test="subTitle != null  and subTitle != ''">and sub_title = #{subTitle}</if>
+            <if test="subContent != null  and subContent != ''">and sub_content = #{subContent}</if>
+            <if test="documentationUrl != null  and documentationUrl != ''">and documentation_url =
+                #{documentationUrl}
+            </if>
+            <if test="targetTrainingRecordContentId != null  and targetTrainingRecordContentId != ''">and
+                target_training_record_content_id = #{targetTrainingRecordContentId}
+            </if>
+
+            <if test="customId != null  and customId != ''">and custom_id = #{customId}</if>
+            <if test="customName != null  and customName != ''">and custom_name like concat('%', #{customName}, '%')
+            </if>
+            <if test="customHeadPortrait != null  and customHeadPortrait != ''">and custom_head_portrait =
+                #{customHeadPortrait}
+            </if>
+            <if test="customPhone != null  and customPhone != ''">and custom_phone = #{customPhone}</if>
+            <if test="customeStrikeMoney != null ">and custome_strike_money = #{customeStrikeMoney}</if>
+            <if test="customEnclosure != null  and customEnclosure != ''">and custom_enclosure = #{customEnclosure}</if>
+            <if test="meetingType != null ">and meeting_type = #{meetingType}</if>
+            <if test="examineTag != null  and examineTag != ''"> and examine_tag = #{examineTag}</if>
+        </where>
+    </select>
+
+    <select id="selectMeetingExamineInitiateById" parameterType="String" resultMap="MeetingExamineInitiateResult">
+        <include refid="selectMeetingExamineInitiateVo"/>
+        where del_status = 0 and examine_initiate_id = #{examineInitiateId}
+    </select>
+
+    <insert id="insertMeetingExamineInitiate" parameterType="MeetingExamineInitiate">
+        insert into meeting_examine_initiate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examineInitiateId != null">examine_initiate_id,</if>
+            <if test="examineModuleId != null">examine_module_id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="reason != null">reason,</if>
+            <if test="pics != null">pics,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="content != null">content,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+
+            <if test="meetingTrainingId != null and meetingTrainingId != ''">meeting_training_id,</if>
+            <if test="title != null">title,</if>
+            <if test="meetintBeginTime != null">meetint_begin_time,</if>
+            <if test="meetintEndTime != null">meetint_end_time,</if>
+            <if test="address != null">address,</if>
+            <if test="meetingStatus != null">meeting_status,</if>
+            <if test="joinAccountId != null">join_account_id,</if>
+            <if test="joinAccountNickName != null">join_account_nick_name,</if>
+            <if test="joinAccountDeptName != null">join_account_dept_name,</if>
+            <if test="joinAccountDeptId != null">join_account_dept_id,</if>
+            <if test="synopsis != null">synopsis,</if>
+            <if test="organizerAccountId != null">organizer_account_id,</if>
+            <if test="organizerHeadPortrait != null">organizer_head_portrait,</if>
+            <if test="organizerNickName != null">organizer_nick_name,</if>
+
+            <if test="evaluate != null">evaluate,</if>
+            <if test="meetingBenefits != null">meeting_benefits,</if>
+            <if test="meetingDisadvantages != null">meeting_disadvantages,</if>
+            <if test="improvement != null">improvement,</if>
+            <if test="evaluateStatus != null">evaluate_status,</if>
+
+            <if test="deptName != null">dept_name,</if>
+            <if test="selfIntroduction != null">self_introduction,</if>
+            <if test="targetId != null">target_id,</if>
+
+            <if test="subTitle != null">sub_title,</if>
+            <if test="subContent != null">sub_content,</if>
+            <if test="documentationUrl != null">documentation_url,</if>
+            <if test="targetTrainingRecordContentId != null">target_training_record_content_id,</if>
+
+            <if test="customId != null">custom_id,</if>
+            <if test="customName != null">custom_name,</if>
+            <if test="customHeadPortrait != null">custom_head_portrait,</if>
+            <if test="customPhone != null">custom_phone,</if>
+            <if test="customeStrikeMoney != null">custome_strike_money,</if>
+            <if test="customEnclosure != null">custom_enclosure,</if>
+            <if test="meetingType != null">meeting_type,</if>
+            <if test="examineTag != null">examine_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examineInitiateId != null">#{examineInitiateId},</if>
+            <if test="examineModuleId != null">#{examineModuleId},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+
+            <if test="meetingTrainingId != null and meetingTrainingId != ''">#{meetingTrainingId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="meetintBeginTime != null">#{meetintBeginTime},</if>
+            <if test="meetintEndTime != null">#{meetintEndTime},</if>
+            <if test="address != null">#{address},</if>
+            <if test="meetingStatus != null">#{meetingStatus},</if>
+            <if test="joinAccountId != null">#{joinAccountId},</if>
+            <if test="joinAccountNickName != null">#{joinAccountNickName},</if>
+            <if test="joinAccountDeptName != null">#{joinAccountDeptName},</if>
+            <if test="joinAccountDeptId != null">#{joinAccountDeptId},</if>
+            <if test="synopsis != null">#{synopsis},</if>
+            <if test="organizerAccountId != null">#{organizerAccountId},</if>
+            <if test="organizerHeadPortrait != null">#{organizerHeadPortrait},</if>
+            <if test="organizerNickName != null">#{organizerNickName},</if>
+
+            <if test="evaluate != null">#{evaluate},</if>
+            <if test="meetingBenefits != null">#{meetingBenefits},</if>
+            <if test="meetingDisadvantages != null">#{meetingDisadvantages},</if>
+            <if test="improvement != null">#{improvement},</if>
+            <if test="evaluateStatus != null">#{evaluateStatus},</if>
+
+            <if test="deptName != null">#{deptName},</if>
+            <if test="selfIntroduction != null">#{selfIntroduction},</if>
+            <if test="targetId != null">#{targetId},</if>
+
+            <if test="parentTitle != null">#{parentTitle},</if>
+            <if test="subTitle != null">#{subTitle},</if>
+            <if test="subContent != null">#{subContent},</if>
+            <if test="documentationUrl != null">#{documentationUrl},</if>
+            <if test="targetTrainingRecordContentId != null">#{targetTrainingRecordContentId},</if>
+
+            <if test="customId != null">#{customId},</if>
+            <if test="customName != null">#{customName},</if>
+            <if test="customHeadPortrait != null">#{customHeadPortrait},</if>
+            <if test="customPhone != null">#{customPhone},</if>
+            <if test="customeStrikeMoney != null">#{customeStrikeMoney},</if>
+            <if test="customEnclosure != null">#{customEnclosure},</if>
+            <if test="meetingType != null">#{meetingType},</if>
+            <if test="examineTag != null">#{examineTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMeetingExamineInitiate" parameterType="MeetingExamineInitiate">
+        update meeting_examine_initiate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examineModuleId != null">examine_module_id = #{examineModuleId},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+
+            <if test="meetingTrainingId != null and meetingTrainingId != ''">meeting_training_id =
+                #{meetingTrainingId},
+            </if>
+            <if test="title != null">title = #{title},</if>
+            <if test="meetintBeginTime != null">meetint_begin_time = #{meetintBeginTime},</if>
+            <if test="meetintEndTime != null">meetint_end_time = #{meetintEndTime},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="meetingStatus != null">meeting_status = #{meetingStatus},</if>
+            <if test="joinAccountId != null">join_account_id = #{joinAccountId},</if>
+            <if test="joinAccountNickName != null">join_account_nick_name = #{joinAccountNickName},</if>
+            <if test="joinAccountDeptName != null">join_account_dept_name = #{joinAccountDeptName},</if>
+            <if test="joinAccountDeptId != null">join_account_dept_id = #{joinAccountDeptId},</if>
+            <if test="synopsis != null">synopsis = #{synopsis},</if>
+            <if test="organizerAccountId != null">organizer_account_id = #{organizerAccountId},</if>
+            <if test="organizerHeadPortrait != null">organizer_head_portrait = #{organizerHeadPortrait},</if>
+            <if test="organizerNickName != null">organizer_nick_name = #{organizerNickName},</if>
+
+            <if test="evaluate != null">evaluate = #{evaluate},</if>
+            <if test="meetingBenefits != null">meeting_benefits = #{meetingBenefits},</if>
+            <if test="meetingDisadvantages != null">meeting_disadvantages = #{meetingDisadvantages},</if>
+            <if test="improvement != null">improvement = #{improvement},</if>
+            <if test="evaluateStatus != null">evaluate_status = #{evaluateStatus},</if>
+
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="selfIntroduction != null">self_introduction = #{selfIntroduction},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+
+            <if test="parentTitle != null">parent_title = #{parentTitle},</if>
+            <if test="subTitle != null">sub_title = #{subTitle},</if>
+            <if test="subContent != null">sub_content = #{subContent},</if>
+            <if test="documentationUrl != null">documentation_url = #{documentationUrl},</if>
+            <if test="targetTrainingRecordContentId != null">target_training_record_content_id =
+                #{targetTrainingRecordContentId},
+            </if>
+
+            <if test="customId != null">custom_id = #{customId},</if>
+            <if test="customName != null">custom_name = #{customName},</if>
+            <if test="customHeadPortrait != null">custom_head_portrait = #{customHeadPortrait},</if>
+            <if test="customPhone != null">custom_phone = #{customPhone},</if>
+            <if test="customeStrikeMoney != null">custome_strike_money = #{customeStrikeMoney},</if>
+            <if test="customEnclosure != null">custom_enclosure = #{customEnclosure},</if>
+            <if test="meetingType != null">meeting_type = #{meetingType},</if>
+            <if test="examineTag != null">examine_tag = #{examineTag},</if>
+        </trim>
+        where examine_initiate_id = #{examineInitiateId}
+    </update>
+
+    <update id="deleteMeetingExamineInitiateById" parameterType="String">
+        update meeting_examine_initiate
+        set del_status = 1
+        where examine_initiate_id = #{examineInitiateId}
+    </update>
+
+    <update id="deleteMeetingExamineInitiateByIds" parameterType="String">
+        update meeting_examine_initiate set del_status = 1 where examine_initiate_id in
+        <foreach item="examineInitiateId" collection="array" open="(" separator="," close=")">
+            #{examineInitiateId}
+        </foreach>
+    </update>
+
+    <!--    App审批列表-->
+    <select id="selectExamineInitiateApiList" parameterType="MeetingExamineInitiate"
+            resultMap="MeetingExamineInitiateResult">
+        <include refid="selectMeetingExamineInitiateVo"/>
+        <where>
+            del_status = 0
+            <if test="examineModuleStr != null and examineModuleStr != ''">and
+                find_in_set(examine_module_id,#{examineModuleStr})
+            </if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="reason != null  and reason != ''">and reason like concat('%', #{reason}, '%')</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="parentId != null  and parentId != ''">and parent_id = #{parentId}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="meetingType != null ">and meeting_type = #{meetingType}</if>
+            <if test="customName != null  and customName != ''">and custom_name like concat('%', #{customName}, '%')
+            </if>
+            <if test="examineTag != null  and examineTag != ''"> and examine_tag = #{examineTag}</if>
+        </where>
+        <if test="searchTimeTag != null and searchTimeTag == 1">order by create_time desc</if>
+        <if test="searchTimeTag != null and searchTimeTag == 2">order by create_time</if>
+    </select>
+
+    <!--    App审批数量-->
+    <select id="selectExamineInitiateApiCount" parameterType="MeetingExamineInitiate" resultType="Integer">
+        select count(*) from meeting_examine_initiate
+        <where>
+            del_status = 0
+            <if test="examineModuleStr != null and examineModuleStr != ''">and
+                find_in_set(examine_module_id,#{examineModuleStr})
+            </if>
+            <if test="examineStatusStr != null and examineStatusStr != ''">and
+                find_in_set(examine_status,examineStatusStr)
+            </if>
+            <if test="examineModuleId != null ">and examine_module_id = #{examineModuleId}</if>
+            <if test="startTime != null ">and start_time = #{startTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="reason != null  and reason != ''">and reason like concat('%', #{reason}, '%')</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="parentId != null  and parentId != ''">and parent_id = #{parentId}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="month != null and month != ''">and DATE_FORMAT(reissue_clocking_date,'%Y-%m') =
+                DATE_FORMAT(#{month},'%Y-%m')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="meetingType != null ">and meeting_type = #{meetingType}</if>
+            <if test="examineTag != null  and examineTag != ''"> and examine_tag = #{examineTag}</if>
+        </where>
+    </select>
+    <select id="selectInitiateByMeetingTrainingId" resultMap="MeetingExamineInitiateResult">
+        SELECT *
+        FROM meeting_examine_initiate
+        WHERE examine_module_id = 24
+          AND del_status = 0
+        ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <!--申请转训信息状态查询（转训审核信息对应的是会议训练审核信息）-->
+    <select id="selectMeetingExamineInitiateByTransferTraining" parameterType="MeetingExamineInitiate"
+            resultMap="MeetingExamineInitiateResult">
+        <include refid="selectMeetingExamineInitiateVo"/>
+        <where>
+            del_status = 0
+            <if test="meetingTrainingId != null  and meetingTrainingId != ''">and meeting_training_id =
+                #{meetingTrainingId}
+            </if>
+            <if test="examineModuleId != null ">and examine_module_id = #{examineModuleId}</if>
+        </where>
+        limit 1
+    </select>
+
+
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.note.mapper.NoteSignMapper">
+    
+    <resultMap type="NoteSign" id="NoteSignResult">
+        <result property="noteSignId"    column="note_sign_id"    />
+        <result property="noteConfigId"    column="note_config_id"    />
+        <result property="noteSignValue"    column="note_sign_value"    />
+        <result property="noteConfigName"    column="noteConfigName"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectNoteSignVo">
+        select note_sign_id, note_config_id,(select note_config_name from note_config where note_config_id = note_sign.note_config_id) as noteConfigName, note_sign_value, create_time, update_time from note_sign
+    </sql>
+
+    <select id="selectNoteSignList" parameterType="NoteSign" resultMap="NoteSignResult">
+        <include refid="selectNoteSignVo"/>
+        <where>  
+            <if test="noteConfigId != null  and noteConfigId != ''"> and note_config_id = #{noteConfigId}</if>
+            <if test="noteSignValue != null  and noteSignValue != ''"> and note_sign_value = #{noteSignValue}</if>
+        </where>
+    </select>
+    
+    <select id="selectNoteSignById" parameterType="String" resultMap="NoteSignResult">
+        <include refid="selectNoteSignVo"/>
+        where note_sign_id = #{noteSignId}
+    </select>
+        
+    <insert id="insertNoteSign" parameterType="NoteSign">
+        insert into note_sign
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noteSignId != null">note_sign_id,</if>
+            <if test="noteConfigId != null and noteConfigId != ''">note_config_id,</if>
+            <if test="noteSignValue != null and noteSignValue != ''">note_sign_value,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="noteSignId != null">#{noteSignId},</if>
+            <if test="noteConfigId != null and noteConfigId != ''">#{noteConfigId},</if>
+            <if test="noteSignValue != null and noteSignValue != ''">#{noteSignValue},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateNoteSign" parameterType="NoteSign">
+        update note_sign
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="noteConfigId != null and noteConfigId != ''">note_config_id = #{noteConfigId},</if>
+            <if test="noteSignValue != null and noteSignValue != ''">note_sign_value = #{noteSignValue},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where note_sign_id = #{noteSignId}
+    </update>
+
+    <delete id="deleteNoteSignById" parameterType="String">
+        delete from note_sign where note_sign_id = #{noteSignId}
+    </delete>
+
+    <delete id="deleteNoteSignByIds" parameterType="String">
+        delete from note_sign where note_sign_id in 
+        <foreach item="noteSignId" collection="array" open="(" separator="," close=")">
+            #{noteSignId}
+        </foreach>
+    </delete>
+
+</mapper>

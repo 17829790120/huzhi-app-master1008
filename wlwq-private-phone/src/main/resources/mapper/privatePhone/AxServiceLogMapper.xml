@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.privatePhone.mapper.AxServiceLogMapper">
+    
+    <resultMap type="AxServiceLog" id="AxServiceLogResult">
+        <result property="axServiceLogId"    column="ax_service_log_id"    />
+        <result property="virtualNumber"    column="virtual_number"    />
+        <result property="realNumber"    column="real_number"    />
+        <result property="subId"    column="sub_id"    />
+        <result property="remarks"    column="remarks"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectAxServiceLogVo">
+        select ax_service_log_id, virtual_number, real_number, sub_id, remarks, status, create_time from ax_service_log
+    </sql>
+
+    <select id="selectAxServiceLogList" parameterType="AxServiceLog" resultMap="AxServiceLogResult">
+        <include refid="selectAxServiceLogVo"/>
+        <where>  
+            <if test="virtualNumber != null  and virtualNumber != ''"> and virtual_number = #{virtualNumber}</if>
+            <if test="realNumber != null  and realNumber != ''"> and real_number = #{realNumber}</if>
+            <if test="subId != null  and subId != ''"> and sub_id = #{subId}</if>
+            <if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectAxServiceLogById" parameterType="Long" resultMap="AxServiceLogResult">
+        <include refid="selectAxServiceLogVo"/>
+        where ax_service_log_id = #{axServiceLogId}
+    </select>
+        
+    <insert id="insertAxServiceLog" parameterType="AxServiceLog" useGeneratedKeys="true" keyProperty="axServiceLogId">
+        insert into ax_service_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="virtualNumber != null">virtual_number,</if>
+            <if test="realNumber != null and realNumber != ''">real_number,</if>
+            <if test="subId != null">sub_id,</if>
+            <if test="remarks != null">remarks,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="virtualNumber != null">#{virtualNumber},</if>
+            <if test="realNumber != null and realNumber != ''">#{realNumber},</if>
+            <if test="subId != null">#{subId},</if>
+            <if test="remarks != null">#{remarks},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAxServiceLog" parameterType="AxServiceLog">
+        update ax_service_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="virtualNumber != null">virtual_number = #{virtualNumber},</if>
+            <if test="realNumber != null and realNumber != ''">real_number = #{realNumber},</if>
+            <if test="subId != null">sub_id = #{subId},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where ax_service_log_id = #{axServiceLogId}
+    </update>
+
+    <delete id="deleteAxServiceLogById" parameterType="Long">
+        delete from ax_service_log where ax_service_log_id = #{axServiceLogId}
+    </delete>
+
+    <delete id="deleteAxServiceLogByIds" parameterType="String">
+        delete from ax_service_log where ax_service_log_id in 
+        <foreach item="axServiceLogId" collection="array" open="(" separator="," close=")">
+            #{axServiceLogId}
+        </foreach>
+    </delete>
+
+</mapper>

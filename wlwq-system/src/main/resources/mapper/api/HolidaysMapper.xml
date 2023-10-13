@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.HolidaysMapper">
+
+    <resultMap type="Holidays" id="HolidaysResult">
+        <result property="holidaysId" column="holidays_id"/>
+        <result property="holidaysDate" column="holidays_date"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectHolidaysVo">
+        select holidays_id, holidays_date, create_time, update_time
+        from holidays
+    </sql>
+
+    <select id="selectHolidaysList" parameterType="Holidays" resultMap="HolidaysResult">
+        <include refid="selectHolidaysVo"/>
+        <where>
+            <if test="holidaysDate != null ">and holidays_date = #{holidaysDate}</if>
+        </where>
+        order by holidays_date
+    </select>
+
+    <select id="selectHolidaysById" parameterType="String" resultMap="HolidaysResult">
+        <include refid="selectHolidaysVo"/>
+        where holidays_id = #{holidaysId}
+    </select>
+
+    <insert id="insertHolidays" parameterType="Holidays">
+        insert into holidays
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="holidaysId != null">holidays_id,</if>
+            <if test="holidaysDate != null">holidays_date,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="holidaysId != null">#{holidaysId},</if>
+            <if test="holidaysDate != null">#{holidaysDate},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHolidays" parameterType="Holidays">
+        update holidays
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="holidaysDate != null">holidays_date = #{holidaysDate},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where holidays_id = #{holidaysId}
+    </update>
+
+    <delete id="deleteHolidaysById" parameterType="String">
+        delete
+        from holidays
+        where holidays_id = #{holidaysId}
+    </delete>
+
+    <delete id="deleteHolidaysByIds" parameterType="String">
+        delete from holidays where holidays_id in
+        <foreach item="holidaysId" collection="array" open="(" separator="," close=")">
+            #{holidaysId}
+        </foreach>
+    </delete>
+
+</mapper>

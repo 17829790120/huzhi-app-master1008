@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('客户列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+<!--                            <li>-->
+<!--                                <label>客户来源：</label>-->
+<!--                                <select name="customSource" class="form-control m-b" th:with="type=${@dict.getType('custom_source')}">-->
+<!--                                    <option value="">-&#45;&#45;请选择-&#45;&#45;</option>-->
+<!--                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>-->
+<!--                                </select>-->
+<!--                            </li>-->
+                            <li>
+                                <label>客户姓名：</label>
+                                <input type="text" name="customName"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="web:customCustomInfo:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="web:customCustomInfo:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="web:customCustomInfo:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:customCustomInfo:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('web:customCustomInfo:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('web:customCustomInfo:remove')}]];
+        var prefix = ctx + "web/customCustomInfo";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "客户",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'customId',
+                    title: '',
+                    visible: false
+                },
+                {
+                    field: 'deptId',
+                    title: '当前登录人公司ID',
+                    visible: false
+                },
+                {
+                    field: 'customSource',
+                    align: 'center',
+                    title: '客户来源'
+                },
+                {
+                    field: 'customName',
+                    align: 'center',
+                    title: '客户姓名'
+                },
+                {
+                    field: 'customSex',
+                    align: 'center',
+                    title: '客户性别'
+                },
+                {
+                    field: 'customBirthday',
+                    align: 'center',
+                    title: '客户生日'
+                },
+                {
+                    field: 'customPhone',
+                    align: 'center',
+                    title: '客户手机号'
+                },
+                {
+                    field: 'customGrade',
+                    align: 'center',
+                    title: '客户等级'
+                },
+                {
+                    field: 'customCompanyName',
+                    align: 'center',
+                    title: '客户公司名称'
+                },
+                {
+                    field: 'customAddress',
+                    align: 'center',
+                    title: '客户住址'
+                },
+                {
+                    field: 'customDemand',
+                    align: 'center',
+                    title: '客户需求'
+                },
+                {
+                    field: 'customResponsibleName',
+                    align: 'center',
+                    title: '客户负责人'
+                },
+                {
+                    field: 'customRemark',
+                    align: 'center',
+                    title: '备注'
+                },
+                {
+                    field: 'delStatus',
+                    align: 'center',
+                    title: '是否删除',
+                    visible: false
+                },
+                {
+                    field: 'sortNum',
+                    align: 'center',
+                    title: '排序',
+                    visible: false
+                },
+                {
+                    field: 'showStatustiny',
+                    align: 'center',
+                    title: '是否显示',
+                    visible: false
+                },
+                {
+                    field: 'customDecisionsName',
+                    align: 'center',
+                    title: '是否客户决策人'
+                },
+                {
+                    field: 'addSource',
+                    align: 'center',
+                    title: '0平台录入1App录入',
+                    visible: false
+                },
+                {
+                    field: 'claimStatusName',
+                    align: 'center',
+                    title: '是否认领'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.customId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+    </script>
+</body>
+</html>

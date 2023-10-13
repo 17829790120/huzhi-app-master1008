@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改直播报名')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-liveRegistration-edit" th:object="${liveRegistration}">
+            <input name="liveRegistrationId" th:field="*{liveRegistrationId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户id：</label>
+                <div class="col-sm-8">
+                    <input name="accountId" th:field="*{accountId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">昵称：</label>
+                <div class="col-sm-8">
+                    <input name="nickName" th:field="*{nickName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">头像：</label>
+                <div class="col-sm-8">
+                    <textarea name="headPortrait" class="form-control">[[*{headPortrait}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">公司ID：</label>
+                <div class="col-sm-8">
+                    <input name="companyId" th:field="*{companyId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">公司名称：</label>
+                <div class="col-sm-8">
+                    <input name="companyName" th:field="*{companyName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户归属部门ID：</label>
+                <div class="col-sm-8">
+                    <input name="deptId" th:field="*{deptId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">部门名称：</label>
+                <div class="col-sm-8">
+                    <input name="deptName" th:field="*{deptName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">直播id：</label>
+                <div class="col-sm-8">
+                    <input name="liveVideoId" th:field="*{liveVideoId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">删除状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box">
+                        <input type="radio" name="delStatus" value="">
+                        <label th:for="delStatus" th:text="未知"></label>
+                    </div>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "web/liveRegistration";
+        $("#form-liveRegistration-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-liveRegistration-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

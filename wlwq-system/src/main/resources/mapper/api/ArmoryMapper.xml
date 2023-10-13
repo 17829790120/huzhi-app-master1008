@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ArmoryMapper">
+
+    <resultMap type="Armory" id="ArmoryResult">
+        <result property="armoryId" column="armory_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="context" column="context"/>
+        <result property="createTime" column="create_time"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="headPortrait" column="head_portrait"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="postNames" column="post_names"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="sortNum" column="sort_num"/>
+    </resultMap>
+
+    <sql id="selectArmoryVo">
+        select armory_id, account_id, context, create_time, nick_name, head_portrait, dept_id, post_ids, dept_name, post_names, company_id, company_name,sort_num from armory
+    </sql>
+
+    <sql id="selectArmory">
+        select
+            a.armory_id,
+            a.account_id,
+            a.context,
+            a.create_time,
+            a.nick_name,
+            a.head_portrait,
+            a.dept_id,
+            a.post_ids,
+            a.dept_name,
+            a.post_names,
+            a.company_id,
+            a.sort_num,
+            s.dept_name as company_name
+        from armory a
+        left join sys_dept d on a.dept_id = d.dept_id
+        left join sys_dept s on s.dept_id = a.company_id
+    </sql>
+
+    <select id="selectArmoryList" parameterType="Armory" resultMap="ArmoryResult">
+        <include refid="selectArmory"/>
+        <where>
+            1 = 1
+            <if test="accountId != null  and accountId != ''">and a.account_id = #{accountId}</if>
+            <if test="context != null  and context != ''">and a.context like concat('%', #{context}, '%')</if>
+            <if test="nickName != null  and nickName != ''">and a.nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="headPortrait != null  and headPortrait != ''">and a.head_portrait = #{headPortrait}</if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="postIds != null  and postIds != ''">and a.post_ids = #{postIds}</if>
+            <if test="deptName != null  and deptName != ''">and a.dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="postNames != null  and postNames != ''">and a.post_names = #{postNames}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="companyName != null  and companyName != ''">and a.company_name like concat('%', #{companyName},
+                '%')
+            </if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by a.sort_num, a.create_time desc
+    </select>
+
+    <select id="selectArmoryById" parameterType="String" resultMap="ArmoryResult">
+        <include refid="selectArmoryVo"/>
+        where armory_id = #{armoryId}
+    </select>
+
+    <!--APP查询英雄榜列表列表-->
+    <select id="selectApiArmoryList" resultMap="ArmoryResult">
+        <include refid="selectArmoryVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="context != null  and context != ''">and context like concat('%', #{context}, '%')</if>
+            <if test="nickName != null  and nickName != ''">and nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="headPortrait != null  and headPortrait != ''">and head_portrait = #{headPortrait}</if>
+            <if test="deptId != null and tag != null and tag == 0">and (dept_id IN (SELECT dept_id FROM sys_dept WHERE
+                dept_id = #{deptId} OR FIND_IN_SET(#{deptId}, ancestors)))
+            </if>
+            <if test="deptId != null and tag != null and tag !=0">and dept_id = #{deptId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptName != null  and deptName != ''">and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="postNames != null  and postNames != ''">and post_names = #{postNames}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+        </where>
+        order by sort_num, create_time desc
+    </select>
+
+    <insert id="insertArmory" parameterType="Armory">
+        insert into armory
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="armoryId != null">armory_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="context != null">context,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="headPortrait != null">head_portrait,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="postNames != null">post_names,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="sortNum != null">sort_num,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="armoryId != null">#{armoryId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="context != null">#{context},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="headPortrait != null">#{headPortrait},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="postNames != null">#{postNames},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+        </trim>
+    </insert>
+
+    <update id="updateArmory" parameterType="Armory">
+        update armory
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="context != null">context = #{context},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="headPortrait != null">head_portrait = #{headPortrait},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="postNames != null">post_names = #{postNames},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+        </trim>
+        where armory_id = #{armoryId}
+    </update>
+
+    <delete id="deleteArmoryById" parameterType="String">
+        delete from armory where armory_id = #{armoryId}
+    </delete>
+
+    <delete id="deleteArmoryByIds" parameterType="String">
+        delete from armory where armory_id in
+        <foreach item="armoryId" collection="array" open="(" separator="," close=")">
+            #{armoryId}
+        </foreach>
+    </delete>
+
+</mapper>

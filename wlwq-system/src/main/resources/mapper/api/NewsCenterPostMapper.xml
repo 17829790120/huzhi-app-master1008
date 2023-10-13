@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.NewsCenterPostMapper">
+
+    <resultMap type="NewsCenterPost" id="NewsCenterPostResult">
+        <result property="newsCenterPostId" column="news_center_post_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="informationCategoryId" column="information_category_id"/>
+        <result property="informationPostTitle" column="information_post_title"/>
+        <result property="informationPostImages" column="information_post_images"/>
+        <result property="informationPostImagesType" column="information_post_images_type"/>
+        <result property="imagesAddress" column="images_address"/>
+        <result property="informationPostContent" column="information_post_content"/>
+        <result property="informationPostFile" column="information_post_file"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="basicsBrowseNumber" column="basics_browse_number"/>
+        <result property="basicsLikeNumber" column="basics_like_number"/>
+        <result property="hostStatus" column="host_status"/>
+        <result property="topStatus" column="top_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="newsCenterCategoryTitle" column="news_center_category_title"/>
+        <result property="realBrowseNumber" column="realBrowseNumber"/>
+        <result property="realCommentNumber" column="realCommentNumber"/>
+        <result property="realLikeNumber" column="realLikeNumber"/>
+        <result property="ancestors" column="ancestors"/>
+    </resultMap>
+
+    <sql id="selectNewsCenterPostVo">
+        select news_center_post_id, dept_id, user_id, information_category_id, information_post_title, information_post_images,
+            information_post_images_type, images_address, information_post_content, information_post_file, sort_num, basics_browse_number,
+            basics_like_number, host_status, top_status, del_status, create_time, update_time,ancestors
+        from news_center_post
+    </sql>
+
+    <sql id="selectNewsCenterPost">
+        select
+            n.news_center_post_id,
+            n.dept_id,
+            n.user_id,
+            n.information_category_id,
+            n.information_post_title,
+            n.information_post_images,
+            n.information_post_images_type,
+            n.images_address,
+            n.information_post_content,
+            n.information_post_file,
+            n.sort_num,
+            n.basics_browse_number,
+            n.basics_like_number,
+            n.host_status,
+            n.top_status,
+            n.del_status,
+            n.create_time,
+            n.update_time,
+            (select ifnull(count(icr.information_comment_id), 0)
+                from information_comment_record icr
+                where icr.information_post_id = n.news_center_post_id and icr.parent_id = 0) as realCommentNumber,
+            (select ifnull(count(br.information_browse_record_id), 0)
+                from information_browse_record br
+                where br.information_post_id = n.news_center_post_id)  as realBrowseNumber,
+            (select ifnull(count(lr.information_like_record_id), 0)
+                from information_like_record lr
+                where lr.primary_id = n.news_center_post_id
+                  and like_type = 1)                                   as realLikeNumber,
+            (select dept_name from sys_dept where dept_id = n.dept_id) dept_name,
+            (select user_name from sys_user where user_id = n.user_id) user_name,
+            (SELECT news_center_category_title FROM news_center_category WHERE news_center_category_id = n.information_category_id) news_center_category_title
+        from news_center_post n
+    </sql>
+
+    <select id="selectNewsCenterPostList" parameterType="NewsCenterPost" resultMap="NewsCenterPostResult">
+        <include refid="selectNewsCenterPost"/>
+        <where>
+            n.del_status = 0
+            <if test="deptId == null ">and (n.dept_id = 100)</if>
+            <if test="deptId != null ">and (n.dept_id = #{deptId} or n.dept_id = 100)</if>
+            <if test="userId != null ">and n.user_id = #{userId}</if>
+            <!--<if test="informationCategoryId != null ">and n.information_category_id = #{informationCategoryId}</if>-->
+            <if test="informationCategoryId != null ">and ( n.information_category_id = #{informationCategoryId}
+                or n.ancestors like concat('%', #{informationCategoryId}, '%'))
+            </if>
+            <if test="informationPostTitle != null  and informationPostTitle != ''">and n.information_post_title like
+                concat('%', #{informationPostTitle}, '%')
+            </if>
+            <if test="informationPostImages != null  and informationPostImages != ''">and n.information_post_images =
+                #{informationPostImages}
+            </if>
+            <if test="informationPostImagesType != null ">and n.information_post_images_type =
+                #{informationPostImagesType}
+            </if>
+            <if test="imagesAddress != null  and imagesAddress != ''">and n.images_address = #{imagesAddress}</if>
+            <if test="informationPostContent != null  and informationPostContent != ''">and n.information_post_content
+                like concat('%', #{informationPostContent}, '%')
+            </if>
+            <if test="informationPostFile != null  and informationPostFile != ''">and n.information_post_file  like concat('%', #{informationPostFile}, '%')
+            </if>
+            <if test="sortNum != null ">and n.sort_num = #{sortNum}</if>
+            <if test="basicsBrowseNumber != null ">and n.basics_browse_number = #{basicsBrowseNumber}</if>
+            <if test="basicsLikeNumber != null ">and n.basics_like_number = #{basicsLikeNumber}</if>
+            <if test="hostStatus != null ">and n.host_status = #{hostStatus}</if>
+            <if test="topStatus != null ">and n.top_status = #{topStatus}</if>
+            <if test="delStatus != null ">and n.del_status = #{delStatus}</if>
+        </where>
+        order by n.create_time desc
+    </select>
+
+    <select id="selectNewsCenterPostById" parameterType="Long" resultMap="NewsCenterPostResult">
+        <include refid="selectNewsCenterPost"/>
+        where n.news_center_post_id = #{newsCenterPostId}
+    </select>
+
+    <insert id="insertNewsCenterPost" parameterType="NewsCenterPost" useGeneratedKeys="true"
+            keyProperty="newsCenterPostId">
+        insert into news_center_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="informationCategoryId != null">information_category_id,</if>
+            <if test="informationPostTitle != null and informationPostTitle != ''">information_post_title,</if>
+            <if test="informationPostImages != null and informationPostImages != ''">information_post_images,</if>
+            <if test="informationPostImagesType != null">information_post_images_type,</if>
+            <if test="imagesAddress != null">images_address,</if>
+            <if test="informationPostContent != null">information_post_content,</if>
+            <if test="informationPostFile != null">information_post_file,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="basicsBrowseNumber != null">basics_browse_number,</if>
+            <if test="basicsLikeNumber != null">basics_like_number,</if>
+            <if test="hostStatus != null">host_status,</if>
+            <if test="topStatus != null">top_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="ancestors != null and ancestors != ''">ancestors,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="informationCategoryId != null">#{informationCategoryId},</if>
+            <if test="informationPostTitle != null and informationPostTitle != ''">#{informationPostTitle},</if>
+            <if test="informationPostImages != null and informationPostImages != ''">#{informationPostImages},</if>
+            <if test="informationPostImagesType != null">#{informationPostImagesType},</if>
+            <if test="imagesAddress != null">#{imagesAddress},</if>
+            <if test="informationPostContent != null">#{informationPostContent},</if>
+            <if test="informationPostFile != null">#{informationPostFile},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="basicsBrowseNumber != null">#{basicsBrowseNumber},</if>
+            <if test="basicsLikeNumber != null">#{basicsLikeNumber},</if>
+            <if test="hostStatus != null">#{hostStatus},</if>
+            <if test="topStatus != null">#{topStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="ancestors != null and ancestors != ''">#{ancestors},</if>
+        </trim>
+    </insert>
+
+    <update id="updateNewsCenterPost" parameterType="NewsCenterPost">
+        update news_center_post
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="informationCategoryId != null">information_category_id = #{informationCategoryId},</if>
+            <if test="informationPostTitle != null and informationPostTitle != ''">information_post_title =
+                #{informationPostTitle},
+            </if>
+            <if test="informationPostImages != null and informationPostImages != ''">information_post_images =
+                #{informationPostImages},
+            </if>
+            <if test="informationPostImagesType != null">information_post_images_type = #{informationPostImagesType},
+            </if>
+            <if test="imagesAddress != null">images_address = #{imagesAddress},</if>
+            <if test="informationPostContent != null">information_post_content = #{informationPostContent},</if>
+            <if test="informationPostFile != null">information_post_file = #{informationPostFile},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="basicsBrowseNumber != null">basics_browse_number = #{basicsBrowseNumber},</if>
+            <if test="basicsLikeNumber != null">basics_like_number = #{basicsLikeNumber},</if>
+            <if test="hostStatus != null">host_status = #{hostStatus},</if>
+            <if test="topStatus != null">top_status = #{topStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="ancestors != null and ancestors != ''">ancestors = #{ancestors},</if>
+        </trim>
+        where news_center_post_id = #{newsCenterPostId}
+    </update>
+
+    <delete id="deleteNewsCenterPostById" parameterType="Long">
+        delete from news_center_post where news_center_post_id = #{newsCenterPostId}
+    </delete>
+
+    <delete id="deleteNewsCenterPostByIds" parameterType="String">
+        delete from news_center_post where news_center_post_id in
+        <foreach item="newsCenterPostId" collection="array" open="(" separator="," close=")">
+            #{newsCenterPostId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('会议审批发起列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>审批类型：</label>
+                            <select class="form-control" name="examineModuleId">
+                                <option value="">所有</option>
+                                <option value="24">会议训练审核</option>
+                                <option value="25">会议训练评价</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>发起者姓名：</label>
+                            <input type="text" name="accountName"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <!--            <div class="btn-group-sm" id="toolbar" role="group">
+                        <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:meetingExamineInitiate:add">
+                            <i class="fa fa-plus"></i> 添加
+                        </a>
+                        <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="web:meetingExamineInitiate:edit">
+                            <i class="fa fa-edit"></i> 修改
+                        </a>
+                        <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="web:meetingExamineInitiate:remove">
+                            <i class="fa fa-remove"></i> 删除
+                        </a>
+                        <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:meetingExamineInitiate:export">
+                            <i class="fa fa-download"></i> 导出
+                        </a>
+                    </div>-->
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:meetingExamineInitiate:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:meetingExamineInitiate:remove')}]];
+    var prefix = ctx + "web/meetingExamineInitiate";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "会议审批发起",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'examineInitiateId',
+                    title: '审批发起ID',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    align: 'center',
+                    title: '标题'
+                },
+                {
+                    field: 'examineModuleId',
+                    align: 'center',
+                    title: '审批类型',
+                    formatter: function (value) {
+                        if (value != null && value == 24) {
+                            return $.table.tooltip("会议训练审核");
+                        } else if (value != null && value == 25) {
+                            return $.table.tooltip("会议训练评价");
+                        }
+                    }
+                },
+                {
+                    field: 'meetintBeginTime',
+                    align: 'center',
+                    title: '会议开始时间'
+                },
+                {
+                    field: 'meetintEndTime',
+                    align: 'center',
+                    title: '会议结束时间'
+                },
+                {
+                    field: 'reason',
+                    align: 'center',
+                    title: '申请内容',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'content',
+                    align: 'center',
+                    title: '审批详情',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'examineStatus',
+                    align: 'center',
+                    title: '审批状态',
+                    formatter: function (value) {
+                        if (value != null && value == 0) {
+                            return $.table.tooltip("未审批");
+                        } else if (value != null && value == 1) {
+                            return $.table.tooltip("待审批");
+                        } else if (value != null && value == 2) {
+                            return $.table.tooltip("审批中");
+                        } else if (value != null && value == 3) {
+                            return $.table.tooltip("已通过");
+                        } else if (value != null && value == 4) {
+                            return $.table.tooltip("已驳回");
+                        } else if (value != null && value == 5) {
+                            return $.table.tooltip("已撤回");
+                        } else if (value != null && value == 6) {
+                            return $.table.tooltip("已取消");
+                        }
+                    }
+                },
+                {
+                    field: 'readStatus',
+                    align: 'center',
+                    title: '已读标识',
+                    formatter: function (value) {
+                        if (value != null && value == 0) {
+                            return $.table.tooltip("未读");
+                        } else if (value != null && value == 1) {
+                            return $.table.tooltip("已读");
+                        }
+                    }
+                },
+                {
+                    field: 'accountName',
+                    align: 'center',
+                    title: '发起者姓名'
+                },
+                {
+                    field: 'accountPhone',
+                    align: 'center',
+                    title: '发起者手机号'
+                },
+                {
+                    field: 'accountHead',
+                    align: 'center',
+                    title: '发起者头像',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (row.examineStatus != 6) {
+                            actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="cancel(\'' + row.examineInitiateId + '\')"><i class="fa fa-edit"></i>取消会议</a> ');
+                        }
+                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.examineInitiateId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.examineInitiateId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    /**
+     * 取消会议
+     */
+    function cancel(examineInitiateId) {
+        $.modal.confirm("确定要取消会议吗？", function () {
+            $.operate.post("/web/meetingExamineInitiate/cancel", {"examineInitiateId": examineInitiateId}, function (result) {
+                if (result.code != 200) {
+                    //alert(result.msg);
+                    return false;
+                }
+                alert("会议取消成功");
+                return true;
+            });
+        });
+    }
+</script>
+</body>
+</html>

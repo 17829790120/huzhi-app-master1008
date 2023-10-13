@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.MessageRemindMapper">
+
+    <resultMap type="MessageRemind" id="MessageRemindResult">
+        <result property="messageRemindId" column="message_remind_id"/>
+        <result property="title" column="title"/>
+        <result property="brief" column="brief"/>
+        <result property="modelStatus" column="model_status"/>
+        <result property="modelId" column="model_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="coverImage" column="cover_image"/>
+        <result property="jumpType" column="jump_type"/>
+        <result property="targetId" column="target_id"/>
+    </resultMap>
+
+    <sql id="selectMessageRemindVo">
+        select message_remind_id,
+               title,
+               brief,
+               model_status,
+               model_id,
+               account_id,
+               create_time,
+               read_status,
+               cover_image,
+               jump_type,
+               target_id
+        from message_remind
+    </sql>
+
+    <select id="selectMessageRemindList" parameterType="MessageRemind" resultMap="MessageRemindResult">
+        <include refid="selectMessageRemindVo"/>
+        <where>
+            <if test="title != null  and title != ''">and title = #{title}</if>
+            <if test="brief != null  and brief != ''">and brief = #{brief}</if>
+            <if test="modelStatus != null ">and model_status = #{modelStatus}</if>
+            <if test="modelId != null  and modelId != ''">and model_id = #{modelId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="coverImage != null  and coverImage != ''">and cover_image = #{coverImage}</if>
+            <if test="jumpType != null ">and jump_type = #{jumpType}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectMessageRemindById" parameterType="String" resultMap="MessageRemindResult">
+        <include refid="selectMessageRemindVo"/>
+        where message_remind_id = #{messageRemindId}
+    </select>
+
+    <insert id="insertMessageRemind" parameterType="MessageRemind">
+        insert into message_remind
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="messageRemindId != null">message_remind_id,</if>
+            <if test="title != null">title,</if>
+            <if test="brief != null">brief,</if>
+            <if test="modelStatus != null">model_status,</if>
+            <if test="modelId != null">model_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="coverImage != null">cover_image,</if>
+            <if test="jumpType != null">jump_type,</if>
+            <if test="targetId != null">target_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="messageRemindId != null">#{messageRemindId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="brief != null">#{brief},</if>
+            <if test="modelStatus != null">#{modelStatus},</if>
+            <if test="modelId != null">#{modelId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="coverImage != null">#{coverImage},</if>
+            <if test="jumpType != null">#{jumpType},</if>
+            <if test="targetId != null">#{targetId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMessageRemind" parameterType="MessageRemind">
+        update message_remind
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="brief != null">brief = #{brief},</if>
+            <if test="modelStatus != null">model_status = #{modelStatus},</if>
+            <if test="modelId != null">model_id = #{modelId},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="jumpType != null">jump_type = #{jumpType},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+        </trim>
+        where message_remind_id = #{messageRemindId}
+    </update>
+
+    <delete id="deleteMessageRemindById" parameterType="String">
+        delete
+        from message_remind
+        where message_remind_id = #{messageRemindId}
+    </delete>
+
+    <delete id="deleteMessageRemindByIds" parameterType="String">
+        delete from message_remind where message_remind_id in
+        <foreach item="messageRemindId" collection="array" open="(" separator="," close=")">
+            #{messageRemindId}
+        </foreach>
+    </delete>
+
+    <!-- 查询消息数量 -->
+    <select id="selectMessageRemindCount" resultType="Integer">
+        select count(*) from message_remind
+        <where>
+            <if test="title != null  and title != ''">and title = #{title}</if>
+            <if test="brief != null  and brief != ''">and brief = #{brief}</if>
+            <if test="modelStatus != null ">and model_status = #{modelStatus}</if>
+            <if test="jumpType != null ">and jump_type = #{jumpType}</if>
+            <if test="modelId != null  and modelId != ''">and model_id = #{modelId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="coverImage != null  and coverImage != ''">and cover_image = #{coverImage}</if>
+        </where>
+    </select>
+
+    <!-- 标记某个用户的消息为已读 -->
+    <update id="emptyNoReadStatus">
+        update message_remind
+        set read_status = 1
+        where account_id = #{accountId}
+          and read_status = 0
+    </update>
+</mapper>

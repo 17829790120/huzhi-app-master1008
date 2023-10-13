@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="wlwq-jwt" />
+        <module name="wlwq-private-phone" />
+        <module name="wlwq-best-pay" />
+        <module name="wlwq-printer" />
+        <module name="wlwq-admin" />
+        <module name="wlwq-quartz" />
+        <module name="wlwq-fluorite-cloud" />
+        <module name="wlwq-information-center" />
+        <module name="wlwq-baidu-ai" />
+        <module name="wlwq-api" />
+        <module name="wlwq-sms" />
+        <module name="wlwq-system" />
+        <module name="wlwq-generator" />
+        <module name="wlwq-framework" />
+        <module name="wlwq-common" />
+        <module name="wlwq-settings" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

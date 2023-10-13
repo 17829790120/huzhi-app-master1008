@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountFlowerRecordMapper">
+
+    <resultMap type="AccountFlowerRecord" id="AccountFlowerRecordResult">
+        <result property="accountFlowerRecordId" column="account_flower_record_id"/>
+        <result property="recordName" column="record_name"/>
+        <result property="recordNum" column="record_num"/>
+        <result property="giveAccountId" column="give_account_id"/>
+        <result property="giveAccountName" column="give_account_name"/>
+        <result property="giveAccountPhone" column="give_account_phone"/>
+        <result property="giveAccountHead" column="give_account_head"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="createTime" column="create_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="postNames" column="post_names"/>
+        <result property="givePostNames" column="give_post_names"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="selectAccountFlowerRecordVo">
+        select account_flower_record_id,
+               record_name,
+               record_num,
+               give_account_id,
+               give_account_name,
+               give_account_phone,
+               give_account_head,
+               give_post_names,
+               account_id,
+               account_name,
+               account_phone,
+               account_head,
+               post_names,
+               create_time
+        from account_flower_record
+    </sql>
+
+    <select id="selectAccountFlowerRecordList" parameterType="AccountFlowerRecord"
+            resultMap="AccountFlowerRecordResult">
+        <include refid="selectAccountFlowerRecordVo"/>
+        <where>
+            del_status = 0
+            <if test="recordName != null  and recordName != ''">and record_name like concat('%', #{recordName}, '%')
+            </if>
+            <if test="recordNum != null ">and record_num = #{recordNum}</if>
+            <!--            <if test="giveAccountId != null  and giveAccountId != ''">and give_account_id = #{giveAccountId}-->
+            <!--            </if>-->
+            <if test="giveStatus != null ">and (
+                (give_account_id = #{giveAccountId} and give_account_id != 0)
+                or (give_account_id = 0 and account_id = #{giveAccountId} and record_num &lt; 0 )
+                )
+            </if>
+            <if test="incomeStatus != null ">and give_account_id != 0</if>
+            <if test="giveAccountName != null  and giveAccountName != ''">and give_account_name like concat('%',
+                #{giveAccountName}, '%')
+            </if>
+            <if test="giveAccountPhone != null  and giveAccountPhone != ''">and give_account_phone
+                like concat('%', #{giveAccountPhone}, '%')
+            </if>
+            <if test="giveAccountHead != null  and giveAccountHead != ''">and give_account_head = #{giveAccountHead}
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId} and record_num>0</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone like concat('%', #{accountPhone},
+                '%')
+            </if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="postNames != null  and postNames != ''">and post_names = #{postNames}</if>
+            <if test="givePostNames != null  and givePostNames != ''">and give_post_names = #{givePostNames}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAccountFlowerRecordById" parameterType="String" resultMap="AccountFlowerRecordResult">
+        <include refid="selectAccountFlowerRecordVo"/>
+        where account_flower_record_id = #{accountFlowerRecordId}
+    </select>
+
+    <insert id="insertAccountFlowerRecord" parameterType="AccountFlowerRecord">
+        insert into account_flower_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountFlowerRecordId != null">account_flower_record_id,</if>
+            <if test="recordName != null">record_name,</if>
+            <if test="recordNum != null">record_num,</if>
+            <if test="giveAccountId != null">give_account_id,</if>
+            <if test="giveAccountName != null">give_account_name,</if>
+            <if test="giveAccountPhone != null">give_account_phone,</if>
+            <if test="giveAccountHead != null">give_account_head,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="postNames != null">post_names,</if>
+            <if test="givePostNames != null">give_post_names,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountFlowerRecordId != null">#{accountFlowerRecordId},</if>
+            <if test="recordName != null">#{recordName},</if>
+            <if test="recordNum != null">#{recordNum},</if>
+            <if test="giveAccountId != null">#{giveAccountId},</if>
+            <if test="giveAccountName != null">#{giveAccountName},</if>
+            <if test="giveAccountPhone != null">#{giveAccountPhone},</if>
+            <if test="giveAccountHead != null">#{giveAccountHead},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="postNames != null">#{postNames},</if>
+            <if test="givePostNames != null">#{givePostNames},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountFlowerRecord" parameterType="AccountFlowerRecord">
+        update account_flower_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="recordName != null">record_name = #{recordName},</if>
+            <if test="recordNum != null">record_num = #{recordNum},</if>
+            <if test="giveAccountId != null">give_account_id = #{giveAccountId},</if>
+            <if test="giveAccountName != null">give_account_name = #{giveAccountName},</if>
+            <if test="giveAccountPhone != null">give_account_phone = #{giveAccountPhone},</if>
+            <if test="giveAccountHead != null">give_account_head = #{giveAccountHead},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="postNames != null">post_names = #{postNames},</if>
+            <if test="givePostNames != null">give_post_names = #{givePostNames},</if>
+        </trim>
+        where account_flower_record_id = #{accountFlowerRecordId}
+    </update>
+
+    <update id="deleteAccountFlowerRecordById" parameterType="String">
+        update account_flower_record set del_status = 1
+        where account_flower_record_id = #{accountFlowerRecordId}
+    </update>
+
+    <update id="deleteAccountFlowerRecordByIds" parameterType="String">
+        update account_flower_record set del_status = 1 where account_flower_record_id in
+        <foreach item="accountFlowerRecordId" collection="array" open="(" separator="," close=")">
+            #{accountFlowerRecordId}
+        </foreach>
+    </update>
+
+    <!--   查询红花排行榜-->
+    <select id="selectApiFlowerAccountList" parameterType="ApiAccount"
+            resultType="com.wlwq.api.resultVO.flower.AccountFlowerResultVO">
+        SELECT
+        a.account_id AS accountId,
+        a.head_portrait AS accountHead,
+        a.nick_name AS accountName,
+        a.phone AS accountPhone,
+        a.surplus_flower_num AS surplusFlowerNum,
+        d.dept_name AS deptName,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, a.post_ids)) AS postNames,
+        CASE
+        WHEN (
+        IFNULL(
+        (
+        SELECT
+        SUM( record_num )
+        FROM
+        account_flower_record
+        WHERE
+        give_account_id != 0
+        AND account_id = a.account_id
+        <if test="startTime != null  and startTime != ''">
+            AND date_format( create_time, '%Y-%m-%d' ) <![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime != null  and endTime != ''">
+            AND date_format( create_time, '%Y-%m-%d' )<![CDATA[ <= ]]> #{endTime}
+        </if>
+        ),
+        0
+        ) - IFNULL(
+        (
+        SELECT
+        SUM( record_num )
+        FROM
+        account_flower_record
+        WHERE
+        account_id != 0
+        AND give_account_id = a.account_id
+        <if test="startTime != null  and startTime != ''">
+            AND date_format( create_time, '%Y-%m-%d' ) <![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime != null  and endTime != ''">
+            AND date_format( create_time, '%Y-%m-%d' ) <![CDATA[ <= ]]> #{endTime}
+        </if>
+        ),
+        0
+        )
+        ) &lt;
+        0 THEN
+        0 ELSE (
+        IFNULL(
+        (
+        SELECT
+        SUM( record_num )
+        FROM
+        account_flower_record
+        WHERE
+        give_account_id != 0
+        AND account_id = a.account_id
+        <if test="startTime != null  and startTime != ''">
+            AND date_format( create_time, '%Y-%m-%d' )<![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime != null  and endTime != ''">
+            AND date_format( create_time, '%Y-%m-%d' )<![CDATA[ <= ]]> #{endTime}
+        </if>
+        ),
+        0
+        ) - IFNULL(
+        (
+        SELECT
+        SUM( record_num )
+        FROM
+        account_flower_record
+        WHERE
+        account_id != 0
+        AND give_account_id = a.account_id
+        <if test="startTime != null  and startTime != ''">
+            AND date_format( create_time, '%Y-%m-%d' )<![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime != null  and endTime != ''">
+            AND date_format( create_time, '%Y-%m-%d' )<![CDATA[ <= ]]> #{endTime}
+        </if>
+        ),
+        0
+        )
+        )
+        END AS totalFlower,
+        ( SELECT GROUP_CONCAT( post_name ) FROM sys_post WHERE FIND_IN_SET( sys_post.post_id, a.post_ids ) ) AS
+        dayPostNames,
+        CASE
+        WHEN (
+        IFNULL( ( SELECT SUM( record_num ) FROM account_flower_record WHERE give_account_id != 0 AND account_id =
+        a.account_id ), 0 ) - IFNULL( ( SELECT SUM( record_num ) FROM account_flower_record WHERE account_id != 0 AND
+        give_account_id = a.account_id ), 0 )
+        ) &lt;
+        0 THEN
+        0 ELSE (
+        IFNULL( ( SELECT SUM( record_num ) FROM account_flower_record WHERE give_account_id != 0 AND account_id =
+        a.account_id ), 0 ) - IFNULL( ( SELECT SUM( record_num ) FROM account_flower_record WHERE account_id != 0 AND
+        give_account_id = a.account_id ), 0 )
+        )
+        END AS dayFlower
+        FROM
+        api_account a
+        LEFT JOIN sys_dept d ON d.dept_id = a.dept_id
+        <where>
+            a.del_status = 0
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="accountId != null ">and a.account_id = #{accountId}</if>
+        </where>
+        order by totalFlower desc
+    </select>
+
+    <!--    查询某个用户某个时间段的红花统计-->
+    <select id="selectApiFlowerAccount" parameterType="ApiAccount"
+            resultType="com.wlwq.api.resultVO.flower.AccountFlowerResultVO">
+        select
+        a.account_id as accountId,
+        a.head_portrait as accountHead,
+        a.nick_name as accountName,
+        a.phone as accountPhone,
+        d.dept_name as deptName,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, a.post_ids)) as postNames,
+        ifnull((select sum(record_num) from account_flower_record
+        where
+        record_num > 0 and a.account_id = account_id
+        <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+            <![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+            <![CDATA[ <= ]]> #{endTime}
+        </if>
+        ),0) dayFlower,
+        ifnull((select sum(record_num) from account_flower_record
+        where
+        record_num > 0 and a.account_id = account_id
+        ),0) totalFlower
+        from api_account a
+        left join sys_dept d on d.dept_id = a.dept_id
+        <where>
+            a.del_status = 0
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="accountId != null and accountId != ''">and a.account_id = #{accountId}</if>
+        </where>
+        order by totalFlower desc
+    </select>
+
+
+    <select id="selectAccountFlowerRecordTotalList" parameterType="AccountFlowerRecord"
+            resultMap="AccountFlowerRecordResult">
+        select account_flower_record_id,
+        record_name,
+        record_num,
+        give_account_id,
+        give_account_name,
+        give_account_phone,
+        give_account_head,
+        give_post_names,
+        account_id,
+        account_name,
+        account_phone,
+        account_head,
+        post_names,
+        if(account_id = #{accountId},1,2) as status,
+        create_time
+        from account_flower_record
+        <where>
+            del_status = 0
+            <if test="recordName != null  and recordName != ''">and record_name like concat('%', #{recordName}, '%')
+            </if>
+            <if test="giveAccountName != null  and giveAccountName != ''">and give_account_name like concat('%',
+                #{giveAccountName}, '%')
+            </if>
+            <if test="giveAccountPhone != null  and giveAccountPhone != ''">and give_account_phone
+                like concat('%', #{giveAccountPhone}, '%')
+            </if>
+            <if test="giveAccountHead != null  and giveAccountHead != ''">and give_account_head = #{giveAccountHead}
+            </if>
+            <if test="accountId != null  and accountId != ''">and ((give_account_id = #{accountId} and give_account_id
+                != 0)
+                or (give_account_id != 0 and account_id = #{accountId}))
+            </if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone like concat('%', #{accountPhone},
+                '%')
+            </if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+                >= #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+                &lt;= #{endTime}
+            </if>
+            <if test="postNames != null  and postNames != ''">and post_names = #{postNames}</if>
+            <if test="givePostNames != null  and givePostNames != ''">and give_post_names = #{givePostNames}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改考试记录列表')"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-examRecord-edit" th:object="${examRecord}">
+        <input name="examRecordId" th:field="*{examRecordId}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">用户id：</label>
+            <div class="col-sm-8">
+                <input name="accountId" th:field="*{accountId}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">考试开始时间：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <input name="beginTime" th:value="${#dates.format(examRecord.beginTime, 'yyyy-MM-dd')}"
+                           class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">考试结束时间：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <input name="endTime" th:value="${#dates.format(examRecord.endTime, 'yyyy-MM-dd')}"
+                           class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">分数：</label>
+            <div class="col-sm-8">
+                <input name="score" th:field="*{score}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">头像：</label>
+            <div class="col-sm-8">
+                <textarea name="headPortrait" class="form-control">[[*{headPortrait}]]</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">昵称：</label>
+            <div class="col-sm-8">
+                <input name="nickName" th:field="*{nickName}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">章节ID：</label>
+            <div class="col-sm-8">
+                <input name="chapterId" th:field="*{chapterId}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">课程ID：</label>
+            <div class="col-sm-8">
+                <input name="courseId" th:field="*{courseId}" class="form-control" type="text">
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/examRecord";
+    $("#form-examRecord-edit").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-examRecord-edit').serialize());
+        }
+    }
+
+    $("input[name='beginTime']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    $("input[name='endTime']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+</script>
+</body>
+</html>

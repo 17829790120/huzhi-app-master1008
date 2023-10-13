@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TrainingModuleMapper">
+
+    <resultMap type="TrainingModule" id="TrainingModuleResult">
+        <result property="trainingModuleId" column="training_module_id"/>
+        <result property="titleName" column="title_name"/>
+        <result property="subheadName" column="subhead_name"/>
+        <result property="moduleIcon" column="module_icon"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="moduleImage"    column="module_image"    />
+    </resultMap>
+
+    <sql id="selectTrainingModuleVo">
+        select training_module_id,
+               title_name,
+               subhead_name,
+               module_icon,
+               sort_num,
+               show_status,
+               module_image,
+               create_time,
+               update_time
+        from training_module
+    </sql>
+
+    <select id="selectTrainingModuleList" parameterType="TrainingModule" resultMap="TrainingModuleResult">
+        <include refid="selectTrainingModuleVo"/>
+        <where>
+            del_status = 0
+            <if test="titleName != null  and titleName != ''">and title_name like concat('%', #{titleName}, '%')</if>
+            <if test="subheadName != null  and subheadName != ''">and subhead_name like concat('%', #{subheadName},
+                '%')
+            </if>
+            <if test="moduleIcon != null  and moduleIcon != ''">and module_icon = #{moduleIcon}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="moduleImage != null  and moduleImage != ''"> and module_image = #{moduleImage}</if>
+        </where>
+        order by sort_num
+    </select>
+
+    <select id="selectTrainingModuleById" parameterType="String" resultMap="TrainingModuleResult">
+        <include refid="selectTrainingModuleVo"/>
+        where del_status = 0 and training_module_id = #{trainingModuleId}
+    </select>
+
+    <insert id="insertTrainingModule" parameterType="TrainingModule">
+        insert into training_module
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="trainingModuleId != null">training_module_id,</if>
+            <if test="titleName != null">title_name,</if>
+            <if test="subheadName != null">subhead_name,</if>
+            <if test="moduleIcon != null">module_icon,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="moduleImage != null">module_image,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="trainingModuleId != null">#{trainingModuleId},</if>
+            <if test="titleName != null">#{titleName},</if>
+            <if test="subheadName != null">#{subheadName},</if>
+            <if test="moduleIcon != null">#{moduleIcon},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="moduleImage != null">#{moduleImage},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTrainingModule" parameterType="TrainingModule">
+        update training_module
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="titleName != null">title_name = #{titleName},</if>
+            <if test="subheadName != null">subhead_name = #{subheadName},</if>
+            <if test="moduleIcon != null">module_icon = #{moduleIcon},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="moduleImage != null">module_image = #{moduleImage},</if>
+        </trim>
+        where training_module_id = #{trainingModuleId}
+    </update>
+
+    <update id="deleteTrainingModuleById" parameterType="String">
+        update training_module set del_status = 1
+        where training_module_id = #{trainingModuleId}
+    </update>
+
+    <update id="deleteTrainingModuleByIds" parameterType="String">
+        update training_module set del_status = 1 where training_module_id in
+        <foreach item="trainingModuleId" collection="array" open="(" separator="," close=")">
+            #{trainingModuleId}
+        </foreach>
+    </update>
+
+    <select id="selectApiTrainingModuleList" parameterType="TrainingModule" resultMap="TrainingModuleResult">
+        <include refid="selectTrainingModuleVo"/>
+        <where>
+            del_status = 0
+            <if test="titleName != null  and titleName != ''">and title_name like concat('%', #{titleName}, '%')</if>
+            <if test="subheadName != null  and subheadName != ''">and subhead_name like concat('%', #{subheadName},
+                '%')
+            </if>
+            <if test="moduleIcon != null  and moduleIcon != ''">and module_icon = #{moduleIcon}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="moduleImage != null  and moduleImage != ''"> and module_image = #{moduleImage}</if>
+        </where>
+        order by sort_num
+    </select>
+</mapper>

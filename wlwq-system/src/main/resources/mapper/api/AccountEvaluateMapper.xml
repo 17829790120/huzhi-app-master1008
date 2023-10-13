@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountEvaluateMapper">
+
+    <resultMap type="AccountEvaluate" id="AccountEvaluateResult">
+        <result property="accountEvaluateId" column="account_evaluate_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="targetId" column="target_id"/>
+        <result property="evaluateType" column="evaluate_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="evaluateName" column="evaluate_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="evaluatePics" column="evaluate_pics"/>
+        <result property="threeStoreClassId" column="three_store_class_id"/>
+    </resultMap>
+
+    <sql id="selectAccountEvaluateVo">
+        select account_evaluate_id,
+               account_id,
+               target_id,
+               evaluate_type,
+               create_time,
+               account_name,
+               account_phone,
+               account_head,
+               evaluate_name,
+               parent_id,
+               evaluate_pics,
+               three_store_class_id
+        from account_evaluate
+    </sql>
+
+    <select id="selectAccountEvaluateList" parameterType="AccountEvaluate" resultMap="AccountEvaluateResult">
+        <include refid="selectAccountEvaluateVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+            <if test="evaluateType != null ">and evaluate_type = #{evaluateType}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="evaluateName != null  and evaluateName != ''">and evaluate_name like concat('%', #{evaluateName},
+                '%')
+            </if>
+            <if test="parentId != null  and parentId != ''">and parent_id = #{parentId}</if>
+            <if test="evaluatePics != null  and evaluatePics != ''">and evaluate_pics = #{evaluatePics}</if>
+            <if test="threeStoreClassId != null  and threeStoreClassId != ''"> and three_store_class_id = #{threeStoreClassId}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAccountEvaluateById" parameterType="String" resultMap="AccountEvaluateResult">
+        <include refid="selectAccountEvaluateVo"/>
+        where account_evaluate_id = #{accountEvaluateId}
+    </select>
+
+    <insert id="insertAccountEvaluate" parameterType="AccountEvaluate">
+        insert into account_evaluate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountEvaluateId != null">account_evaluate_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="targetId != null">target_id,</if>
+            <if test="evaluateType != null">evaluate_type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="evaluateName != null">evaluate_name,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="evaluatePics != null">evaluate_pics,</if>
+            <if test="threeStoreClassId != null">three_store_class_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountEvaluateId != null">#{accountEvaluateId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="targetId != null">#{targetId},</if>
+            <if test="evaluateType != null">#{evaluateType},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="evaluateName != null">#{evaluateName},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="evaluatePics != null">#{evaluatePics},</if>
+            <if test="threeStoreClassId != null">#{threeStoreClassId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountEvaluate" parameterType="AccountEvaluate">
+        update account_evaluate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+            <if test="evaluateType != null">evaluate_type = #{evaluateType},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="evaluateName != null">evaluate_name = #{evaluateName},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="evaluatePics != null">evaluate_pics = #{evaluatePics},</if>
+            <if test="threeStoreClassId != null">three_store_class_id = #{threeStoreClassId},</if>
+        </trim>
+        where account_evaluate_id = #{accountEvaluateId}
+    </update>
+
+    <delete id="deleteAccountEvaluateById" parameterType="String">
+        delete
+        from account_evaluate
+        where account_evaluate_id = #{accountEvaluateId}
+    </delete>
+
+    <delete id="deleteAccountEvaluateByIds" parameterType="String">
+        delete from account_evaluate where account_evaluate_id in
+        <foreach item="accountEvaluateId" collection="array" open="(" separator="," close=")">
+            #{accountEvaluateId}
+        </foreach>
+    </delete>
+
+    <select id="selectApiAccountEvaluateList" parameterType="AccountEvaluate" resultMap="AccountEvaluateResult">
+        <include refid="selectAccountEvaluateVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+            <if test="evaluateType != null ">and evaluate_type = #{evaluateType}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="evaluateName != null  and evaluateName != ''">and evaluate_name like concat('%', #{evaluateName},
+                '%')
+            </if>
+            <if test="parentId != null  and parentId != ''">and parent_id = #{parentId}</if>
+            <if test="evaluatePics != null  and evaluatePics != ''">and evaluate_pics = #{evaluatePics}</if>
+            <if test="threeStoreClassId != null  and threeStoreClassId != ''"> and three_store_class_id = #{threeStoreClassId}</if>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

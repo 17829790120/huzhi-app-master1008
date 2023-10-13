@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExamineContractCounterpartyMapper">
+
+    <resultMap type="ExamineContractCounterparty" id="ExamineContractCounterpartyResult">
+        <result property="examineContractCounterpartyId" column="examine_contract_counterparty_id"/>
+        <result property="examineInitiateId" column="examine_initiate_id"/>
+        <result property="counterpartyTag" column="counterparty_tag"/>
+        <result property="counterpartyType" column="counterparty_type"/>
+        <result property="principalName" column="principal_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="counterpartyName"    column="counterparty_name"    />
+    </resultMap>
+
+    <sql id="selectExamineContractCounterpartyVo">
+        select examine_contract_counterparty_id,
+               examine_initiate_id,
+               counterparty_tag,
+               counterparty_type,
+               counterparty_name,
+               principal_name,
+               create_time,
+               update_time,
+               del_status
+        from examine_contract_counterparty
+    </sql>
+
+    <select id="selectExamineContractCounterpartyList" parameterType="ExamineContractCounterparty"
+            resultMap="ExamineContractCounterpartyResult">
+        <include refid="selectExamineContractCounterpartyVo"/>
+        <where>
+            del_status = 0
+            <if test="examineInitiateId != null  and examineInitiateId != ''">and examine_initiate_id =
+                #{examineInitiateId}
+            </if>
+            <if test="counterpartyTag != null  and counterpartyTag != ''">and counterparty_tag = #{counterpartyTag}</if>
+            <if test="counterpartyType != null ">and counterparty_type = #{counterpartyType}</if>
+            <if test="principalName != null  and principalName != ''">and principal_name like concat('%',
+                #{principalName}, '%')
+            </if>
+            <if test="counterpartyName != null  and counterpartyName != ''"> and counterparty_name like concat('%', #{counterpartyName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectExamineContractCounterpartyById" parameterType="String"
+            resultMap="ExamineContractCounterpartyResult">
+        <include refid="selectExamineContractCounterpartyVo"/>
+        where del_status = 0 and examine_contract_counterparty_id = #{examineContractCounterpartyId}
+    </select>
+
+    <insert id="insertExamineContractCounterparty" parameterType="ExamineContractCounterparty">
+        insert into examine_contract_counterparty
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examineContractCounterpartyId != null">examine_contract_counterparty_id,</if>
+            <if test="examineInitiateId != null">examine_initiate_id,</if>
+            <if test="counterpartyTag != null">counterparty_tag,</if>
+            <if test="counterpartyType != null">counterparty_type,</if>
+            <if test="principalName != null">principal_name,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="counterpartyName != null">counterparty_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examineContractCounterpartyId != null">#{examineContractCounterpartyId},</if>
+            <if test="examineInitiateId != null">#{examineInitiateId},</if>
+            <if test="counterpartyTag != null">#{counterpartyTag},</if>
+            <if test="counterpartyType != null">#{counterpartyType},</if>
+            <if test="principalName != null">#{principalName},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="counterpartyName != null">#{counterpartyName},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamineContractCounterparty" parameterType="ExamineContractCounterparty">
+        update examine_contract_counterparty
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examineInitiateId != null">examine_initiate_id = #{examineInitiateId},</if>
+            <if test="counterpartyTag != null">counterparty_tag = #{counterpartyTag},</if>
+            <if test="counterpartyType != null">counterparty_type = #{counterpartyType},</if>
+            <if test="principalName != null">principal_name = #{principalName},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="counterpartyName != null">counterparty_name = #{counterpartyName},</if>
+        </trim>
+        where examine_contract_counterparty_id = #{examineContractCounterpartyId}
+    </update>
+
+    <update id="deleteExamineContractCounterpartyById" parameterType="String">
+        update examine_contract_counterparty set del_status = 1
+        where examine_contract_counterparty_id = #{examineContractCounterpartyId}
+    </update>
+
+    <update id="deleteExamineContractCounterpartyByIds" parameterType="String">
+        update examine_contract_counterparty set del_status = 1 where examine_contract_counterparty_id in
+        <foreach item="examineContractCounterpartyId" collection="array" open="(" separator="," close=")">
+            #{examineContractCounterpartyId}
+        </foreach>
+    </update>
+
+<!--    根据发起审批ID删除相对方信息-->
+    <update id="deleteExamineContractCounterpartyByExamineInitiateId" parameterType="String">
+        update examine_contract_counterparty set del_status = 1
+        where del_status = 0 and examine_initiate_id = #{examineInitiateId}
+    </update>
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountBindingMapper">
+
+    <resultMap type="AccountBinding" id="AccountBindingResult">
+        <result property="accountBindingId" column="account_binding_id"/>
+        <result property="accountIds" column="account_ids"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="accountId" column="account_id"/>
+    </resultMap>
+
+    <sql id="selectAccountBindingVo">
+        select account_binding_id, account_id,account_ids, create_time, update_time
+        from account_binding
+    </sql>
+
+    <select id="selectAccountBindingList" parameterType="AccountBinding" resultMap="AccountBindingResult">
+        <include refid="selectAccountBindingVo"/>
+        <where>
+            <if test="accountIds != null  and accountIds != ''">and account_ids = #{accountIds}</if>
+            <if test="accountId != null  and accountId != ''"> and account_id = #{accountId}</if>
+        </where>
+    </select>
+
+    <select id="selectAccountBindingById" parameterType="String" resultMap="AccountBindingResult">
+        <include refid="selectAccountBindingVo"/>
+        where account_binding_id = #{accountBindingId}
+    </select>
+
+    <insert id="insertAccountBinding" parameterType="AccountBinding">
+        insert into account_binding
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountBindingId != null">account_binding_id,</if>
+            <if test="accountIds != null">account_ids,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="accountId != null">account_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountBindingId != null">#{accountBindingId},</if>
+            <if test="accountIds != null">#{accountIds},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="accountId != null">#{accountId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountBinding" parameterType="AccountBinding">
+        update account_binding
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountIds != null">account_ids = #{accountIds},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+        </trim>
+        where account_binding_id = #{accountBindingId}
+    </update>
+
+    <delete id="deleteAccountBindingById" parameterType="String">
+        delete
+        from account_binding
+        where account_binding_id = #{accountBindingId}
+    </delete>
+
+    <delete id="deleteAccountBindingByIds" parameterType="String">
+        delete from account_binding where account_binding_id in
+        <foreach item="accountBindingId" collection="array" open="(" separator="," close=")">
+            #{accountBindingId}
+        </foreach>
+    </delete>
+
+
+    <select id="selectAccountBinding" parameterType="AccountBinding" resultMap="AccountBindingResult">
+        <include refid="selectAccountBindingVo"/>
+        <where>
+            <if test="accountIds != null  and accountIds != ''">and find_in_set(#{accountIds},account_ids)</if>
+            <if test="accountId != null  and accountId != ''"> and account_id = #{accountId}</if>
+        </where>
+        limit 1
+    </select>
+</mapper>

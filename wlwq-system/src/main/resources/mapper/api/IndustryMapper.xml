@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.IndustryMapper">
+
+    <resultMap type="Industry" id="IndustryResult">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="ensurePrice" column="ensure_price"/>
+        <result property="serviceCommissionStart" column="service_commission_start"/>
+        <result property="serviceCommissionEnd" column="service_commission_end"/>
+        <result property="sort" column="sort"/>
+        <result property="coverImage" column="cover_image"/>
+        <result property="bannerImage" column="banner_image"/>
+        <result property="createTime" column="create_time"/>
+        <result property="parentName" column="parent_name"/>
+    </resultMap>
+
+    <sql id="selectIndustryVo">
+        select id, parent_id, name, ensure_price, service_commission_start, service_commission_end, sort, cover_image, banner_image, create_time from b_industry
+    </sql>
+
+    <select id="selectIndustryList" parameterType="Industry" resultMap="IndustryResult">
+        <include refid="selectIndustryVo"/>
+        <where>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="ensurePrice != null ">and ensure_price = #{ensurePrice}</if>
+            <if test="serviceCommissionStart != null ">and service_commission_start = #{serviceCommissionStart}</if>
+            <if test="serviceCommissionEnd != null ">and service_commission_end = #{serviceCommissionEnd}</if>
+            <if test="sort != null ">and sort = #{sort}</if>
+            <if test="coverImage != null  and coverImage != ''">and cover_image = #{coverImage}</if>
+            <if test="bannerImage != null  and bannerImage != ''">and banner_image = #{bannerImage}</if>
+        </where>
+        order by parent_id
+    </select>
+
+    <select id="selectIndustryById" parameterType="Long" resultMap="IndustryResult">
+        select t.id, t.parent_id, t.name, t.ensure_price, t.service_commission_start, t.service_commission_end, t.sort, t.cover_image, t.banner_image, t.create_time, p.name as parent_name
+        from b_industry t
+        left join b_industry p on p.id = t.parent_id
+        where t.id = #{id}
+    </select>
+
+    <insert id="insertIndustry" parameterType="Industry" useGeneratedKeys="true" keyProperty="id">
+        insert into b_industry
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="ensurePrice != null">ensure_price,</if>
+            <if test="serviceCommissionStart != null">service_commission_start,</if>
+            <if test="serviceCommissionEnd != null">service_commission_end,</if>
+            <if test="sort != null">sort,</if>
+            <if test="coverImage != null">cover_image,</if>
+            <if test="bannerImage != null">banner_image,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="ensurePrice != null">#{ensurePrice},</if>
+            <if test="serviceCommissionStart != null">#{serviceCommissionStart},</if>
+            <if test="serviceCommissionEnd != null">#{serviceCommissionEnd},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="coverImage != null">#{coverImage},</if>
+            <if test="bannerImage != null">#{bannerImage},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateIndustry" parameterType="Industry">
+        update b_industry
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="ensurePrice != null">ensure_price = #{ensurePrice},</if>
+            <if test="serviceCommissionStart != null">service_commission_start = #{serviceCommissionStart},</if>
+            <if test="serviceCommissionEnd != null">service_commission_end = #{serviceCommissionEnd},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="bannerImage != null">banner_image = #{bannerImage},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteIndustryById" parameterType="Long">
+        delete from b_industry where id = #{id}
+    </delete>
+
+    <delete id="deleteIndustryByIds" parameterType="String">
+        delete from b_industry where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

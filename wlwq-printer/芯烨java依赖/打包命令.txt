@@ -1,0 +1,2 @@
+在此文件夹下打开shell，输入
+mvn install:install-file -Dfile="xpyun-opensdk.jar" -DgroupId="xinye" -DartifactId="xpyun" -Dversion="1.0.0" -Dpackaging="jar"

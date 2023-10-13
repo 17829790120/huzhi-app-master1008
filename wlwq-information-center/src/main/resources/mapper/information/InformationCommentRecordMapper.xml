@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.information.mapper.InformationCommentRecordMapper">
+    <resultMap type="InformationCommentRecord" id="InformationCommentRecordResult">
+        <result property="informationCommentId" column="information_comment_id"/>
+        <result property="informationPostId" column="information_post_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="accountName" column="account_name"/>
+        <result property="commentContent" column="comment_content"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="informationPostTitle" column="informationPostTitle"/>
+        <result property="commentOrAnswerStatus" column="commentOrAnswerStatus"/>
+        <result property="realLikeNumber" column="realLikeNumber"/>
+        <result property="informationType" column="information_type"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="postNames" column="post_names"/>
+        <result property="resourceUrl" column="resource_url"/>
+        <result property="resourceType" column="resource_type"/>
+    </resultMap>
+
+    <!--    <sql id="selectInformationCommentRecordVo">
+            select icr.information_comment_id,
+                   icr.information_post_id,
+                   ip.information_post_title   as informationPostTitle,
+                   if(icr.parent_id > 0, 1, 0) as commentOrAnswerStatus,
+                   icr.parent_id,
+                   icr.account_id,
+                   icr.account_head,
+                   icr.account_name,
+                   icr.audit_status,
+                   icr.comment_content,
+                   (select ifnull(count(lr.information_like_record_id),0) from information_like_record lr where lr.primary_id = icr.information_comment_id and like_type = 2) as realLikeNumber,
+                   icr.create_time,
+                   information_type
+            from information_comment_record icr
+                         left join information_post ip on icr.information_post_id = ip.information_post_id
+        </sql>-->
+
+    <sql id="selectInformationCommentRecordVo">
+        select icr.information_comment_id,
+               icr.information_post_id,
+               ip.information_post_title   as informationPostTitle,
+               if(icr.parent_id > 0, 1, 0) as commentOrAnswerStatus,
+               icr.parent_id,
+               icr.account_id,
+               icr.account_head,
+               icr.account_name,
+               icr.audit_status,
+               icr.comment_content,
+               (select ifnull(count(lr.information_like_record_id),0) from information_like_record lr where lr.primary_id = icr.information_comment_id and like_type = 2) as realLikeNumber,
+               icr.create_time,
+               icr.information_type,
+               icr.post_ids,
+               icr.post_names,
+               icr.resource_url,
+               icr.resource_type
+        from information_comment_record icr
+                     left join news_center_post ip on icr.information_post_id = ip.news_center_post_id
+    </sql>
+
+    <select id="selectInformationCommentRecordList" parameterType="InformationCommentRecord"
+            resultMap="InformationCommentRecordResult">
+        <include refid="selectInformationCommentRecordVo"/>
+        <where>
+            and ip.del_status = 0
+            <if test="informationPostId != null">
+                and icr.information_post_id = #{informationPostId}
+            </if>
+            <if test="informationPostTitle != null">
+                and ip.information_post_title like concat('%',#{informationPostTitle},'%')
+            </if>
+            <if test="parentId != null">
+                and icr.parent_id = #{parentId}
+            </if>
+            <if test="auditStatus != null">
+                and icr.audit_status = #{auditStatus}
+            </if>
+            <if test="accountId != null  and accountId != ''">
+                and icr.account_id = #{accountId}
+            </if>
+            <if test="accountHead != null  and accountHead != ''">
+                and icr.account_head = #{accountHead}
+            </if>
+            <if test="accountName != null  and accountName != ''">
+                and icr.account_name like concat('%', #{accountName}, '%')
+            </if>
+            <if test="commentContent != null  and commentContent != ''">
+                and icr.comment_content like concat('%',#{commentContent},'%')
+            </if>
+            <if test="informationType != null and informationType !=0">and information_type = #{informationType}</if>
+        </where>
+        order by icr.create_time desc
+    </select>
+
+    <select id="selectInformationCommentRecordById" parameterType="Long" resultMap="InformationCommentRecordResult">
+        select t.information_comment_id,
+               t.information_post_id,
+               t.parent_id,
+               t.account_id,
+               t.account_head,
+               t.account_name,
+               t.audit_status,
+               t.comment_content,
+               t.create_time,
+               p.comment_content as parent_name,
+               t.post_ids,
+               t.post_names,
+               t.resource_url,
+               t.resource_type
+        from information_comment_record t
+                     left join information_comment_record p on p.information_comment_id = t.parent_id
+        where t.information_comment_id = #{informationCommentId}
+    </select>
+
+    <insert id="insertInformationCommentRecord" parameterType="InformationCommentRecord" useGeneratedKeys = "true" keyProperty = "informationCommentId">
+        insert into information_comment_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="informationCommentId != null">
+                information_comment_id,
+            </if>
+            <if test="informationPostId != null">
+                information_post_id,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="auditStatus != null">
+                audit_status,
+            </if>
+            <if test="accountId != null and accountId != ''">
+                account_id,
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                account_head,
+            </if>
+            <if test="accountName != null and accountName != ''">
+                account_name,
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                comment_content,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="informationType != null">information_type,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="postNames != null">post_names,</if>
+            <if test="resourceUrl != null">resource_url,</if>
+            <if test="resourceType != null">resource_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="informationCommentId != null">
+                #{informationCommentId},
+            </if>
+            <if test="informationPostId != null">
+                #{informationPostId},
+            </if>
+            <if test="parentId != null">
+                #{parentId},
+            </if>
+            <if test="auditStatus != null">
+                #{auditStatus},
+            </if>
+            <if test="accountId != null and accountId != ''">
+                #{accountId},
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                #{accountHead},
+            </if>
+            <if test="accountName != null and accountName != ''">
+                #{accountName},
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                #{commentContent},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="informationType != null">#{informationType},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="postNames != null">#{postNames},</if>
+            <if test="resourceUrl != null">#{resourceUrl},</if>
+            <if test="resourceType != null">#{resourceType},</if>
+        </trim>
+    </insert>
+
+    <update id="updateInformationCommentRecord" parameterType="InformationCommentRecord">
+        update information_comment_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="informationPostId != null">
+                information_post_id = #{informationPostId},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="auditStatus != null">
+                audit_status = #{auditStatus},
+            </if>
+            <if test="accountId != null and accountId != ''">
+                account_id = #{accountId},
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                account_head = #{accountHead},
+            </if>
+            <if test="accountName != null and accountName != ''">
+                account_name = #{accountName},
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                comment_content = #{commentContent},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="informationType != null">information_type = #{informationType},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="postNames != null">post_names = #{postNames},</if>
+            <if test="resourceUrl != null">resource_url = #{resourceUrl},</if>
+            <if test="resourceType != null">resource_type = #{resourceType},</if>
+        </trim>
+        where information_comment_id = #{informationCommentId}
+    </update>
+
+    <delete id="deleteInformationCommentRecordById" parameterType="Long">
+        delete
+        from information_comment_record
+        where information_comment_id = #{informationCommentId}
+    </delete>
+
+    <delete id="deleteInformationCommentRecordByIds" parameterType="String">
+        delete
+        from information_comment_record where information_comment_id in
+        <foreach item="informationCommentId" collection="array" open="(" separator="," close=")">
+            #{informationCommentId}
+        </foreach>
+    </delete>
+
+    <!--    查询子集ID-->
+    <select id="selectIdsByParentId" resultType="java.lang.String">
+        select GROUP_CONCAT(information_comment_id) from information_comment_record where parent_id = #{parentId}
+    </select>
+    <select id="selectCommentListByPostId" resultType="java.util.Map">
+        select
+        information_comment_id as informationCommentId,
+        information_post_id as informationPostId,
+        account_id as accountId,
+        parent_id as parentId,
+        create_time as createTime,
+        account_head as accountHead,
+        account_name as accountName,
+        comment_content as commentContent,
+        post_ids as postIds,
+        post_names as postNames,
+        resource_url as resourceUrl,
+        resource_type as resourceType
+        from information_comment_record
+        where information_post_id = #{informationPostId} and parent_id = 0
+        <choose>
+            <when test="hostOrNewStatus == 1">
+                ORDER BY create_time desc
+            </when>
+            <otherwise>
+                ORDER BY create_time asc
+            </otherwise>
+        </choose>
+    </select>
+    <select id="selectCommentReplyListByPrimaryId" resultType="java.util.Map">
+        select
+            information_comment_id as  informationCommentId,
+            information_post_id as informationPostId,
+            account_id as accountId,
+            parent_id as parentId,
+            create_time as createTime,
+            account_head as accountHead,
+            account_name as accountName,
+            comment_content as commentContent,
+            post_ids as postIds,
+            post_names as postNames,
+            resource_url as resourceUrl,
+            resource_type as resourceType
+        from information_comment_record
+        where parent_id = #{informationCommentId}
+        ORDER BY create_time
+    </select>
+</mapper>

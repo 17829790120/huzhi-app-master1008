@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExamineCopyFlowMapper">
+
+    <resultMap type="ExamineCopyFlow" id="ExamineCopyFlowResult">
+        <result property="examineCopyFlowId" column="examine_copy_flow_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="examineModuleId" column="examine_module_id"/>
+        <result property="postName" column="post_name"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+    </resultMap>
+
+    <sql id="selectExamineCopyFlowVo">
+        select f.examine_copy_flow_id,
+               f.post_id,
+               f.create_time,
+               f.update_time,
+               f.dept_id,
+               f.examine_module_id,
+               f.company_id,
+               p.post_name,
+               sd.dept_name as company_name,
+               d.dept_name
+        from examine_copy_flow f
+                 left join sys_dept d on f.dept_id = d.dept_id
+                 left join sys_dept sd on sd.dept_id = f.company_id
+                 left join sys_post p on f.post_id = p.post_id
+    </sql>
+
+    <select id="selectExamineCopyFlowList" parameterType="ExamineCopyFlow" resultMap="ExamineCopyFlowResult">
+        <include refid="selectExamineCopyFlowVo"/>
+        <where>
+            1 = 1
+            <if test="postId != null ">and f.post_id = #{postId}</if>
+            <if test="deptId != null ">and f.dept_id = #{deptId}</if>
+            <if test="examineModuleId != null ">and f.examine_module_id = #{examineModuleId}</if>
+            <if test="companyId != null ">and f.company_id = #{companyId}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by f.dept_id,f.examine_module_id
+    </select>
+
+
+    <select id="selectApiExamineCopyFlowList" parameterType="ExamineCopyFlow" resultMap="ExamineCopyFlowResult">
+        <include refid="selectExamineCopyFlowVo"/>
+        <where>
+            <if test="postId != null ">and f.post_id = #{postId}</if>
+            <if test="deptId != null ">and f.dept_id = #{deptId}</if>
+            <if test="examineModuleId != null ">and f.examine_module_id = #{examineModuleId}</if>
+            <if test="companyId != null ">and f.company_id = #{companyId}</if>
+        </where>
+        order by f.dept_id,f.examine_module_id
+    </select>
+
+    <select id="selectExamineCopyFlowById" parameterType="String" resultMap="ExamineCopyFlowResult">
+        <include refid="selectExamineCopyFlowVo"/>
+        where f.examine_copy_flow_id = #{examineCopyFlowId}
+    </select>
+
+    <insert id="insertExamineCopyFlow" parameterType="ExamineCopyFlow">
+        insert into examine_copy_flow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examineCopyFlowId != null">examine_copy_flow_id,</if>
+            <if test="postId != null">post_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="examineModuleId != null">examine_module_id,</if>
+            <if test="companyId != null">company_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examineCopyFlowId != null">#{examineCopyFlowId},</if>
+            <if test="postId != null">#{postId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="examineModuleId != null">#{examineModuleId},</if>
+            <if test="companyId != null">#{companyId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamineCopyFlow" parameterType="ExamineCopyFlow">
+        update examine_copy_flow
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="examineModuleId != null">examine_module_id = #{examineModuleId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+        </trim>
+        where examine_copy_flow_id = #{examineCopyFlowId}
+    </update>
+
+    <delete id="deleteExamineCopyFlowById" parameterType="String">
+        delete
+        from examine_copy_flow
+        where examine_copy_flow_id = #{examineCopyFlowId}
+    </delete>
+
+    <delete id="deleteExamineCopyFlowByIds" parameterType="String">
+        delete from examine_copy_flow where examine_copy_flow_id in
+        <foreach item="examineCopyFlowId" collection="array" open="(" separator="," close=")">
+            #{examineCopyFlowId}
+        </foreach>
+    </delete>
+
+</mapper>

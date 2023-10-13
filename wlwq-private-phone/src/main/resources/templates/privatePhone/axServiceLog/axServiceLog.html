@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('AX号码绑定日志列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>虚拟号码：</label>
+                                <input type="text" name="virtualNumber"/>
+                            </li>
+                            <li>
+                                <label>真实号码：</label>
+                                <input type="text" name="realNumber"/>
+                            </li>
+                            <li>
+                                <label>华为云绑定ID：</label>
+                                <input type="text" name="subId"/>
+                            </li>
+                            <li>
+                                <label>备注：</label>
+                                <input type="text" name="remarks"/>
+                            </li>
+                            <li>
+                                <label>状态：</label>
+                                <select name="status">
+                                    <option value="">所有</option>
+                                    <option value="0">失败</option>
+                                    <option value="1">成功</option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="privatePhone:axServiceLog:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="privatePhone:axServiceLog:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="privatePhone:axServiceLog:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="privatePhone:axServiceLog:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('privatePhone:axServiceLog:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('privatePhone:axServiceLog:remove')}]];
+        var prefix = ctx + "privatePhone/axServiceLog";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "AX号码绑定日志",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'axServiceLogId',
+                    title: 'AX绑定日志ID',
+                    visible: false
+                },
+                {
+                    field: 'virtualNumber',
+                    title: '虚拟号码'
+                },
+                {
+                    field: 'realNumber',
+                    title: '真实号码'
+                },
+                {
+                    field: 'subId',
+                    title: '华为云绑定ID'
+                },
+                {
+                    field: 'remarks',
+                    title: '备注'
+                },
+                {
+                    field: 'status',
+                    title: '状态：',
+                    formatter: function(value, row, index) {
+                        if (value === 0){
+                            return "<span class=\"badge badge-danger\">失败</span>";
+                        }if (value === 1){
+                            return "<span class=\"badge badge-primary\">成功</span>";
+                        }
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.axServiceLogId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.axServiceLogId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

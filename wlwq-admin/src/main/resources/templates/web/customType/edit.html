@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改客户意向')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-type-edit" th:object="${customType}">
+            <input name="customTypeId" th:field="*{customTypeId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">客户意向名称：</label>
+                <div class="col-sm-8">
+                    <input name="customTypeName" th:field="*{customTypeName}" class="form-control" type="text">
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "web/customType";
+        $("#form-type-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-type-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增抄送抄送流程')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-examineCopyFlow-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">部门：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input name="deptId" type="hidden" id="treeId"/>
+                    <input name="deptName" onclick="selectDeptTree()" id="treeName" type="text"
+                           placeholder="请选择归属部门"
+                           class="form-control" required>
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">抄送模块：</label>
+            <div class="col-sm-8">
+                <select name="examineModuleId" id="examineModuleId" class="form-control m-b" required>
+                    <option value="">请选择</option>
+                    <option th:each="module : ${moduleList}" th:text="${module.moduleName}"
+                            th:value="${module.examineModuleId}">
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">抄送岗位：</label>
+            <div class="col-sm-8">
+                <select name="postId" id="postId" class="form-control m-b" required>
+<!--                    <option value="">请选择</option>-->
+<!--                    <option th:each="post : ${postList}" th:text="${post.postName}"-->
+<!--                            th:value="${post.postId}">-->
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/examineCopyFlow"
+    $("#form-examineCopyFlow-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-examineCopyFlow-add').serialize());
+        }
+    }
+
+
+    /* 用户管理-新增-选择部门树 */
+    function selectDeptTree() {
+        var treeId = $("#treeId").val();
+        var deptId = $.common.isEmpty(treeId) ? "100" : $("#treeId").val();
+        var url = ctx + "system/dept/selectDeptTree/" + deptId;
+        var options = {
+            title: '选择部门',
+            width: "380",
+            url: url,
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero) {
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        var body = layer.getChildFrame('body', index);
+        $("#treeId").val(body.find('#treeId').val());
+        $("#treeName").val(body.find('#treeName').val());
+        selectPostsById(body.find('#treeId').val())
+        layer.close(index);
+    }
+
+    // 根据公司查询岗位
+    function selectPostsById(deptId) {
+        $.post(ctx + 'system/post/selectPostsByDeptId', {deptId: deptId}, function (data) {
+            $('#postId').html("");
+            if (data != null) {
+                //先创建好select里面的option元素
+                var option = document.createElement("option");
+                //转换DOM对象为JQ对象,好用JQ里面提供的方法 给option的value赋值
+                $(option).val("");
+                //给option的text赋值,这就是你点开下拉框能够看到的东西
+                $(option).text("请选择");
+                //获取select 下拉框对象,并将option添加进select
+                $('#postId').append(option);
+                for (var i = 0; i < data.length; i++) {
+                    //先创建好select里面的option元素
+                    var option = document.createElement("option");
+                    //转换DOM对象为JQ对象,好用JQ里面提供的方法 给option的value赋值
+                    $(option).val(data[i].postId);
+                    //给option的text赋值,这就是你点开下拉框能够看到的东西
+                    $(option).text(data[i].postName);
+                    //获取select 下拉框对象,并将option添加进select
+                    $('#postId').append(option);
+                }
+            }
+
+        })
+    }
+</script>
+</body>
+</html>

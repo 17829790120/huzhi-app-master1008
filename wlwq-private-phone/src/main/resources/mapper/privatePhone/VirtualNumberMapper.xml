@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.privatePhone.mapper.VirtualNumberMapper">
+    <resultMap type="com.wlwq.privatePhone.domain.VirtualNumber" id="VirtualNumberResult">
+        <result property="virtualNumberId" column="virtual_number_id"/>
+        <result property="virtualNumber" column="virtual_number"/>
+        <result property="realNumber" column="real_number"/>
+        <result property="subId" column="sub_id"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectVirtualNumberVo">
+        select virtual_number_id, virtual_number, real_number, sub_id, status, create_time, update_time
+        from virtual_number
+    </sql>
+
+    <select id="selectVirtualNumberList" parameterType="com.wlwq.privatePhone.domain.VirtualNumber" resultMap="VirtualNumberResult">
+        <include refid="selectVirtualNumberVo"/>
+        <where>
+            <if test="virtualNumber != null  and virtualNumber != ''">
+                and virtual_number = #{virtualNumber}
+            </if>
+            <if test="realNumber != null  and realNumber != ''">
+                and real_number = #{realNumber}
+            </if>
+            <if test="subId != null  and subId != ''">
+                and sub_id = #{subId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectVirtualNumberById" parameterType="Long" resultMap="VirtualNumberResult">
+        <include refid="selectVirtualNumberVo"/>
+        where virtual_number_id = #{virtualNumberId}
+    </select>
+
+    <insert id="insertVirtualNumber" parameterType="com.wlwq.privatePhone.domain.VirtualNumber">
+        insert into virtual_number
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="virtualNumberId != null">
+                virtual_number_id,
+            </if>
+            <if test="virtualNumber != null and virtualNumber != ''">
+                virtual_number,
+            </if>
+            <if test="realNumber != null and realNumber != ''">
+                real_number,
+            </if>
+            <if test="subId != null and subId != ''">
+                sub_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="virtualNumberId != null">
+                #{virtualNumberId},
+            </if>
+            <if test="virtualNumber != null and virtualNumber != ''">
+                #{virtualNumber},
+            </if>
+            <if test="realNumber != null and realNumber != ''">
+                #{realNumber},
+            </if>
+            <if test="subId != null and subId != ''">
+                #{subId},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateVirtualNumber" parameterType="com.wlwq.privatePhone.domain.VirtualNumber">
+        update virtual_number
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="virtualNumber != null and virtualNumber != ''">
+                virtual_number = #{virtualNumber},
+            </if>
+            <if test="realNumber != null and realNumber != ''">
+                real_number = #{realNumber},
+            </if>
+            <if test="subId != null and subId != ''">
+                sub_id = #{subId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </trim>
+        where virtual_number_id = #{virtualNumberId}
+    </update>
+
+    <delete id="deleteVirtualNumberById" parameterType="Long">
+        delete
+        from virtual_number
+        where virtual_number_id = #{virtualNumberId}
+    </delete>
+
+    <delete id="deleteVirtualNumberByIds" parameterType="String">
+        delete
+        from virtual_number where virtual_number_id in
+        <foreach item="virtualNumberId" collection="array" open="(" separator="," close=")">
+            #{virtualNumberId}
+        </foreach>
+    </delete>
+
+<!--    获取一个可使用的隐私号码-->
+    <select id="selectCanUseVirtualNumber" resultMap="VirtualNumberResult">
+        select virtual_number_id, virtual_number, real_number, sub_id, status, create_time, update_time
+        from virtual_number
+        where status = 0 limit 1
+    </select>
+
+<!--    根据虚拟手机号修改虚拟号码-->
+    <update id="updateVirtualNumberByVirtualNumber">
+        update virtual_number set status = #{status}
+        where virtual_number = #{virtualNumber}
+    </update>
+<!--    根据隐私号码获取隐私号码对象-->
+    <select id="selectVirtualNumberByPrivatePhone" resultMap="VirtualNumberResult">
+        select virtual_number_id, virtual_number, real_number, sub_id, status, create_time, update_time from
+        virtual_number where virtual_number = #{privateNumber} limit 1
+    </select>
+
+<!--    根据绑定id查询-->
+    <select id="selectVirtualNumberBySubId" resultMap="VirtualNumberResult">
+        select * from virtual_number where sub_id = #{subId} limit  1
+    </select>
+</mapper>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CourseCustomizationPostMapper">
+
+    <resultMap type="CourseCustomizationPost" id="CourseCustomizationPostResult">
+        <result property="courseCustomizationPostId" column="course_customization_post_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="informationCategoryId" column="information_category_id"/>
+        <result property="informationPostTitle" column="information_post_title"/>
+        <result property="informationPostImages" column="information_post_images"/>
+        <result property="informationPostImagesType" column="information_post_images_type"/>
+        <result property="imagesAddress" column="images_address"/>
+        <result property="informationPostContent" column="information_post_content"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="basicsReservationNumber" column="basics_reservation_number"/>
+        <result property="hostStatus" column="host_status"/>
+        <result property="topStatus" column="top_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="telephone" column="telephone"/>
+    </resultMap>
+
+    <sql id="selectCourseCustomizationPostVo">
+        select course_customization_post_id, dept_id, user_id, information_category_id, information_post_title,
+            information_post_images, information_post_images_type, images_address, information_post_content, sort_num,
+            basics_reservation_number, host_status, top_status, del_status, create_time, update_time, ancestors, synopsis, telephone
+        from course_customization_post
+    </sql>
+
+    <select id="selectCourseCustomizationPostList" parameterType="CourseCustomizationPost"
+            resultMap="CourseCustomizationPostResult">
+        <include refid="selectCourseCustomizationPostVo"/>
+        <where>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="informationCategoryId != null ">and ( information_category_id = #{informationCategoryId}
+                or ancestors like concat('%', #{informationCategoryId}, '%'))
+            </if>
+            <!--<if test="informationCategoryId != null ">and information_category_id = #{informationCategoryId}</if>-->
+            <if test="informationPostTitle != null  and informationPostTitle != ''">and information_post_title like
+                concat('%', #{informationPostTitle}, '%')
+            </if>
+            <if test="informationPostImages != null  and informationPostImages != ''">and information_post_images =
+                #{informationPostImages}
+            </if>
+            <if test="informationPostImagesType != null ">and information_post_images_type =
+                #{informationPostImagesType}
+            </if>
+            <if test="imagesAddress != null  and imagesAddress != ''">and images_address = #{imagesAddress}</if>
+            <if test="informationPostContent != null  and informationPostContent != ''">and information_post_content
+                like concat('%', #{informationPostContent}, '%')
+            </if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="basicsReservationNumber != null ">and basics_reservation_number = #{basicsReservationNumber}</if>
+            <if test="hostStatus != null ">and host_status = #{hostStatus}</if>
+            <if test="topStatus != null ">and top_status = #{topStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="ancestors != null  and ancestors != ''">and ancestors = #{ancestors}</if>
+            <if test="synopsis != null  and synopsis != ''">and synopsis like concat('%', #{synopsis}, '%')</if>
+            <if test="telephone != null  and telephone != ''">and telephone = #{telephone}</if>
+        </where>
+    </select>
+
+    <select id="selectCourseCustomizationPostById" parameterType="String" resultMap="CourseCustomizationPostResult">
+        <include refid="selectCourseCustomizationPostVo"/>
+        where course_customization_post_id = #{courseCustomizationPostId}
+    </select>
+
+    <insert id="insertCourseCustomizationPost" parameterType="CourseCustomizationPost">
+        insert into course_customization_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseCustomizationPostId != null">course_customization_post_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="informationCategoryId != null">information_category_id,</if>
+            <if test="informationPostTitle != null">information_post_title,</if>
+            <if test="informationPostImages != null">information_post_images,</if>
+            <if test="informationPostImagesType != null">information_post_images_type,</if>
+            <if test="imagesAddress != null">images_address,</if>
+            <if test="informationPostContent != null">information_post_content,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="basicsReservationNumber != null">basics_reservation_number,</if>
+            <if test="hostStatus != null">host_status,</if>
+            <if test="topStatus != null">top_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="ancestors != null">ancestors,</if>
+            <if test="synopsis != null">synopsis,</if>
+            <if test="telephone != null">telephone,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseCustomizationPostId != null">#{courseCustomizationPostId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="informationCategoryId != null">#{informationCategoryId},</if>
+            <if test="informationPostTitle != null">#{informationPostTitle},</if>
+            <if test="informationPostImages != null">#{informationPostImages},</if>
+            <if test="informationPostImagesType != null">#{informationPostImagesType},</if>
+            <if test="imagesAddress != null">#{imagesAddress},</if>
+            <if test="informationPostContent != null">#{informationPostContent},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="basicsReservationNumber != null">#{basicsReservationNumber},</if>
+            <if test="hostStatus != null">#{hostStatus},</if>
+            <if test="topStatus != null">#{topStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="ancestors != null">#{ancestors},</if>
+            <if test="synopsis != null">#{synopsis},</if>
+            <if test="telephone != null">#{telephone},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCourseCustomizationPost" parameterType="CourseCustomizationPost">
+        update course_customization_post
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="informationCategoryId != null">information_category_id = #{informationCategoryId},</if>
+            <if test="informationPostTitle != null">information_post_title = #{informationPostTitle},</if>
+            <if test="informationPostImages != null">information_post_images = #{informationPostImages},</if>
+            <if test="informationPostImagesType != null">information_post_images_type = #{informationPostImagesType},
+            </if>
+            <if test="imagesAddress != null">images_address = #{imagesAddress},</if>
+            <if test="informationPostContent != null">information_post_content = #{informationPostContent},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="basicsReservationNumber != null">basics_reservation_number = #{basicsReservationNumber},</if>
+            <if test="hostStatus != null">host_status = #{hostStatus},</if>
+            <if test="topStatus != null">top_status = #{topStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="ancestors != null">ancestors = #{ancestors},</if>
+            <if test="synopsis != null">synopsis = #{synopsis},</if>
+            <if test="telephone != null">telephone = #{telephone},</if>
+        </trim>
+        where course_customization_post_id = #{courseCustomizationPostId}
+    </update>
+
+    <delete id="deleteCourseCustomizationPostById" parameterType="String">
+        delete from course_customization_post where course_customization_post_id = #{courseCustomizationPostId}
+    </delete>
+
+    <delete id="deleteCourseCustomizationPostByIds" parameterType="String">
+        delete from course_customization_post where course_customization_post_id in
+        <foreach item="courseCustomizationPostId" collection="array" open="(" separator="," close=")">
+            #{courseCustomizationPostId}
+        </foreach>
+    </delete>
+
+</mapper>

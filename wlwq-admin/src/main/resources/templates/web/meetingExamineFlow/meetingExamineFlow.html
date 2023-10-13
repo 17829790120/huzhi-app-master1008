@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('会议审批流程列表')"/>
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: layout-latest-css"/>
+    <th:block th:include="include :: ztree-css"/>
+</head>
+<body class="gray-bg">
+<div class="ui-layout-west">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa icon-grid"></i> 组织架构
+            </div>
+            <div class="box-tools pull-right">
+                <a type="button" class="btn btn-box-tool" href="#" onclick="dept()" title="管理部门"><i
+                        class="fa fa-edit"></i></a>
+                <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i
+                        class="fa fa-chevron-up"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i
+                        class="fa fa-chevron-down"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i
+                        class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class="ui-layout-content">
+            <div id="tree" class="ztree"></div>
+        </div>
+    </div>
+</div>
+<div class="ui-layout-center">
+    <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <input type="hidden" id="deptId" name="deptId">
+                    <input type="hidden" id="parentId" name="parentId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>审批模块：</p>
+                                <select name="examineModuleId" id="examineModuleId" class="form-control m-b">
+                                    <option value="">所有</option>
+                                    <option th:each="module : ${moduleList}" th:text="${module.moduleName}"
+                                            th:value="${module.examineModuleId}">
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                        class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                        class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:examineFlow:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+                   shiro:hasPermission="web:examineFlow:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+                   shiro:hasPermission="web:examineFlow:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:examineFlow:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: layout-latest-js"/>
+<th:block th:include="include :: ztree-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:meetingExamineFlow:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:meetingExamineFlow:remove')}]];
+    var prefix = ctx + "web/meetingExamineFlow";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "会议审批流程",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'meetingExamineFlowId',
+                    title: '审批流程ID',
+                    visible: false
+                },
+                {
+                    field: 'examineModuleName',
+                    title: '模块名称'
+                },
+                {
+                    field: 'companyName',
+                    title: '公司名称'
+                },
+                {
+                    field: 'deptName',
+                    title: '部门'
+                },
+                {
+                    field: 'postName',
+                    title: '审批岗位'
+                },
+                {
+                    field: 'examineSequence',
+                    align: 'center',
+                    title: '审批顺序，正序'
+                },
+                {
+                    field: 'accountName',
+                    title: '审批人员'
+                },
+                 {
+                    field: 'minValue',
+                    align: 'center',
+                    title: '最小值(元)'
+                },
+                {
+                    field: 'maxValue',
+                    align: 'center',
+                    title: '最大值(元)'
+                },
+                {
+                    field: 'createTime',
+                    align: 'center',
+                    title: '创建时间'
+                },
+                {
+                    field: 'updateTime',
+                    align: 'center',
+                    title: '更新时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.meetingExamineFlowId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.meetingExamineFlowId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    $(function () {
+        var panehHidden = false;
+        if ($(this).width() < 769) {
+            panehHidden = true;
+        }
+        $('body').layout({initClosed: panehHidden, west__size: 185});
+        // 回到顶部绑定
+        if ($.fn.toTop !== undefined) {
+            var opt = {
+                win: $('.ui-layout-center'),
+                doc: $('.ui-layout-center')
+            };
+            $('#scroll-up').toTop(opt);
+        }
+        queryDeptTree();
+    });
+
+
+    function queryDeptTree() {
+        var url = ctx + "system/dept/treeData";
+        var options = {
+            url: url,
+            expandLevel: 2,
+            onClick: zOnClick
+        };
+        $.tree.init(options);
+
+        function zOnClick(event, treeId, treeNode) {
+            $("#deptId").val(treeNode.id);
+            $("#parentId").val(treeNode.pId);
+            $.table.search();
+        }
+    }
+
+    $('#btnExpand').click(function () {
+        $._tree.expandAll(true);
+        $(this).hide();
+        $('#btnCollapse').show();
+    });
+
+    $('#btnCollapse').click(function () {
+        $._tree.expandAll(false);
+        $(this).hide();
+        $('#btnExpand').show();
+    });
+
+    $('#btnRefresh').click(function () {
+        queryDeptTree();
+    });
+
+    /* 用户管理-部门 */
+    function dept() {
+        var url = ctx + "system/dept";
+        $.modal.openTab("部门管理", url);
+    }
+</script>
+</body>
+</html>

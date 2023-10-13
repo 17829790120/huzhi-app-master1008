@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('测试训练试题列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <input type="hidden" id="examPaperRecordId" name="examPaperRecordId">
+                        <li>
+                            <label>试题类型：</label>
+                            <select class="form-control m-b" name="testTrainingCategoryId">
+                                <option value="">请选择</option>
+                                <option th:each="testTrainingCategory : ${testTrainingCategoryList}" th:text="${testTrainingCategory.title}"
+                                        th:value="${testTrainingCategory.testTrainingCategoryId}">
+                            </select>
+                        </li>
+                        <li>
+                            <p>类型</p>
+                            <select name="questionStatus" class="form-control m-b">
+                                <option value="">所有</option>
+                                <option value="1">单项选择题</option>
+                                <option value="2">多项选择题</option>
+                                <option value="3">解答题</option>
+                                <option value="4">判断题</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>是否显示：</label>
+                            <select name="showStatus">
+                                <option value="">所有</option>
+                                <option value="0">否</option>
+                                <option value="1">是</option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>难易程度：</p>
+                            <select name="complexityStatus" class="form-control m-b">
+                                <option value="">所有</option>
+                                <option value="3">易</option>
+                                <option value="2">中等</option>
+                                <option value="1">难</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+<!--        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:questionManagerTestTraining:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single" onclick="$.operate.edit()"
+               shiro:hasPermission="web:questionManagerTestTraining:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:questionManagerTestTraining:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:questionManagerTestTraining:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>-->
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var addFlag = [[${@permission.hasPermi('web:examPaperRecord:add')}]];
+    var removeFlag = [[${@permission.hasPermi('web:questionManagerTestTraining:remove')}]];
+    var prefix = ctx + "web/questionManagerTestTraining";
+    var examPaperRecordId = [[${examPaperRecordId}]];
+    var examPaperTitle = [[${examPaperTitle}]];
+    $("#examPaperRecordId").val(examPaperRecordId);
+
+    $(function () {
+        var options = {
+            url: prefix + "/listNew",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "试题列表",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'questionManagerId',
+                    title: '题库表id',
+                    visible: false
+                },
+                {
+                    field: 'questionStatus',
+                    align: 'center',
+                    title: '类型',
+                    formatter: function (value, row, index) {
+                        // 难易程度 1：难 2：中等 3：易
+                        if (value == 1) {
+                            return '<span class="label label-success">单项选择题</span>';
+                        } else if (value == 2) {
+                            return '<span class="label label-success">多项选择题</span>';
+                        } else if (value == 3) {
+                            return '<span class="label label-primary">解答题</span>';
+                        }else if (value == 4) {
+                            return '<span class="label label-primary">判断题</span>';
+                        } else {
+                            return '';
+                        }
+                    }
+                },
+                {
+                    field: 'content',
+                    align: 'center',
+                    title: '内容',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'analysis',
+                    align: 'center',
+                    title: '解析',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'score',
+                    align: 'center',
+                    title: '分数'
+                },
+                {
+                    field: 'showStatus',
+                    title: '显示状态',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        var categorys="showStatus";
+                        return statusTools(row,categorys);
+                    }
+                },
+                {
+                    field: 'complexityStatus',
+                    align: 'center',
+                    title: '难易程度',
+                    formatter: function (value, row, index) {
+                        // 难易程度 1：难 2：中等 3：易
+                        if (value == 1) {
+                            return '<span class="label label-success">难</span>';
+                        } else if (value == 2) {
+                            return '<span class="label label-success">中等</span>';
+                        } else if (value == 3) {
+                            return '<span class="label label-primary">易</span>';
+                        } else {
+                            return '';
+                        }
+                    }
+                },
+                {
+                    field: 'sortNum',
+                    align: 'center',
+                    title: '排序'
+                },
+                {
+                    field: 'optionA',
+                    align: 'center',
+                    title: '选项A',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'optionB',
+                    align: 'center',
+                    title: '选项B',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'optionC',
+                    align: 'center',
+                    title: '选项C',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'optionD',
+                    align: 'center',
+                    title: '选项D',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+/*                {
+                    field: 'optionE',
+                    align: 'center',
+                    title: '选项E'
+                },
+                {
+                    field: 'optionF',
+                    align: 'center',
+                    title: '选项F'
+                },*/
+                {
+                    field: 'answerStatus',
+                    align: 'center',
+                    title: '正确答案'
+                },
+                {
+                    field: 'testTrainingCategoryTitle',
+                    align: 'center',
+                    title: '类别标题'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + addFlag + '"  href="javascript:void(0)" onclick="addExamPaperRecord(\'' + row.questionManagerId + '\')"><i class="fa fa-edit"></i>加入试卷</a> ');
+                        //actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.questionManagerId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        //actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.questionManagerId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    //显示不显示
+    function statusTools(row,categorys) {
+        // 显示
+        if (row.showStatus == 1) {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.questionManagerId + '\',0,\''+categorys+'\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.questionManagerId + '\',1,\''+categorys+'\')"></i> ';
+        }
+    }
+    function disable(questionManagerId,num,categorys) {
+        if("showStatus"===categorys){
+            $.modal.confirm("确认要隐藏吗？", function () {
+                $.operate.post(prefix + "/edit", {"questionManagerId": questionManagerId, "showStatus": 0});
+            })
+        }
+    }
+
+    function enable(questionManagerId,num,categorys) {
+        if("showStatus"===categorys){
+            $.modal.confirm("确认要显示吗？", function () {
+                $.operate.post(prefix + "/edit", {"questionManagerId": questionManagerId, "showStatus": 1});
+            })
+        }
+    }
+
+    function addExamPaperRecord(questionManagerId) {
+        $.modal.confirm("确定要添加到试题吗？",function(){
+            $.operate.post("/web/examQuestionManager/addNew",{"questionManagerId": questionManagerId,
+                "examPaperRecordId":examPaperRecordId,"examPaperTitle":examPaperTitle},function(result){
+                if(result.code != 200){
+                    //alert(result.msg);
+                    return false;
+                }
+                alert("添加成功");
+                return true;
+            });
+        });
+    }
+</script>
+</body>
+</html>

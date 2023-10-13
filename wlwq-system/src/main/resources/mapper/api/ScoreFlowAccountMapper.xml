@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ScoreFlowAccountMapper">
+
+    <resultMap type="ScoreFlowAccount" id="ScoreFlowAccountResult">
+        <result property="scoreFlowAccountId" column="score_flow_account_id"/>
+        <result property="accountScoreId" column="account_score_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="examineSequence" column="examine_sequence"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="examineType" column="examine_type"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="rejectContent" column="reject_content"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="pics" column="pics"/>
+        <result property="examineEndTime" column="examine_end_time"/>
+        <result property="examineTag" column="examine_tag"/>
+        <result property="postName" column="post_name"/>
+        <result property="companyId"    column="company_id"    />
+    </resultMap>
+
+    <sql id="selectScoreFlowAccountVo">
+        select score_flow_account_id,
+               account_score_id,
+               account_id,
+               post_id,
+               examine_sequence,
+               create_time,
+               update_time,
+               examine_status,
+               examine_type,
+               read_status,
+               reject_content,
+               del_status,
+               dept_id,
+               account_name,
+               account_phone,
+               account_head,
+               pics,
+               examine_end_time,
+               company_id,
+               examine_tag
+        from score_flow_account
+    </sql>
+
+    <select id="selectScoreFlowAccountList" parameterType="ScoreFlowAccount" resultMap="ScoreFlowAccountResult">
+        <include refid="selectScoreFlowAccountVo"/>
+        <where>
+            del_status = 0
+            <if test="accountScoreId != null  and accountScoreId != ''">and account_score_id = #{accountScoreId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="examineEndTime != null ">and examine_end_time = #{examineEndTime}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+        </where>
+    </select>
+
+    <select id="selectScoreFlowAccountById" parameterType="String" resultMap="ScoreFlowAccountResult">
+        <include refid="selectScoreFlowAccountVo"/>
+        where score_flow_account_id = #{scoreFlowAccountId}
+    </select>
+
+    <insert id="insertScoreFlowAccount" parameterType="ScoreFlowAccount">
+        insert into score_flow_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="scoreFlowAccountId != null">score_flow_account_id,</if>
+            <if test="accountScoreId != null">account_score_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="postId != null">post_id,</if>
+            <if test="examineSequence != null">examine_sequence,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="examineType != null">examine_type,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="rejectContent != null">reject_content,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="pics != null">pics,</if>
+            <if test="examineEndTime != null">examine_end_time,</if>
+            <if test="examineTag != null">examine_tag,</if>
+            <if test="companyId != null">company_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="scoreFlowAccountId != null">#{scoreFlowAccountId},</if>
+            <if test="accountScoreId != null">#{accountScoreId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="postId != null">#{postId},</if>
+            <if test="examineSequence != null">#{examineSequence},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="examineType != null">#{examineType},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="rejectContent != null">#{rejectContent},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="examineEndTime != null">#{examineEndTime},</if>
+            <if test="examineTag != null">#{examineTag},</if>
+            <if test="companyId != null">#{companyId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateScoreFlowAccount" parameterType="ScoreFlowAccount">
+        update score_flow_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountScoreId != null">account_score_id = #{accountScoreId},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="examineSequence != null">examine_sequence = #{examineSequence},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="examineType != null">examine_type = #{examineType},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="rejectContent != null">reject_content = #{rejectContent},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="examineEndTime != null">examine_end_time = #{examineEndTime},</if>
+            <if test="examineTag != null">examine_tag = #{examineTag},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+        </trim>
+        where score_flow_account_id = #{scoreFlowAccountId}
+    </update>
+
+    <update id="deleteScoreFlowAccountById" parameterType="String">
+        update score_flow_account
+        set del_status = 1
+        where score_flow_account_id = #{scoreFlowAccountId}
+    </update>
+
+    <update id="deleteScoreFlowAccountByIds" parameterType="String">
+        update score_flow_account set del_status = 1 where score_flow_account_id in
+        <foreach item="scoreFlowAccountId" collection="array" open="(" separator="," close=")">
+            #{scoreFlowAccountId}
+        </foreach>
+    </update>
+
+    <!--    只查询就近的一条-->
+    <select id="selectNearLimitScoreFlowAccount" parameterType="ScoreFlowAccount"
+            resultMap="ScoreFlowAccountResult">
+        select
+        account_score_id,
+        account_id,
+        post_id,
+        examine_sequence,
+        examine_type,
+        dept_id,
+        examine_status
+        from score_flow_account
+        <where>
+            del_status = 0
+            <if test="accountScoreId != null  and accountScoreId != ''">and account_score_id = #{accountScoreId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null  and examineType != ''">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+        </where>
+        order by update_time desc limit 1
+    </select>
+
+
+    <!--    我审核的审核列表-->
+    <select id="selectMyScoreFlowAccountList" parameterType="ScoreFlowAccount"
+            resultType="Map">
+        select
+        a.score_flow_account_id as flowAccountId,
+        a.account_score_id as accountScoreId,
+        a.account_name as examineAccountName,
+        s.account_name as subAccountName,
+        s.score,
+        s.create_time as subCreateTime,
+        a.examine_status as examineStatus,
+        a.examine_tag as examineTag
+        from score_flow_account a left join account_score s on a.account_score_id = s.account_score_id
+        <where>
+            <if test="accountScoreId != null  and accountScoreId != ''">and a.account_score_id = #{accountScoreId}</if>
+            <if test="accountId != null  and accountId != ''">and a.account_id = #{accountId}</if>
+            <if test="postId != null ">and a.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and a.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null and examineStatus == 1">and a.examine_status = 1</if>
+            <if test="examineStatus != null and examineStatus == 2">and a.examine_status in(3,4)</if>
+            <if test="examineType != null  and examineType != ''">and a.examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and a.read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and a.reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and s.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="examineTag != null  and examineTag != ''">and a.examine_tag = #{examineTag}</if>
+            <if test="companyId != null "> and a.company_id = #{companyId}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+
+    <!--    根据唯一标识查询审批人员信息-->
+    <select id="selectNearScoreFlowAccountList" parameterType="ScoreFlowAccount"
+            resultMap="ScoreFlowAccountResult">
+        select
+        t.create_time,
+        t.update_time,
+        t.examine_status,
+        t.examine_type,
+        t.read_status,
+        t.reject_content,
+        t.dept_id,
+        t.account_name,
+        t.account_phone,
+        t.account_head,
+        p.post_name,
+        t.pics
+        from score_flow_account t left join sys_post p on t.post_id = p.post_id
+        <where>
+            t.del_status = 0
+            <if test="accountScoreId != null  and accountScoreId != ''">and t.account_score_id = #{accountScoreId}</if>
+            <if test="accountId != null  and accountId != ''">and t.account_id = #{accountId}</if>
+            <if test="postId != null ">and t.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and t.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and t.examine_status = #{examineStatus}</if>
+            <if test="examineType != null  and examineType != ''">and t.examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and t.read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and t.reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and t.dept_id = #{deptId}</if>
+            <if test="delStatus != null ">and t.del_status = #{delStatus}</if>
+            <if test="examineTag != null  and examineTag != ''">and t.examine_tag = #{examineTag}</if>
+            <if test="companyId != null "> and t.company_id = #{companyId}</if>
+        </where>
+        order by t.examine_sequence,t.create_time
+    </select>
+</mapper>

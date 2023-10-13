@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改人员训练模块')"/>
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-trainingModule-edit" th:object="${trainingModule}">
+        <input name="trainingModuleId" th:field="*{trainingModuleId}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">标题名称：</label>
+            <div class="col-sm-8">
+                <input name="titleName" th:field="*{titleName}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">副标题名称：</label>
+            <div class="col-sm-8">
+                <input name="subheadName" th:field="*{subheadName}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">模块图标：</label>
+            <div class="col-sm-8">
+                <input name="moduleIcon" id="fileUrl" th:field="*{moduleIcon}" class="form-control" type="text">
+                <div class="file-loading">
+                    <input class="form-control file-upload" id="moduleIcon" name="file" type="file">
+                </div>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 建议尺寸：338px * 208px</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">详情背景图：</label>
+            <div class="col-sm-8">
+                <input name="moduleImage" th:field="*{moduleImage}"  class="form-control" type="text">
+                <div class="file-loading">
+                    <input class="form-control file-upload" id="moduleImage" name="file" type="file">
+                </div>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 建议尺寸：750px * 448px</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">排序(排序越小，越靠前)：</label>
+            <div class="col-sm-8">
+                <input name="sortNum" th:field="*{sortNum}" class="form-control" type="text"
+                       onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">显示状态：</label>
+            <div class="col-sm-8">
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" value="0" name="showStatus" th:field="*{showStatus}"> <i></i> 否</label>
+                </div>
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" checked value="1" name="showStatus" th:field="*{showStatus}"> <i></i>
+                        显示</label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<script th:inline="javascript">
+        var prefix = ctx + "web/trainingModule";
+        $("#form-trainingModule-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-trainingModule-edit').serialize());
+            }
+        }
+
+     $(".file-upload").each(function (i) {
+        var val = $("input[name='" + this.id + "']").val()
+        $(this).fileinput({
+            'uploadUrl': ctx + 'app/upload',
+            initialPreviewAsData: true,
+            initialPreview: [val],
+            maxFileCount: 1,
+            autoReplace: true
+        }).on('fileuploaded', function (event, data, previewId, index) {
+            $("input[name='" + event.currentTarget.id + "']").val(data.response.message)
+        }).on('fileremoved', function (event, id, index) {
+            $("input[name='" + event.currentTarget.id + "']").val('')
+        })
+        $(this).fileinput('_initFileActions');
+    });
+</script>
+</body>
+</html>

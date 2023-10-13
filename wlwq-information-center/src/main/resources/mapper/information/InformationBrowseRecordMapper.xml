@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.information.mapper.InformationBrowseRecordMapper">
+    <resultMap type="InformationBrowseRecord" id="InformationBrowseRecordResult">
+        <result property="informationBrowseRecordId" column="information_browse_record_id"/>
+        <result property="informationPostId" column="information_post_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="accountName" column="account_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="informationPostTitle" column="informationPostTitle"/>
+        <result property="informationType" column="information_type"/>
+        <result property="deptId" column="dept_id"/>
+    </resultMap>
+
+    <sql id="selectInformationBrowseRecordVo">
+        select ibr.information_browse_record_id,
+               ibr.information_post_id,
+               ip.information_post_title as informationPostTitle,
+               ibr.account_id,
+               ibr.account_head,
+               ibr.account_name,
+               ibr.create_time,
+               ibr.information_type,
+               ibr.dept_id
+        from information_browse_record ibr
+                 left join information_post ip on ibr.information_post_id = ip.information_post_id
+                 left join sys_dept d on ibr.dept_id = d.dept_id
+    </sql>
+
+    <sql id="selectInformationBrowseRecordNewsCenterVo">
+        select ibr.information_browse_record_id,
+               ibr.information_post_id,
+               ncp.information_post_title as informationPostTitle,
+               ibr.account_id,
+               ibr.account_head,
+               ibr.account_name,
+               ibr.create_time,
+               ibr.information_type,
+               ibr.dept_id
+        from information_browse_record ibr
+                 left join news_center_post ncp on ibr.information_post_id = ncp.news_center_post_id
+                 left join sys_dept d on ibr.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectInformationBrowseRecordNewsCenterList" parameterType="InformationBrowseRecord"
+            resultMap="InformationBrowseRecordResult">
+        <include refid="selectInformationBrowseRecordNewsCenterVo"/>
+        <where>
+            1 = 1
+            <if test="informationPostId != null">
+                and ibr.information_post_id = #{informationPostId}
+            </if>
+            <if test="informationPostTitle != null and informationPostTitle != '' ">
+                and ip.information_post_title = #{informationPostTitle}
+            </if>
+            <if test="accountId != null  and accountId != ''">
+                and ibr.account_id = #{accountId}
+            </if>
+            <if test="accountHead != null  and accountHead != ''">
+                and ibr.account_head = #{accountHead}
+            </if>
+            <if test="accountName != null  and accountName != ''">
+                and ibr.account_name like concat('%', #{accountName}, '%')
+            </if>
+            <if test="informationType != null and informationType != 0">and ibr.information_type = #{informationType}
+            </if>
+            <if test="deptId != null "> and ibr.dept_id = #{deptId}</if>
+        </where>
+        ${params.dataScope}
+        order by ibr.create_time desc
+    </select>
+
+    <select id="selectInformationBrowseRecordNewsCenterById" parameterType="Long"
+            resultMap="InformationBrowseRecordResult">
+        <include refid="selectInformationBrowseRecordNewsCenterVo"/>
+        where ibr.information_browse_record_id = #{informationBrowseRecordId}
+    </select>
+
+    <select id="selectInformationBrowseRecordList" parameterType="InformationBrowseRecord"
+            resultMap="InformationBrowseRecordResult">
+        <include refid="selectInformationBrowseRecordVo"/>
+        <where>
+            1 = 1
+            <if test="informationPostId != null">
+                and ibr.information_post_id = #{informationPostId}
+            </if>
+            <if test="informationPostTitle != null and informationPostTitle != '' ">
+                and ip.information_post_title = #{informationPostTitle}
+            </if>
+            <if test="accountId != null  and accountId != ''">
+                and ibr.account_id = #{accountId}
+            </if>
+            <if test="accountHead != null  and accountHead != ''">
+                and ibr.account_head = #{accountHead}
+            </if>
+            <if test="accountName != null  and accountName != ''">
+                and ibr.account_name like concat('%', #{accountName}, '%')
+            </if>
+            <if test="informationType != null and informationType != 0">and ibr.information_type = #{informationType}
+            </if>
+            <if test="deptId != null "> and ibr.dept_id = #{deptId}</if>
+        </where>
+        ${params.dataScope}
+        order by ibr.create_time desc
+    </select>
+
+    <select id="selectInformationBrowseRecordById" parameterType="Long" resultMap="InformationBrowseRecordResult">
+        <include refid="selectInformationBrowseRecordVo"/>
+        where information_browse_record_id = #{informationBrowseRecordId}
+    </select>
+
+
+    <insert id="insertInformationBrowseRecord" parameterType="InformationBrowseRecord" useGeneratedKeys="true"
+            keyProperty="informationBrowseRecordId">
+        insert into information_browse_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="informationPostId != null">
+                information_post_id,
+            </if>
+            <if test="accountId != null and accountId != ''">
+                account_id,
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                account_head,
+            </if>
+            <if test="accountName != null and accountName != ''">
+                account_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="informationType != null">information_type,</if>
+            <if test="deptId != null">dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="informationPostId != null">
+                #{informationPostId},
+            </if>
+            <if test="accountId != null and accountId != ''">
+                #{accountId},
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                #{accountHead},
+            </if>
+            <if test="accountName != null and accountName != ''">
+                #{accountName},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="informationType != null">#{informationType},</if>
+            <if test="deptId != null">#{deptId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateInformationBrowseRecord" parameterType="InformationBrowseRecord">
+        update information_browse_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="informationPostId != null">
+                information_post_id = #{informationPostId},
+            </if>
+            <if test="accountId != null and accountId != ''">
+                account_id = #{accountId},
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                account_head = #{accountHead},
+            </if>
+            <if test="accountName != null and accountName != ''">
+                account_name = #{accountName},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="informationType != null">information_type = #{informationType},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where information_browse_record_id = #{informationBrowseRecordId}
+    </update>
+
+    <delete id="deleteInformationBrowseRecordById" parameterType="Long">
+        delete
+        from information_browse_record
+        where information_browse_record_id = #{informationBrowseRecordId}
+    </delete>
+
+    <delete id="deleteInformationBrowseRecordByIds" parameterType="String">
+        delete
+        from information_browse_record where information_browse_record_id in
+        <foreach item="informationBrowseRecordId" collection="array" open="(" separator="," close=")">
+            #{informationBrowseRecordId}
+        </foreach>
+    </delete>
+</mapper>

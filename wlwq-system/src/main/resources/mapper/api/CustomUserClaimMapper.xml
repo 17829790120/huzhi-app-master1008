@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CustomUserClaimMapper">
+    
+    <resultMap type="CustomUserClaim" id="CustomUserClaimResult">
+        <result property="customClaimId"    column="custom_claim_id"    />
+        <result property="customInfoId"    column="custom_info_id"    />
+        <result property="customUserId"    column="custom_user_id"    />
+        <result property="customFollowTime"    column="custom_follow_time"    />
+        <result property="customFollowLastTime"    column="custom_follow_last_time"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="sortNum"    column="sort_num"    />
+        <result property="showStatustiny"    column="show_statustiny"    />
+        <result property="delStatus"    column="del_status"    />
+        <result property="claimTime"    column="claim_time"    />
+        <result property="releaseTime"    column="release_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="companyId"    column="company_id"    />
+    </resultMap>
+
+    <sql id="selectCustomUserClaimVo">
+        select custom_claim_id, custom_info_id, custom_user_id, custom_follow_time, custom_follow_last_time, status, create_time, create_by, update_time,
+        update_by, sort_num, show_statustiny, del_status, claim_time, release_time,dept_id,company_id from custom_user_claim
+    </sql>
+
+    <select id="selectCustomUserClaimList" parameterType="CustomUserClaim" resultMap="CustomUserClaimResult">
+        <include refid="selectCustomUserClaimVo"/>
+        <where>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="customInfoId != null and customInfoId != ''"> and custom_info_id = #{customInfoId}</if>
+            <if test="customUserId != null and customUserId != ''"> and custom_user_id = #{customUserId}</if>
+            <if test="customFollowTime != null "> and custom_follow_time = #{customFollowTime}</if>
+            <if test="customFollowLastTime != null "> and custom_follow_last_time = #{customFollowLastTime}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="sortNum != null "> and sort_num = #{sortNum}</if>
+            <if test="showStatustiny != null "> and show_statustiny = #{showStatustiny}</if>
+            <if test="delStatus != null "> and del_status = #{delStatus}</if>
+            <if test="claimTime != null "> and claim_time = #{claimTime}</if>
+            <if test="releaseTime != null "> and release_time = #{releaseTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectCustomUserClaimById" parameterType="Long" resultMap="CustomUserClaimResult">
+        <include refid="selectCustomUserClaimVo"/>
+        where custom_claim_id = #{customClaimId}
+    </select>
+        
+    <insert id="insertCustomUserClaim" parameterType="CustomUserClaim">
+        insert into custom_user_claim
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="customClaimId != null">custom_claim_id,</if>
+            <if test="customInfoId != null">custom_info_id,</if>
+            <if test="customUserId != null">custom_user_id,</if>
+            <if test="customFollowTime != null">custom_follow_time,</if>
+            <if test="customFollowLastTime != null">custom_follow_last_time,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatustiny != null">show_statustiny,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="claimTime != null">claim_time,</if>
+            <if test="releaseTime != null">release_time,</if>
+            <if test="isFollow != null">is_follow,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="customClaimId != null">#{customClaimId},</if>
+            <if test="customInfoId != null">#{customInfoId},</if>
+            <if test="customUserId != null">#{customUserId},</if>
+            <if test="customFollowTime != null">#{customFollowTime},</if>
+            <if test="customFollowLastTime != null">#{customFollowLastTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatustiny != null">#{showStatustiny},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="claimTime != null">#{claimTime},</if>
+            <if test="releaseTime != null">#{releaseTime},</if>
+            <if test="isFollow != null">#{isFollow},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomUserClaim" parameterType="CustomUserClaim">
+        update custom_user_claim
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="customInfoId != null">custom_info_id = #{customInfoId},</if>
+            <if test="customUserId != null">custom_user_id = #{customUserId},</if>
+            <if test="customFollowTime != null">custom_follow_time = #{customFollowTime},</if>
+            <if test="customFollowLastTime != null">custom_follow_last_time = #{customFollowLastTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatustiny != null">show_statustiny = #{showStatustiny},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="claimTime != null">claim_time = #{claimTime},</if>
+            <if test="releaseTime != null">release_time = #{releaseTime},</if>
+        </trim>
+        where custom_claim_id = #{customClaimId}
+    </update>
+
+    <delete id="deleteCustomUserClaimById" parameterType="Long">
+        delete from custom_user_claim where custom_claim_id = #{customClaimId}
+    </delete>
+
+    <delete id="deleteCustomUserClaimByIds" parameterType="String">
+        delete from custom_user_claim where custom_claim_id in 
+        <foreach item="customClaimId" collection="array" open="(" separator="," close=")">
+            #{customClaimId}
+        </foreach>
+    </delete>
+    <update id="updateCustomUser">
+        update custom_user_claim set `status`=#{status} ,release_time=now()
+        where custom_claim_id=#{customClaimId}
+    </update>
+
+    <update id="updateCustomUsers">
+        update custom_user_claim set `status`=#{status} ,release_time=now()
+        where custom_claim_id in
+        <foreach item="customClaimIds" collection="customClaimIds" open="(" separator="," close=")">
+            #{customClaimIds}
+        </foreach>
+    </update>
+
+    <update id="updateCustomFollowTime">
+        update custom_user_claim set custom_follow_last_time=now(),is_follow=1 where custom_claim_id=#{customClaimId}
+    </update>
+
+    <update id="updateCustomUserClaimStatus">
+        update custom_user_claim set `status`='2'
+        where custom_info_id=#{customInfoId} and `status`='0'
+    </update>
+
+
+    <resultMap type="com.wlwq.api.resultVO.CustomUserVO" id="CustomUserVOResult">
+        <result property="nickName"    column="nick_name"    />
+        <result property="customName"    column="custom_name"    />
+        <result property="customFollowTime"    column="custom_follow_time"    />
+        <result property="customFollowLastTime"    column="custom_follow_last_time"    />
+        <result property="claimTime"    column="claim_time"    />
+        <result property="releaseTime"    column="release_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+    <select id="findCustomUserVO" resultMap="CustomUserVOResult">
+        select custom_name,nick_name,custom_follow_time,custom_follow_last_time,`status`,claim_time,release_time
+		from custom_user_claim cuc
+		LEFT JOIN custom_custom_info cci on cuc.custom_info_id=cci.custom_id
+		LEFT JOIN api_account aa on aa.account_id=cci.custom_responsible
+		where cuc.company_id=#{companyId}
+        <if test="customName != null and customName != ''">
+            and custom_name like concat('%', #{customName}, '%')
+        </if>
+		ORDER BY FIELD( `status`, "0" ) DESC,FIELD( `status`, "2" ) DESC,custom_follow_time
+
+    </select>
+</mapper>

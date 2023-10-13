@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.information.mapper.InformationSettingMapper">
+    
+    <resultMap type="InformationSetting" id="InformationSettingResult">
+        <result property="informationSettingId"    column="information_setting_id"    />
+        <result property="informationSettingTitle"    column="information_setting_title"    />
+        <result property="informationSettingStatus"    column="information_setting_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectInformationSettingVo">
+        select information_setting_id, information_setting_title, information_setting_status, create_time, update_time from information_setting
+    </sql>
+
+    <select id="selectInformationSettingList" parameterType="InformationSetting" resultMap="InformationSettingResult">
+        <include refid="selectInformationSettingVo"/>
+        <where>  
+            <if test="informationSettingId != null "> and information_setting_id = #{informationSettingId}</if>
+            <if test="informationSettingTitle != null  and informationSettingTitle != ''"> and information_setting_title = #{informationSettingTitle}</if>
+            <if test="informationSettingStatus != null "> and information_setting_status = #{informationSettingStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectInformationSettingById" parameterType="Long" resultMap="InformationSettingResult">
+        <include refid="selectInformationSettingVo"/>
+        where information_setting_id = #{informationSettingId}
+    </select>
+        
+    <insert id="insertInformationSetting" parameterType="InformationSetting" useGeneratedKeys="true" keyProperty="informationSettingId">
+        insert into information_setting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="informationSettingTitle != null and informationSettingTitle != ''">information_setting_title,</if>
+            <if test="informationSettingStatus != null">information_setting_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="informationSettingTitle != null and informationSettingTitle != ''">#{informationSettingTitle},</if>
+            <if test="informationSettingStatus != null">#{informationSettingStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInformationSetting" parameterType="InformationSetting">
+        update information_setting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="informationSettingTitle != null and informationSettingTitle != ''">information_setting_title = #{informationSettingTitle},</if>
+            <if test="informationSettingStatus != null">information_setting_status = #{informationSettingStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where information_setting_id = #{informationSettingId}
+    </update>
+
+    <delete id="deleteInformationSettingById" parameterType="Long">
+        delete from information_setting where information_setting_id = #{informationSettingId}
+    </delete>
+
+    <delete id="deleteInformationSettingByIds" parameterType="String">
+        delete from information_setting where information_setting_id in 
+        <foreach item="informationSettingId" collection="array" open="(" separator="," close=")">
+            #{informationSettingId}
+        </foreach>
+    </delete>
+
+</mapper>

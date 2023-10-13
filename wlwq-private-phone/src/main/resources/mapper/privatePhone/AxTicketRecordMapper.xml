@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.privatePhone.mapper.AxTicketRecordMapper">
+
+    <resultMap type="AxTicketRecord" id="AxTicketRecordResult">
+        <result property="axTicketRecordId"    column="ax_ticket_record_id"    />
+        <result property="direction"    column="direction"    />
+        <result property="spId"    column="sp_id"    />
+        <result property="appKey"    column="app_key"    />
+        <result property="icId"    column="ic_id"    />
+        <result property="bindNum"    column="bind_num"    />
+        <result property="sessionId"    column="session_id"    />
+        <result property="callerNum"    column="caller_num"    />
+        <result property="calleeNum"    column="callee_num"    />
+        <result property="callinTime"    column="callIn_time"    />
+        <result property="callEndTime"    column="call_end_time"    />
+        <result property="recordFlag"    column="record_flag"    />
+        <result property="recordStartTime"    column="record_start_time"    />
+        <result property="recordObjectName"    column="record_object_name"    />
+        <result property="recordBucketName"    column="record_bucket_name"    />
+        <result property="recordDomain"    column="record_domain"    />
+        <result property="serviceType"    column="service_type"    />
+        <result property="recordFileUrl"    column="record_file_url"    />
+        <result property="hostName"    column="host_name"    />
+        <result property="recordFileUrlLocal"    column="record_file_url_local"    />
+        <result property="subscriptionId"    column="subscription_id"    />
+        <result property="areaCode"    column="area_code"    />
+        <result property="callDuration"    column="call_duration"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectAxTicketRecordVo">
+        select ax_ticket_record_id, direction, sp_id, app_key, ic_id, bind_num, session_id, caller_num, callee_num, callIn_time, call_end_time, record_flag, record_start_time, record_object_name, record_bucket_name, record_domain, service_type, record_file_url, host_name, record_file_url_local, subscription_id, area_code, call_duration, create_time from ax_ticket_record
+    </sql>
+
+    <select id="selectAxTicketRecordList" parameterType="AxTicketRecord" resultMap="AxTicketRecordResult">
+        <include refid="selectAxTicketRecordVo"/>
+        <where>
+            <if test="direction != null "> and direction = #{direction}</if>
+            <if test="spId != null  and spId != ''"> and sp_id = #{spId}</if>
+            <if test="appKey != null  and appKey != ''"> and app_key = #{appKey}</if>
+            <if test="icId != null  and icId != ''"> and ic_id = #{icId}</if>
+            <if test="bindNum != null  and bindNum != ''"> and bind_num = #{bindNum}</if>
+            <if test="sessionId != null  and sessionId != ''"> and session_id = #{sessionId}</if>
+            <if test="callerNum != null  and callerNum != ''"> and caller_num = #{callerNum}</if>
+            <if test="calleeNum != null  and calleeNum != ''"> and callee_num = #{calleeNum}</if>
+            <if test="callinTime != null  and callinTime != ''"> and callIn_time = #{callinTime}</if>
+            <if test="callEndTime != null  and callEndTime != ''"> and call_end_time = #{callEndTime}</if>
+            <if test="recordFlag != null "> and record_flag = #{recordFlag}</if>
+            <if test="recordStartTime != null  and recordStartTime != ''"> and record_start_time = #{recordStartTime}</if>
+            <if test="recordObjectName != null  and recordObjectName != ''"> and record_object_name like concat('%', #{recordObjectName}, '%')</if>
+            <if test="recordBucketName != null  and recordBucketName != ''"> and record_bucket_name like concat('%', #{recordBucketName}, '%')</if>
+            <if test="recordDomain != null  and recordDomain != ''"> and record_domain = #{recordDomain}</if>
+            <if test="serviceType != null  and serviceType != ''"> and service_type = #{serviceType}</if>
+            <if test="recordFileUrl != null  and recordFileUrl != ''"> and record_file_url = #{recordFileUrl}</if>
+            <if test="hostName != null  and hostName != ''"> and host_name like concat('%', #{hostName}, '%')</if>
+            <if test="recordFileUrlLocal != null  and recordFileUrlLocal != ''"> and record_file_url_local = #{recordFileUrlLocal}</if>
+            <if test="subscriptionId != null  and subscriptionId != ''"> and subscription_id = #{subscriptionId}</if>
+            <if test="areaCode != null  and areaCode != ''"> and area_code = #{areaCode}</if>
+            <if test="callDuration != null "> and call_duration = #{callDuration}</if>
+        </where>
+    </select>
+
+    <select id="selectAxTicketRecordById" parameterType="Long" resultMap="AxTicketRecordResult">
+        <include refid="selectAxTicketRecordVo"/>
+        where ax_ticket_record_id = #{axTicketRecordId}
+    </select>
+
+    <insert id="insertAxTicketRecord" parameterType="AxTicketRecord" useGeneratedKeys="true" keyProperty="axTicketRecordId">
+        insert into ax_ticket_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="direction != null">direction,</if>
+            <if test="spId != null and spId != ''">sp_id,</if>
+            <if test="appKey != null and appKey != ''">app_key,</if>
+            <if test="icId != null">ic_id,</if>
+            <if test="bindNum != null and bindNum != ''">bind_num,</if>
+            <if test="sessionId != null and sessionId != ''">session_id,</if>
+            <if test="callerNum != null and callerNum != ''">caller_num,</if>
+            <if test="calleeNum != null and calleeNum != ''">callee_num,</if>
+            <if test="callinTime != null">callIn_time,</if>
+            <if test="callEndTime != null">call_end_time,</if>
+            <if test="recordFlag != null">record_flag,</if>
+            <if test="recordStartTime != null">record_start_time,</if>
+            <if test="recordObjectName != null">record_object_name,</if>
+            <if test="recordBucketName != null">record_bucket_name,</if>
+            <if test="recordDomain != null">record_domain,</if>
+            <if test="serviceType != null">service_type,</if>
+            <if test="recordFileUrl != null">record_file_url,</if>
+            <if test="hostName != null">host_name,</if>
+            <if test="recordFileUrlLocal != null">record_file_url_local,</if>
+            <if test="subscriptionId != null">subscription_id,</if>
+            <if test="areaCode != null">area_code,</if>
+            <if test="callDuration != null">call_duration,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="direction != null">#{direction},</if>
+            <if test="spId != null and spId != ''">#{spId},</if>
+            <if test="appKey != null and appKey != ''">#{appKey},</if>
+            <if test="icId != null">#{icId},</if>
+            <if test="bindNum != null and bindNum != ''">#{bindNum},</if>
+            <if test="sessionId != null and sessionId != ''">#{sessionId},</if>
+            <if test="callerNum != null and callerNum != ''">#{callerNum},</if>
+            <if test="calleeNum != null and calleeNum != ''">#{calleeNum},</if>
+            <if test="callinTime != null">#{callinTime},</if>
+            <if test="callEndTime != null">#{callEndTime},</if>
+            <if test="recordFlag != null">#{recordFlag},</if>
+            <if test="recordStartTime != null">#{recordStartTime},</if>
+            <if test="recordObjectName != null">#{recordObjectName},</if>
+            <if test="recordBucketName != null">#{recordBucketName},</if>
+            <if test="recordDomain != null">#{recordDomain},</if>
+            <if test="serviceType != null">#{serviceType},</if>
+            <if test="recordFileUrl != null">#{recordFileUrl},</if>
+            <if test="hostName != null">#{hostName},</if>
+            <if test="recordFileUrlLocal != null">#{recordFileUrlLocal},</if>
+            <if test="subscriptionId != null">#{subscriptionId},</if>
+            <if test="areaCode != null">#{areaCode},</if>
+            <if test="callDuration != null">#{callDuration},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAxTicketRecord" parameterType="AxTicketRecord">
+        update ax_ticket_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="direction != null">direction = #{direction},</if>
+            <if test="spId != null and spId != ''">sp_id = #{spId},</if>
+            <if test="appKey != null and appKey != ''">app_key = #{appKey},</if>
+            <if test="icId != null">ic_id = #{icId},</if>
+            <if test="bindNum != null and bindNum != ''">bind_num = #{bindNum},</if>
+            <if test="sessionId != null and sessionId != ''">session_id = #{sessionId},</if>
+            <if test="callerNum != null and callerNum != ''">caller_num = #{callerNum},</if>
+            <if test="calleeNum != null and calleeNum != ''">callee_num = #{calleeNum},</if>
+            <if test="callinTime != null">callIn_time = #{callinTime},</if>
+            <if test="callEndTime != null">call_end_time = #{callEndTime},</if>
+            <if test="recordFlag != null">record_flag = #{recordFlag},</if>
+            <if test="recordStartTime != null">record_start_time = #{recordStartTime},</if>
+            <if test="recordObjectName != null">record_object_name = #{recordObjectName},</if>
+            <if test="recordBucketName != null">record_bucket_name = #{recordBucketName},</if>
+            <if test="recordDomain != null">record_domain = #{recordDomain},</if>
+            <if test="serviceType != null">service_type = #{serviceType},</if>
+            <if test="recordFileUrl != null">record_file_url = #{recordFileUrl},</if>
+            <if test="hostName != null">host_name = #{hostName},</if>
+            <if test="recordFileUrlLocal != null">record_file_url_local = #{recordFileUrlLocal},</if>
+            <if test="subscriptionId != null">subscription_id = #{subscriptionId},</if>
+            <if test="areaCode != null">area_code = #{areaCode},</if>
+            <if test="callDuration != null">call_duration = #{callDuration},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where ax_ticket_record_id = #{axTicketRecordId}
+    </update>
+
+    <delete id="deleteAxTicketRecordById" parameterType="Long">
+        delete from ax_ticket_record where ax_ticket_record_id = #{axTicketRecordId}
+    </delete>
+
+    <delete id="deleteAxTicketRecordByIds" parameterType="String">
+        delete from ax_ticket_record where ax_ticket_record_id in
+        <foreach item="axTicketRecordId" collection="array" open="(" separator="," close=")">
+            #{axTicketRecordId}
+        </foreach>
+    </delete>
+
+</mapper>

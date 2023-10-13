@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改目标训练记录')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-targetTrainingRecord-edit" th:object="${targetTrainingRecord}">
+            <input name="targetTrainingRecordId" th:field="*{targetTrainingRecordId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">目标训练主键id：</label>
+                <div class="col-sm-8">
+                    <input name="targetTrainingId" th:field="*{targetTrainingId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">标题：</label>
+                <div class="col-sm-8">
+                    <textarea name="title" class="form-control">[[*{title}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">年份：</label>
+                <div class="col-sm-8">
+                    <input name="years" th:field="*{years}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">0:否 1:删除：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box">
+                        <input type="radio" name="delStatus" value="">
+                        <label th:for="delStatus" th:text="未知"></label>
+                    </div>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">显示状态 0：显示 1：隐藏：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box">
+                        <input type="radio" name="showStatus" value="">
+                        <label th:for="showStatus" th:text="未知"></label>
+                    </div>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">排序，数字越小越靠前：</label>
+                <div class="col-sm-8">
+                    <input name="sortNum" th:field="*{sortNum}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">申请者公司ID：</label>
+                <div class="col-sm-8">
+                    <input name="applicantCompanyId" th:field="*{applicantCompanyId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">申请者部门ID：</label>
+                <div class="col-sm-8">
+                    <input name="applicantDeptId" th:field="*{applicantDeptId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">申请者岗位IDS：</label>
+                <div class="col-sm-8">
+                    <input name="applicantPostIds" th:field="*{applicantPostIds}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请者公司名称：</label>
+                <div class="col-sm-8">
+                    <textarea name="applicantCompanyName" class="form-control">[[*{applicantCompanyName}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请者部门名称：</label>
+                <div class="col-sm-8">
+                    <textarea name="applicantDeptName" class="form-control">[[*{applicantDeptName}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请者岗位名称：</label>
+                <div class="col-sm-8">
+                    <textarea name="applicantPostName" class="form-control">[[*{applicantPostName}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">申请者id：</label>
+                <div class="col-sm-8">
+                    <input name="applicantId" th:field="*{applicantId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请者头像：</label>
+                <div class="col-sm-8">
+                    <textarea name="applicantrHeadPortrait" class="form-control">[[*{applicantrHeadPortrait}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">申请者昵称：</label>
+                <div class="col-sm-8">
+                    <input name="applicantNickName" th:field="*{applicantNickName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">现在的自己图片：</label>
+                <div class="col-sm-8">
+                    <textarea name="nowMyselfImg" class="form-control">[[*{nowMyselfImg}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">自我介绍图片：</label>
+                <div class="col-sm-8">
+                    <textarea name="selfIntroductionImg" class="form-control">[[*{selfIntroductionImg}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">理想的自己图片：</label>
+                <div class="col-sm-8">
+                    <textarea name="idealSelfImg" class="form-control">[[*{idealSelfImg}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">自我介绍：</label>
+                <div class="col-sm-8">
+                    <textarea name="selfIntroduction" class="form-control">[[*{selfIntroduction}]]</textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "web/targetTrainingRecord";
+        $("#form-targetTrainingRecord-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-targetTrainingRecord-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

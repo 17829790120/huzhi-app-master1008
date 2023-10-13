@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExamineFlowCopyAccountMapper">
+
+    <resultMap type="ExamineFlowCopyAccount" id="ExamineFlowCopyAccountResult">
+        <result property="examineFlowCopyAccountId" column="examine_flow_copy_account_id"/>
+        <result property="copyAccountId" column="copy_account_id"/>
+        <result property="examineInitiateId" column="examine_initiate_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="examineType" column="examine_type"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="copyAccountName" column="copy_account_name"/>
+        <result property="copyAccountPhone" column="copy_account_phone"/>
+        <result property="copyAccountHead" column="copy_account_head"/>
+        <result property="examineTag" column="examine_tag"/>
+    </resultMap>
+
+    <sql id="selectExamineFlowCopyAccountVo">
+        select examine_flow_copy_account_id,
+               copy_account_id,
+               examine_initiate_id,
+               create_time,
+               update_time,
+               examine_status,
+               examine_type,
+               read_status,
+               del_status,
+               copy_account_name,
+               copy_account_phone,
+               copy_account_head,
+               examine_tag
+        from examine_flow_copy_account
+    </sql>
+
+    <select id="selectExamineFlowCopyAccountList" parameterType="ExamineFlowCopyAccount"
+            resultMap="ExamineFlowCopyAccountResult">
+        <include refid="selectExamineFlowCopyAccountVo"/>
+        <where>
+            del_status = 0
+            <if test="copyAccountId != null  and copyAccountId != ''">and copy_account_id = #{copyAccountId}</if>
+            <if test="examineInitiateId != null  and examineInitiateId != ''">and examine_initiate_id =
+                #{examineInitiateId}
+            </if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="copyAccountName != null  and copyAccountName != ''">and copy_account_name like concat('%',
+                #{copyAccountName}, '%')
+            </if>
+            <if test="copyAccountPhone != null  and copyAccountPhone != ''">and copy_account_phone =
+                #{copyAccountPhone}
+            </if>
+            <if test="copyAccountHead != null  and copyAccountHead != ''">and copy_account_head = #{copyAccountHead}
+            </if>
+            <if test="examineTag != null  and examineTag != ''"> and examine_tag = #{examineTag}</if>
+        </where>
+    </select>
+
+    <select id="selectExamineFlowCopyAccountById" parameterType="String" resultMap="ExamineFlowCopyAccountResult">
+        <include refid="selectExamineFlowCopyAccountVo"/>
+        where del_status = 0 and examine_flow_copy_account_id = #{examineFlowCopyAccountId}
+    </select>
+
+    <insert id="insertExamineFlowCopyAccount" parameterType="ExamineFlowCopyAccount">
+        insert into examine_flow_copy_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examineFlowCopyAccountId != null">examine_flow_copy_account_id,</if>
+            <if test="copyAccountId != null">copy_account_id,</if>
+            <if test="examineInitiateId != null">examine_initiate_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="examineType != null">examine_type,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="copyAccountName != null">copy_account_name,</if>
+            <if test="copyAccountPhone != null">copy_account_phone,</if>
+            <if test="copyAccountHead != null">copy_account_head,</if>
+            <if test="examineTag != null">examine_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examineFlowCopyAccountId != null">#{examineFlowCopyAccountId},</if>
+            <if test="copyAccountId != null">#{copyAccountId},</if>
+            <if test="examineInitiateId != null">#{examineInitiateId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="examineType != null">#{examineType},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="copyAccountName != null">#{copyAccountName},</if>
+            <if test="copyAccountPhone != null">#{copyAccountPhone},</if>
+            <if test="copyAccountHead != null">#{copyAccountHead},</if>
+            <if test="examineTag != null">#{examineTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamineFlowCopyAccount" parameterType="ExamineFlowCopyAccount">
+        update examine_flow_copy_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="copyAccountId != null">copy_account_id = #{copyAccountId},</if>
+            <if test="examineInitiateId != null">examine_initiate_id = #{examineInitiateId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="examineType != null">examine_type = #{examineType},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="copyAccountName != null">copy_account_name = #{copyAccountName},</if>
+            <if test="copyAccountPhone != null">copy_account_phone = #{copyAccountPhone},</if>
+            <if test="copyAccountHead != null">copy_account_head = #{copyAccountHead},</if>
+            <if test="examineTag != null">examine_tag = #{examineTag},</if>
+        </trim>
+        where examine_flow_copy_account_id = #{examineFlowCopyAccountId}
+    </update>
+
+    <update id="deleteExamineFlowCopyAccountById" parameterType="String">
+        update examine_flow_copy_account
+        set del_status = 1
+        where examine_flow_copy_account_id = #{examineFlowCopyAccountId}
+    </update>
+
+    <update id="deleteExamineFlowCopyAccountByIds" parameterType="String">
+        update examine_flow_copy_account set del_status = 1 where examine_flow_copy_account_id in
+        <foreach item="examineFlowCopyAccountId" collection="array" open="(" separator="," close=")">
+            #{examineFlowCopyAccountId}
+        </foreach>
+    </update>
+
+    <!--    抄送我的审批列表-->
+    <select id="selectMyCopyExamineList" parameterType="com.wlwq.api.domain.ExamineInitiate" resultType="Map">
+        select f.examine_flow_copy_account_id as examineFlowCopyAccountId,
+        e.examine_initiate_id as examineInitiateId,
+        e.examine_module_id as examineModuleId,
+        e.start_time as startTime,
+        e.end_time as endTime,
+        e.reason,
+        e.pics,
+        f.create_time as createTime,
+        f.examine_status as examineStatus,
+        e.reimburse_money as reimburseMoney,
+        e.money_date as moneyDate,
+        e.account_name as accountName,
+        e.account_head as accountHead,
+        f.read_status as readStatus,
+        e.total_money as totalMoney,
+        e.contract_text as contractText,
+        e.contract_name as contractName,
+        e.contract_number as contractNumber,
+        e.contract_money_type as contractMoneyType,
+        e.contract_deadline_type as contractDeadlineType,
+        e.signature_date as signatureDate,
+        e.seal_type as sealType,
+        e.content,
+        e.leave_type as leaveType,
+        e.reissue_clocking_date as reissueClockingDate,
+        e.raw_clocking_time as rawClockingTime,
+        e.reissue_clocking_time as reissueClockingTime,
+        e.dept_id as deptId,
+        d.dept_name as deptName,
+        e.company_id as companyId,
+        e.ask_for_leave_hour as askForLeaveHour,
+        f.examine_tag as examineTag
+        from examine_flow_copy_account f
+        left join examine_initiate e on f.examine_initiate_id = e.examine_initiate_id
+        left join sys_dept d on d.dept_id = e.dept_id
+        where f.del_status = 0
+        and f.copy_account_id = #{accountId}
+        <if test="readStatus != null ">and f.read_status = #{readStatus}</if>
+        <if test="examineStatus != null ">and f.examine_status = #{examineStatus}</if>
+        <if test="examineModuleStr != null and examineModuleStr != ''">and
+            find_in_set(e.examine_module_id,examineModuleStr)
+        </if>
+        <if test="reason != null  and reason != ''">and e.reason = #{reason}</if>
+        <if test="examineTag != null  and examineTag != ''"> and f.examine_tag = #{examineTag}</if>
+        <if test="searchTimeTag != null and searchTimeTag == 1">order by f.create_time desc</if>
+        <if test="searchTimeTag != null and searchTimeTag == 2">order by f.create_time</if>
+    </select>
+
+    <!--    更新抄送某个用户的已读状态-->
+    <update id="updateReadStatusByCopyAccountById" parameterType="String">
+        update examine_flow_copy_account
+        set read_status = 1
+        where del_status = 0
+          and copy_account_id = #{copyAccountId}
+    </update>
+
+
+    <!--    抄送我的审批详情-->
+    <select id="selectCopyMyExamineDetail" parameterType="String" resultType="Map">
+        select f.examine_flow_copy_account_id as examineFlowCopyAccountId,
+               e.examine_initiate_id          as examineInitiateId,
+               e.examine_module_id            as examineModuleId,
+               e.start_time                   as startTime,
+               e.end_time                     as endTime,
+               e.reason,
+               e.pics,
+               f.create_time                  as createTime,
+               f.examine_status               as examineStatus,
+               e.reimburse_money              as reimburseMoney,
+               e.money_date                   as moneyDate,
+               e.account_name                 as accountName,
+               e.account_head                 as accountHead,
+               f.read_status                  as readStatus,
+               e.total_money                  as totalMoney,
+               e.contract_text                as contractText,
+               e.contract_name                as contractName,
+               e.contract_number              as contractNumber,
+               e.contract_money_type          as contractMoneyType,
+               e.contract_deadline_type       as contractDeadlineType,
+               e.signature_date               as signatureDate,
+               e.seal_type                    as sealType,
+               e.content,
+               e.leave_type                   as leaveType,
+               e.reissue_clocking_date        as reissueClockingDate,
+               e.raw_clocking_time            as rawClockingTime,
+               e.reissue_clocking_time        as reissueClockingTime,
+               e.dept_id                      as deptId,
+               e.company_id                   as companyId,
+               e.ask_for_leave_hour           as askForLeaveHour,
+               f.examine_tag as examineTag
+        from examine_flow_copy_account f
+                 left join examine_initiate e on f.examine_initiate_id = e.examine_initiate_id
+        where f.del_status = 0
+          and f.examine_flow_copy_account_id = #{flowCopyAccountId}
+          and f.copy_account_id = #{accountId}
+    </select>
+
+    <select id="selectExamineFlowCopyAccountCount" parameterType="ExamineFlowCopyAccount"
+            resultType="Integer">
+        select count(*) from examine_flow_copy_account
+        <where>
+            del_status = 0
+            <if test="copyAccountId != null  and copyAccountId != ''">and copy_account_id = #{copyAccountId}</if>
+            <if test="examineInitiateId != null  and examineInitiateId != ''">and examine_initiate_id =
+                #{examineInitiateId}
+            </if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="copyAccountName != null  and copyAccountName != ''">and copy_account_name like concat('%',
+                #{copyAccountName}, '%')
+            </if>
+            <if test="copyAccountPhone != null  and copyAccountPhone != ''">and copy_account_phone =
+                #{copyAccountPhone}
+            </if>
+            <if test="copyAccountHead != null  and copyAccountHead != ''">and copy_account_head = #{copyAccountHead}
+            </if>
+            <if test="examineTag != null  and examineTag != ''"> and examine_tag = #{examineTag}</if>
+        </where>
+    </select>
+</mapper>

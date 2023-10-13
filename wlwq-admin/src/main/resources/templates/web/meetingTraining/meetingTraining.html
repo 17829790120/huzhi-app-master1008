@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('会议训练列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+<!--                        <li>
+                            <label>显示状态 0：显示 1：隐藏：</label>
+                            <select class="form-control" name="showStatus">
+                                <option value="">所有</option>
+                                <option value="0">显示</option>
+                                <option value="1">隐藏</option>
+                            </select>
+                        </li>-->
+<!--                        <li>
+                            <label>开始时间：</label>
+                            <input type="text" class="time-input" placeholder="请选择开始时间" name="beginTime"/>
+                        </li>
+                        <li>
+                            <label>结束时间：</label>
+                            <input type="text" class="time-input" placeholder="请选择结束时间" name="endTime"/>
+                        </li>-->
+                        <li>
+                            <label>组织者：</label>
+                            <input type="text" name="organizerNickName"/>
+                        </li>
+                        <li>
+                            <label>会议标题：</label>
+                            <input type="text" name="title"/>
+                        </li>
+<!--                        <li>
+                            <label>会议状态 0：新建会议1：会议纪要；2：领导评价：</label>
+                            <select class="form-control" name="meetingStatus">
+                                <option value="">所有</option>
+                                <option value="-1">代码生成请选择字典属性</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>会议审核状态 0：未审核，1：审核未通过；2：审核已通过：</label>
+                            <select class="form-control" name="memberReviewStatus">
+                                <option value="">所有</option>
+                                <option value="-1">代码生成请选择字典属性</option>
+                            </select>
+                        </li>-->
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+<!--            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:meetingTraining:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="web:meetingTraining:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:meetingTraining:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:meetingTraining:export">
+                <i class="fa fa-download"></i> 导出
+            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:meetingTraining:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:meetingTraining:remove')}]];
+    var prefix = ctx + "web/meetingTraining";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "会议训练",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'meetingTrainingId',
+                    title: '会议训练主键id',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    align: 'center',
+                    title: '标题'
+                },
+                {
+                    field: 'beginTime',
+                    align: 'center',
+                    title: '开始时间'
+                },
+                {
+                    field: 'endTime',
+                    align: 'center',
+                    title: '结束时间'
+                },
+                {
+                    field: 'address',
+                    align: 'center',
+                    title: '地址'
+                },
+                {
+                    field: 'joinAccountNickName',
+                    align: 'center',
+                    title: '参会人员名称',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'joinAccountDeptName',
+                    align: 'center',
+                    title: '参会人员部门名称'
+                },
+                {
+                    field: 'organizerHeadPortrait',
+                    align: 'center',
+                    title: '组织者头像',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'organizerNickName',
+                    align: 'center',
+                    title: '组织者昵称'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="examRecordDetails(\'' + row.meetingTrainingId + '\')"><i class="fa fa-edit"></i>会议训练流程</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.meetingTrainingId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.meetingTrainingId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    /*考试记录-详细*/
+    function examRecordDetails(meetingTrainingId) {
+        $.modal.openFull("会议训练流程事项列表", ctx + "web/meetingTrainingItem/listByMeetingTrainingId?meetingTrainingId="+meetingTrainingId);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改问卷记录答案')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-questionnaireRecordAnswer-edit" th:object="${questionnaireRecordAnswer}">
+            <input name="questionnaireRecordAnswerId" th:field="*{questionnaireRecordAnswerId}" type="hidden">
+<!--            <div class="form-group">
+                <label class="col-sm-3 control-label">问卷记录id：</label>
+                <div class="col-sm-8">
+                    <input name="questionnaireRecordId" th:field="*{questionnaireRecordId}" class="form-control" type="text">
+                </div>
+            </div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">答题内容：</label>
+                <div class="col-sm-8">
+                    <textarea cols="5" rows="5" name="content" class="form-control" maxlength="300"
+                              required>[[*{content}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">答题得分：</label>
+                <div class="col-sm-8">
+                    <input name="score" th:field="*{score}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">创建者：</label>
+                <div class="col-sm-8">
+                    <input name="creatorName" th:field="*{creatorName}" class="form-control" type="text" disabled>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "web/questionnaireRecordAnswer";
+        $("#form-questionnaireRecordAnswer-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-questionnaireRecordAnswer-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

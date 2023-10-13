@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CourseViewRecordMapper">
+
+    <resultMap type="CourseViewRecord" id="CourseViewRecordResult">
+        <result property="courseViewRecordId" column="course_view_record_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="headPortrait" column="head_portrait"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="watchTime" column="watch_time"/>
+        <result property="chapterId" column="chapter_id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="watchStatus" column="watch_status"/>
+        <result property="parentId" column="parent_id"/>
+    </resultMap>
+
+    <sql id="selectCourseViewRecordVo">
+        select c.course_view_record_id, c.account_id, c.head_portrait, c.nick_name, c.dept_id, c.begin_time, c.end_time,
+               c.create_time, c.update_time, c.watch_time, c.chapter_id, c.course_id, c.watch_status,c.parent_id
+            from course_view_record c  left join sys_dept d on c.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectCourseViewRecordList" parameterType="CourseViewRecord" resultMap="CourseViewRecordResult">
+        <include refid="selectCourseViewRecordVo"/>
+        <where>
+            c.del_status = 0
+            <if test="accountId != null  and accountId != ''">and c.account_id = #{accountId}</if>
+            <if test="headPortrait != null  and headPortrait != ''">and c.head_portrait = #{headPortrait}</if>
+            <if test="nickName != null  and nickName != ''">and c.nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="deptId != null ">and c.dept_id = #{deptId}</if>
+            <if test="beginTime != null ">and c.begin_time = #{beginTime}</if>
+            <if test="endTime != null ">and c.end_time = #{endTime}</if>
+            <if test="watchTime != null ">and c.watch_time = #{watchTime}</if>
+            <if test="chapterId != null ">and c.chapter_id = #{chapterId}</if>
+            <if test="courseId != null ">and c.course_id = #{courseId}</if>
+            <if test="watchStatus != null ">and c.watch_status = #{watchStatus}</if>
+            <if test="parentId != null">and c.parent_id = #{parentId}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by c.create_time
+    </select>
+
+    <select id="selectCourseViewRecordById" parameterType="String" resultMap="CourseViewRecordResult">
+        <include refid="selectCourseViewRecordVo"/>
+        where c.del_status = 0 and c.course_view_record_id = #{courseViewRecordId}
+    </select>
+
+    <insert id="insertCourseViewRecord" parameterType="CourseViewRecord">
+        insert into course_view_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseViewRecordId != null">course_view_record_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="headPortrait != null">head_portrait,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="beginTime != null">begin_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="watchTime != null">watch_time,</if>
+            <if test="chapterId != null">chapter_id,</if>
+            <if test="courseId != null">course_id,</if>
+            <if test="watchStatus != null">watch_status,</if>
+            <if test="parentId != null">parent_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseViewRecordId != null">#{courseViewRecordId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="headPortrait != null">#{headPortrait},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="beginTime != null">#{beginTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="watchTime != null">#{watchTime},</if>
+            <if test="chapterId != null">#{chapterId},</if>
+            <if test="courseId != null">#{courseId},</if>
+            <if test="watchStatus != null">#{watchStatus},</if>
+            <if test="parentId != null">#{parentId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCourseViewRecord" parameterType="CourseViewRecord">
+        update course_view_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="headPortrait != null">head_portrait = #{headPortrait},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="beginTime != null">begin_time = #{beginTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="watchTime != null">watch_time = #{watchTime},</if>
+            <if test="chapterId != null">chapter_id = #{chapterId},</if>
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="watchStatus != null">watch_status = #{watchStatus},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+        </trim>
+        where course_view_record_id = #{courseViewRecordId}
+    </update>
+
+    <delete id="deleteCourseViewRecordById" parameterType="String">
+        delete from course_view_record where course_view_record_id = #{courseViewRecordId}
+    </delete>
+
+    <delete id="deleteCourseViewRecordByIds" parameterType="String">
+        delete from course_view_record where course_view_record_id in
+        <foreach item="courseViewRecordId" collection="array" open="(" separator="," close=")">
+            #{courseViewRecordId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.StudyInformationPostMapper">
+
+    <resultMap type="StudyInformationPost" id="StudyInformationPostResult">
+        <result property="studyInformationPostId" column="study_information_post_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="studyInformationCategoryId" column="study_information_category_id"/>
+        <result property="informationPostTitle" column="information_post_title"/>
+        <result property="informationPostImages" column="information_post_images"/>
+        <result property="informationPostImagesType" column="information_post_images_type"/>
+        <result property="imagesAddress" column="images_address"/>
+        <result property="informationPostContent" column="information_post_content"/>
+        <result property="informationPostFile" column="information_post_file"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="basicsBrowseNumber" column="basics_browse_number"/>
+        <result property="basicsLikeNumber" column="basics_like_number"/>
+        <result property="hostStatus" column="host_status"/>
+        <result property="topStatus" column="top_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="ancestors" column="ancestors"/>
+    </resultMap>
+
+    <sql id="selectStudyInformationPost">
+        select study_information_post_id, dept_id, user_id, study_information_category_id, information_post_title,
+            information_post_images, information_post_images_type, images_address, information_post_content, information_post_file,
+            sort_num, basics_browse_number, basics_like_number, host_status, top_status, del_status, create_time, update_time, ancestors
+        from study_information_post
+    </sql>
+    <sql id="selectStudyInformationPostVo">
+        select p.study_information_post_id,
+               p.dept_id,
+               d.dept_name                                             as deptName,
+               p.user_id,
+               u.user_name                                             as userName,
+               p.study_information_category_id,
+               c.information_category_title                            as informationCategoryTitle,
+               p.information_post_title,
+               p.information_post_images,
+               p.information_post_images_type,
+               p.images_address,
+               p.information_post_content,
+               p.information_post_file,
+               p.sort_num,
+               p.basics_browse_number,
+               p.basics_like_number,
+               p.host_status,
+               p.top_status,
+               p.del_status,
+               p.create_time,
+               p.update_time,
+               (select ifnull(count(br.information_browse_record_id), 0)
+                from information_browse_record br
+                where br.information_post_id = p.study_information_post_id)  as realBrowseNumber
+        from study_information_post p
+                     left join sys_dept d on p.dept_id = d.dept_id
+                     left join sys_user u on p.user_id = u.user_id
+                     left join study_information_category c on p.study_information_category_id = c.study_information_category_id
+    </sql>
+    <select id="selectStudyInformationPostList" parameterType="StudyInformationPost"
+            resultMap="StudyInformationPostResult">
+        <include refid="selectStudyInformationPostVo"/>
+        <where>
+            p.del_status = 0
+            <if test="deptId != null ">and p.dept_id = #{deptId}</if>
+            <if test="userId != null ">and p.user_id = #{userId}</if>
+<!--            <if test="studyInformationCategoryId != null ">and study_information_category_id =
+                #{studyInformationCategoryId}
+            </if>-->
+            <if test="studyInformationCategoryId != null ">and (p.study_information_category_id = #{studyInformationCategoryId}
+                or p.ancestors like concat('%', #{studyInformationCategoryId}, '%'))
+            </if>
+            <if test="informationPostTitle != null  and informationPostTitle != ''">and p.information_post_title like
+                concat('%', #{informationPostTitle}, '%')
+            </if>
+            <if test="informationPostImages != null  and informationPostImages != ''">and p.information_post_images =
+                #{informationPostImages}
+            </if>
+            <if test="informationPostImagesType != null ">and p.information_post_images_type =
+                #{informationPostImagesType}
+            </if>
+            <if test="imagesAddress != null  and imagesAddress != ''">and p.images_address = #{imagesAddress}</if>
+            <if test="informationPostContent != null  and informationPostContent != ''">and p.information_post_content
+                like concat('%', #{informationPostContent}, '%')
+            </if>
+            <if test="informationPostFile != null  and informationPostFile != ''">and p.information_post_file =
+                #{informationPostFile}
+            </if>
+            <if test="sortNum != null ">and p.sort_num = #{sortNum}</if>
+            <if test="basicsBrowseNumber != null ">and p.basics_browse_number = #{basicsBrowseNumber}</if>
+            <if test="basicsLikeNumber != null ">and p.basics_like_number = #{basicsLikeNumber}</if>
+            <if test="hostStatus != null ">and p.host_status = #{hostStatus}</if>
+            <if test="topStatus != null ">and p.top_status = #{topStatus}</if>
+            <if test="delStatus != null ">and p.del_status = #{delStatus}</if>
+            <if test="ancestors != null  and ancestors != ''">and p.ancestors = #{ancestors}</if>
+        </where>
+        order by p.top_status desc, p.top_status desc,p.create_time desc
+    </select>
+
+    <select id="selectStudyInformationPostById" parameterType="Long" resultMap="StudyInformationPostResult">
+        <include refid="selectStudyInformationPostVo"/>
+        where p.study_information_post_id = #{studyInformationPostId}
+    </select>
+
+    <insert id="insertStudyInformationPost" parameterType="StudyInformationPost" useGeneratedKeys="true"
+            keyProperty="studyInformationPostId">
+        insert into study_information_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="studyInformationCategoryId != null">study_information_category_id,</if>
+            <if test="informationPostTitle != null and informationPostTitle != ''">information_post_title,</if>
+            <if test="informationPostImages != null and informationPostImages != ''">information_post_images,</if>
+            <if test="informationPostImagesType != null">information_post_images_type,</if>
+            <if test="imagesAddress != null">images_address,</if>
+            <if test="informationPostContent != null">information_post_content,</if>
+            <if test="informationPostFile != null">information_post_file,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="basicsBrowseNumber != null">basics_browse_number,</if>
+            <if test="basicsLikeNumber != null">basics_like_number,</if>
+            <if test="hostStatus != null">host_status,</if>
+            <if test="topStatus != null">top_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="ancestors != null">ancestors,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="studyInformationCategoryId != null">#{studyInformationCategoryId},</if>
+            <if test="informationPostTitle != null and informationPostTitle != ''">#{informationPostTitle},</if>
+            <if test="informationPostImages != null and informationPostImages != ''">#{informationPostImages},</if>
+            <if test="informationPostImagesType != null">#{informationPostImagesType},</if>
+            <if test="imagesAddress != null">#{imagesAddress},</if>
+            <if test="informationPostContent != null">#{informationPostContent},</if>
+            <if test="informationPostFile != null">#{informationPostFile},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="basicsBrowseNumber != null">#{basicsBrowseNumber},</if>
+            <if test="basicsLikeNumber != null">#{basicsLikeNumber},</if>
+            <if test="hostStatus != null">#{hostStatus},</if>
+            <if test="topStatus != null">#{topStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="ancestors != null">#{ancestors},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStudyInformationPost" parameterType="StudyInformationPost">
+        update study_information_post
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="studyInformationCategoryId != null">study_information_category_id =
+                #{studyInformationCategoryId},
+            </if>
+            <if test="informationPostTitle != null and informationPostTitle != ''">information_post_title =
+                #{informationPostTitle},
+            </if>
+            <if test="informationPostImages != null and informationPostImages != ''">information_post_images =
+                #{informationPostImages},
+            </if>
+            <if test="informationPostImagesType != null">information_post_images_type = #{informationPostImagesType},
+            </if>
+            <if test="imagesAddress != null">images_address = #{imagesAddress},</if>
+            <if test="informationPostContent != null">information_post_content = #{informationPostContent},</if>
+            <if test="informationPostFile != null">information_post_file = #{informationPostFile},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="basicsBrowseNumber != null">basics_browse_number = #{basicsBrowseNumber},</if>
+            <if test="basicsLikeNumber != null">basics_like_number = #{basicsLikeNumber},</if>
+            <if test="hostStatus != null">host_status = #{hostStatus},</if>
+            <if test="topStatus != null">top_status = #{topStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="ancestors != null">ancestors = #{ancestors},</if>
+        </trim>
+        where study_information_post_id = #{studyInformationPostId}
+    </update>
+
+    <update id="deleteStudyInformationPostById" parameterType="Long">
+        update study_information_post set del_status = 1 where study_information_post_id = #{studyInformationPostId}
+    </update>
+
+    <update id="deleteStudyInformationPostByIds" parameterType="String">
+        update study_information_post set del_status = 1 where study_information_post_id in
+        <foreach item="studyInformationPostId" collection="array" open="(" separator="," close=")">
+            #{studyInformationPostId}
+        </foreach>
+    </update>
+<!--    <delete id="deleteStudyInformationPostById" parameterType="Long">
+        delete from study_information_post where study_information_post_id = #{studyInformationPostId}
+    </delete>
+
+    <delete id="deleteStudyInformationPostByIds" parameterType="String">
+        delete from study_information_post where study_information_post_id in
+        <foreach item="studyInformationPostId" collection="array" open="(" separator="," close=")">
+            #{studyInformationPostId}
+        </foreach>
+    </delete>-->
+
+</mapper>

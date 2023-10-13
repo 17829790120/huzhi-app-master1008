@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TargetTrainingRecordMapper">
+
+    <resultMap type="TargetTrainingRecord" id="TargetTrainingRecordResult">
+        <result property="targetTrainingRecordId" column="target_training_record_id"/>
+        <result property="targetTrainingId" column="target_training_id"/>
+        <result property="title" column="title"/>
+        <result property="years" column="years"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="applicantCompanyId" column="applicant_company_id"/>
+        <result property="applicantDeptId" column="applicant_dept_id"/>
+        <result property="applicantPostIds" column="applicant_post_ids"/>
+        <result property="applicantCompanyName" column="applicant_company_name"/>
+        <result property="applicantDeptName" column="applicant_dept_name"/>
+        <result property="applicantPostName" column="applicant_post_name"/>
+        <result property="applicantId" column="applicant_id"/>
+        <result property="applicantrHeadPortrait" column="applicantr_head_portrait"/>
+        <result property="applicantNickName" column="applicant_nick_name"/>
+        <result property="nowMyselfImg" column="now_myself_img"/>
+        <result property="selfIntroductionImg" column="self_introduction_img"/>
+        <result property="idealSelfImg" column="ideal_self_img"/>
+        <result property="selfIntroduction" column="self_introduction"/>
+        <result property="imgUrl" column="img_url"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="briefIntroduction" column="brief_introduction"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="editNum" column="edit_num"/>
+        <result property="editDate" column="edit_date"/>
+    </resultMap>
+
+    <sql id="selectTargetTrainingRecordVo">
+        select target_training_record_id, target_training_id, title, years, del_status, create_time, update_time, show_status,
+            sort_num, applicant_company_id, applicant_dept_id, applicant_post_ids, applicant_company_name, applicant_dept_name,
+            applicant_post_name, applicant_id, applicantr_head_portrait, applicant_nick_name, now_myself_img, self_introduction_img,
+            ideal_self_img, self_introduction, img_url, file_url, brief_introduction, audit_status,edit_num,edit_date
+        from target_training_record
+    </sql>
+
+    <select id="selectTargetTrainingRecordList" parameterType="TargetTrainingRecord"
+            resultMap="TargetTrainingRecordResult">
+        <include refid="selectTargetTrainingRecordVo"/>
+        <where>
+            <if test="targetTrainingId != null  and targetTrainingId != ''">and target_training_id =
+                #{targetTrainingId}
+            </if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="years != null ">and years = #{years}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="applicantCompanyId != null ">and applicant_company_id = #{applicantCompanyId}</if>
+            <if test="applicantDeptId != null ">and applicant_dept_id = #{applicantDeptId}</if>
+            <if test="applicantPostIds != null ">and applicant_post_ids = #{applicantPostIds}</if>
+            <if test="applicantCompanyName != null  and applicantCompanyName != ''">and applicant_company_name like
+                concat('%', #{applicantCompanyName}, '%')
+            </if>
+            <if test="applicantDeptName != null  and applicantDeptName != ''">and applicant_dept_name like concat('%',
+                #{applicantDeptName}, '%')
+            </if>
+            <if test="applicantPostName != null  and applicantPostName != ''">and applicant_post_name like concat('%',
+                #{applicantPostName}, '%')
+            </if>
+            <if test="applicantId != null  and applicantId != ''">and applicant_id = #{applicantId}</if>
+            <if test="applicantrHeadPortrait != null  and applicantrHeadPortrait != ''">and applicantr_head_portrait =
+                #{applicantrHeadPortrait}
+            </if>
+            <if test="applicantNickName != null  and applicantNickName != ''">and applicant_nick_name like concat('%',
+                #{applicantNickName}, '%')
+            </if>
+            <if test="nowMyselfImg != null  and nowMyselfImg != ''">and now_myself_img = #{nowMyselfImg}</if>
+            <if test="selfIntroductionImg != null  and selfIntroductionImg != ''">and self_introduction_img =
+                #{selfIntroductionImg}
+            </if>
+            <if test="idealSelfImg != null  and idealSelfImg != ''">and ideal_self_img = #{idealSelfImg}</if>
+            <if test="selfIntroduction != null  and selfIntroduction != ''">and self_introduction like concat('%',
+                #{selfIntroduction}, '%')
+            </if>
+            <if test="imgUrl != null  and imgUrl != ''">and img_url = #{imgUrl}</if>
+            <if test="fileUrl != null  and fileUrl != ''">and file_url = #{fileUrl}</if>
+            <if test="briefIntroduction != null  and briefIntroduction != ''">and brief_introduction =
+                #{briefIntroduction}
+            </if>
+            <if test="auditStatus != null ">and audit_status = #{auditStatus}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectTargetTrainingRecordById" parameterType="String" resultMap="TargetTrainingRecordResult">
+        <include refid="selectTargetTrainingRecordVo"/>
+        where target_training_record_id = #{targetTrainingRecordId}
+    </select>
+
+    <insert id="insertTargetTrainingRecord" parameterType="TargetTrainingRecord">
+        insert into target_training_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="targetTrainingRecordId != null">target_training_record_id,</if>
+            <if test="targetTrainingId != null">target_training_id,</if>
+            <if test="title != null">title,</if>
+            <if test="years != null">years,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="applicantCompanyId != null">applicant_company_id,</if>
+            <if test="applicantDeptId != null">applicant_dept_id,</if>
+            <if test="applicantPostIds != null">applicant_post_ids,</if>
+            <if test="applicantCompanyName != null">applicant_company_name,</if>
+            <if test="applicantDeptName != null">applicant_dept_name,</if>
+            <if test="applicantPostName != null">applicant_post_name,</if>
+            <if test="applicantId != null">applicant_id,</if>
+            <if test="applicantrHeadPortrait != null">applicantr_head_portrait,</if>
+            <if test="applicantNickName != null">applicant_nick_name,</if>
+            <if test="nowMyselfImg != null">now_myself_img,</if>
+            <if test="selfIntroductionImg != null">self_introduction_img,</if>
+            <if test="idealSelfImg != null">ideal_self_img,</if>
+            <if test="selfIntroduction != null">self_introduction,</if>
+            <if test="imgUrl != null">img_url,</if>
+            <if test="fileUrl != null">file_url,</if>
+            <if test="briefIntroduction != null">brief_introduction,</if>
+            <if test="auditStatus != null">audit_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="targetTrainingRecordId != null">#{targetTrainingRecordId},</if>
+            <if test="targetTrainingId != null">#{targetTrainingId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="years != null">#{years},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="applicantCompanyId != null">#{applicantCompanyId},</if>
+            <if test="applicantDeptId != null">#{applicantDeptId},</if>
+            <if test="applicantPostIds != null">#{applicantPostIds},</if>
+            <if test="applicantCompanyName != null">#{applicantCompanyName},</if>
+            <if test="applicantDeptName != null">#{applicantDeptName},</if>
+            <if test="applicantPostName != null">#{applicantPostName},</if>
+            <if test="applicantId != null">#{applicantId},</if>
+            <if test="applicantrHeadPortrait != null">#{applicantrHeadPortrait},</if>
+            <if test="applicantNickName != null">#{applicantNickName},</if>
+            <if test="nowMyselfImg != null">#{nowMyselfImg},</if>
+            <if test="selfIntroductionImg != null">#{selfIntroductionImg},</if>
+            <if test="idealSelfImg != null">#{idealSelfImg},</if>
+            <if test="selfIntroduction != null">#{selfIntroduction},</if>
+            <if test="imgUrl != null">#{imgUrl},</if>
+            <if test="fileUrl != null">#{fileUrl},</if>
+            <if test="briefIntroduction != null">#{briefIntroduction},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTargetTrainingRecord" parameterType="TargetTrainingRecord">
+        update target_training_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="targetTrainingId != null">target_training_id = #{targetTrainingId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="years != null">years = #{years},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="applicantCompanyId != null">applicant_company_id = #{applicantCompanyId},</if>
+            <if test="applicantDeptId != null">applicant_dept_id = #{applicantDeptId},</if>
+            <if test="applicantPostIds != null">applicant_post_ids = #{applicantPostIds},</if>
+            <if test="applicantCompanyName != null">applicant_company_name = #{applicantCompanyName},</if>
+            <if test="applicantDeptName != null">applicant_dept_name = #{applicantDeptName},</if>
+            <if test="applicantPostName != null">applicant_post_name = #{applicantPostName},</if>
+            <if test="applicantId != null">applicant_id = #{applicantId},</if>
+            <if test="applicantrHeadPortrait != null">applicantr_head_portrait = #{applicantrHeadPortrait},</if>
+            <if test="applicantNickName != null">applicant_nick_name = #{applicantNickName},</if>
+            <if test="nowMyselfImg != null">now_myself_img = #{nowMyselfImg},</if>
+            <if test="selfIntroductionImg != null">self_introduction_img = #{selfIntroductionImg},</if>
+            <if test="idealSelfImg != null">ideal_self_img = #{idealSelfImg},</if>
+            <if test="selfIntroduction != null">self_introduction = #{selfIntroduction},</if>
+            <if test="imgUrl != null">img_url = #{imgUrl},</if>
+            <if test="fileUrl != null">file_url = #{fileUrl},</if>
+            <if test="briefIntroduction != null">brief_introduction = #{briefIntroduction},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="editNum != null">edit_num = #{editNum},</if>
+            <if test="editDate != null">edit_date = #{editDate},</if>
+        </trim>
+        where target_training_record_id = #{targetTrainingRecordId}
+    </update>
+
+    <delete id="deleteTargetTrainingRecordById" parameterType="String">
+        delete from target_training_record where target_training_record_id = #{targetTrainingRecordId}
+    </delete>
+
+    <delete id="deleteTargetTrainingRecordByIds" parameterType="String">
+        delete from target_training_record where target_training_record_id in
+        <foreach item="targetTrainingRecordId" collection="array" open="(" separator="," close=")">
+            #{targetTrainingRecordId}
+        </foreach>
+    </delete>
+
+</mapper>

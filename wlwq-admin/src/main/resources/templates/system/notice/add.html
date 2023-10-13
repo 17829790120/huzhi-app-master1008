@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增通知公告')"/>
+    <!--导入下面这三玩意-->
+    <script th:src="@{/editor/jq.js}"></script>
+    <script th:src="@{/editor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/editor/editor.js}"></script>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-notice-add">
+        <div class="form-group">
+            <label class="col-sm-2 control-label is-required">公司：</label>
+            <div class="col-sm-8">
+                <select class="form-control m-b" id="deptId" name="deptId" required>
+                    <option value="">请选择</option>
+                    <option th:each="dept : ${deptList}" th:text="${dept.deptName}"
+                            th:value="${dept.deptId}">
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label is-required">公告标题：</label>
+            <div class="col-sm-10">
+                <input id="noticeTitle" name="noticeTitle" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label is-required">公告类型：</label>
+            <div class="col-sm-10">
+                <select name="noticeType" class="form-control m-b" th:with="type=${@dict.getType('sys_notice_type')}">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label is-required">公告内容：</label>
+            <div class="col-sm-10">
+                <h1 onclick="GetTinyMceContent('mytextarea')"></h1>
+                <form method="post">
+                    <textarea id="mytextarea" style="visibility: inherit;"></textarea>
+                </form>
+                <input id="noticeContent" name="noticeContent" class="form-control" type="hidden">
+            </div>
+        </div>
+        <!--			<div class="form-group">-->
+        <!--				<label class="col-sm-2 control-label">公告状态：</label>-->
+        <!--				<div class="col-sm-10">-->
+        <!--				    <div class="radio-box" th:each="dict : ${@dict.getType('sys_notice_status')}">-->
+        <!--						<input type="radio" th:id="${dict.dictCode}" name="status" th:value="${dict.dictValue}" th:checked="${dict.default}">-->
+        <!--						<label th:for="${dict.dictCode}" th:text="${dict.dictLabel}"></label>-->
+        <!--					</div>-->
+        <!--				</div>-->
+        <!--			</div>-->
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript">
+    var prefix = ctx + "system/notice";
+
+    window.onload = function () {
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextarea');
+    }
+
+
+    function GetTinyMceContent() {
+        $("#noticeContent").val(tinyMCE.activeEditor.getContent());
+    }
+
+    $("#form-notice-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        GetTinyMceContent();
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-notice-add').serialize());
+        }
+    }
+</script>
+</body>
+</html>

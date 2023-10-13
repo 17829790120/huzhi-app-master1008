@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CourseCustomizationCategoryMapper">
+
+    <resultMap type="CourseCustomizationCategory" id="CourseCustomizationCategoryResult">
+        <result property="courseCustomizationCategoryId" column="course_customization_category_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="categoryTitle" column="category_title"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="level" column="level"/>
+        <result property="ancestors" column="ancestors"/>
+    </resultMap>
+
+    <sql id="selectCourseCustomizationCategoryVo">
+        select course_customization_category_id, dept_id, user_id, parent_id, category_title,
+            sort_num, del_status, show_status, create_time, update_time, level , ancestors
+        from course_customization_category
+    </sql>
+
+    <select id="selectCourseCustomizationCategoryList" parameterType="CourseCustomizationCategory"
+            resultMap="CourseCustomizationCategoryResult">
+        <include refid="selectCourseCustomizationCategoryVo"/>
+        <where>
+            del_status = 0
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="categoryTitle != null  and categoryTitle != ''">and category_title like concat('%',
+                #{categoryTitle}, '%')
+            </if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="level != null ">and level = #{level}</if>
+            <if test="ancestors != null  and ancestors != ''"> and ancestors = #{ancestors}</if>
+        </where>
+    </select>
+
+    <select id="selectCourseCustomizationCategoryById" parameterType="Long"
+            resultMap="CourseCustomizationCategoryResult">
+        <include refid="selectCourseCustomizationCategoryVo"/>
+        where course_customization_category_id = #{courseCustomizationCategoryId}
+    </select>
+
+    <insert id="insertCourseCustomizationCategory" parameterType="CourseCustomizationCategory" useGeneratedKeys="true"
+            keyProperty="courseCustomizationCategoryId">
+        insert into course_customization_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="categoryTitle != null">category_title,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="level != null">level,</if>
+            <if test="ancestors != null">ancestors,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="categoryTitle != null">#{categoryTitle},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="level != null">#{level},</if>
+            <if test="ancestors != null">#{ancestors},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCourseCustomizationCategory" parameterType="CourseCustomizationCategory">
+        update course_customization_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="categoryTitle != null">category_title = #{categoryTitle},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="ancestors != null">ancestors = #{ancestors},</if>
+        </trim>
+        where course_customization_category_id = #{courseCustomizationCategoryId}
+    </update>
+    <update id="deleteCourseCustomizationCategoryById" parameterType="Long">
+        update course_customization_category set del_status = 1 where course_customization_category_id = #{courseCustomizationCategoryId}
+    </update>
+
+    <update id="deleteCourseCustomizationCategoryByIds" parameterType="String">
+        update course_customization_category set del_status = 1 where course_customization_category_id in
+        <foreach item="courseCustomizationCategoryId" collection="array" open="(" separator="," close=")">
+            #{courseCustomizationCategoryId}
+        </foreach>
+    </update>
+<!--    <delete id="deleteCourseCustomizationCategoryById" parameterType="Long">
+        delete from course_customization_category where course_customization_category_id = #{courseCustomizationCategoryId}
+    </delete>
+
+    <delete id="deleteCourseCustomizationCategoryByIds" parameterType="String">
+        delete from course_customization_category where course_customization_category_id in
+        <foreach item="courseCustomizationCategoryId" collection="array" open="(" separator="," close=")">
+            #{courseCustomizationCategoryId}
+        </foreach>
+    </delete>-->
+
+</mapper>

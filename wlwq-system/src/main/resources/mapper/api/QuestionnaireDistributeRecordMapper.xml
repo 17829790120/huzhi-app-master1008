@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.QuestionnaireDistributeRecordMapper">
+
+    <resultMap type="QuestionnaireDistributeRecord" id="QuestionnaireDistributeRecordResult">
+        <result property="questionnaireDistributeRecordId" column="questionnaire_distribute_record_id"/>
+        <result property="questionnaireId" column="questionnaire_id"/>
+        <result property="title" column="title"/>
+        <result property="score" column="score"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="creatorDeptId" column="creator_dept_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+    </resultMap>
+
+    <sql id="selectQuestionnaireDistributeRecordVo">
+        select questionnaire_distribute_record_id, questionnaire_id, title, score, creator_id, creator_name, creator_dept_id, create_time, del_status, dept_id, company_id from questionnaire_distribute_record
+    </sql>
+
+    <select id="selectQuestionnaireDistributeRecordList" parameterType="QuestionnaireDistributeRecord"
+            resultMap="QuestionnaireDistributeRecordResult">
+        <include refid="selectQuestionnaireDistributeRecordVo"/>
+        <where>
+            <if test="questionnaireId != null  and questionnaireId != ''">and questionnaire_id = #{questionnaireId}</if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="creatorId != null ">and creator_id = #{creatorId}</if>
+            <if test="creatorName != null  and creatorName != ''">and creator_name like concat('%', #{creatorName},
+                '%')
+            </if>
+            <if test="creatorDeptId != null ">and creator_dept_id = #{creatorDeptId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectQuestionnaireDistributeRecordById" parameterType="String"
+            resultMap="QuestionnaireDistributeRecordResult">
+        <include refid="selectQuestionnaireDistributeRecordVo"/>
+        where questionnaire_distribute_record_id = #{questionnaireDistributeRecordId}
+    </select>
+
+    <insert id="insertQuestionnaireDistributeRecord" parameterType="QuestionnaireDistributeRecord">
+        insert into questionnaire_distribute_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionnaireDistributeRecordId != null">questionnaire_distribute_record_id,</if>
+            <if test="questionnaireId != null">questionnaire_id,</if>
+            <if test="title != null">title,</if>
+            <if test="score != null">score,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="creatorName != null">creator_name,</if>
+            <if test="creatorDeptId != null">creator_dept_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionnaireDistributeRecordId != null">#{questionnaireDistributeRecordId},</if>
+            <if test="questionnaireId != null">#{questionnaireId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="score != null">#{score},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="creatorName != null">#{creatorName},</if>
+            <if test="creatorDeptId != null">#{creatorDeptId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateQuestionnaireDistributeRecord" parameterType="QuestionnaireDistributeRecord">
+        update questionnaire_distribute_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionnaireId != null">questionnaire_id = #{questionnaireId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="creatorName != null">creator_name = #{creatorName},</if>
+            <if test="creatorDeptId != null">creator_dept_id = #{creatorDeptId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+        </trim>
+        where questionnaire_distribute_record_id = #{questionnaireDistributeRecordId}
+    </update>
+
+    <delete id="deleteQuestionnaireDistributeRecordById" parameterType="String">
+        delete from questionnaire_distribute_record where questionnaire_distribute_record_id = #{questionnaireDistributeRecordId}
+    </delete>
+
+    <delete id="deleteQuestionnaireDistributeRecordByIds" parameterType="String">
+        delete from questionnaire_distribute_record where questionnaire_distribute_record_id in
+        <foreach item="questionnaireDistributeRecordId" collection="array" open="(" separator="," close=")">
+            #{questionnaireDistributeRecordId}
+        </foreach>
+    </delete>
+
+</mapper>

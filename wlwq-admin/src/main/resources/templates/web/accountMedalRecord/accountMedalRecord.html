@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('用户勋章记录列表')"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>勋章名称：</label>
+                            <input type="text" name="medalName"/>
+                        </li>
+                        <li>
+                            <label>用户姓名：</label>
+                            <input type="text" name="accountName"/>
+                        </li>
+                        <li>
+                            <label>用户手机号：</label>
+                            <input type="text" name="accountPhone"/>
+                        </li>
+                        <li class="select-time"
+                            style="display: flex;justify-content: space-between;align-items: center;">
+                            创建时间：
+                            <input type="text" class="input-sm form-control" name="startTime"
+                                   id="datetimepicker-startTime" style=" width: 174px;"
+                                   placeholder="yyyy-MM-dd"/>
+                            <span class="input-group-addon"
+                                  style="border: 0;padding: 0;margin: 0 0.75rem;margin-right: 1.25rem;">到</span>
+                            <input type="text" class="input-sm form-control" name="endTime" id="datetimepicker-endTime"
+                                   style=" width: 174px;"
+                                   placeholder="yyyy-MM-dd"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:accountMedalRecord:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+<!--            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"-->
+<!--               shiro:hasPermission="web:accountMedalRecord:edit">-->
+<!--                <i class="fa fa-edit"></i> 修改-->
+<!--            </a>-->
+<!--            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"-->
+<!--               shiro:hasPermission="web:accountMedalRecord:remove">-->
+<!--                <i class="fa fa-remove"></i> 删除-->
+<!--            </a>-->
+            <a class="btn btn-warning" onclick="$.table.exportExcel()"
+               shiro:hasPermission="web:accountMedalRecord:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<script th:inline="javascript">
+
+    $("#datetimepicker-startTime").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView: "month",
+        todayBtn: true,
+        autoclose: true,
+        endDate: new Date(),
+    }).on('changeDate', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var startTime = event.date;
+        $('#datetimepicker-endTime').datetimepicker('setStartDate', startTime);
+    });
+
+    $("#datetimepicker-endTime").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView: "month",
+        todayBtn: true,
+        autoclose: true,
+        endDate: new Date(),
+    }).on('changeDate', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var endTime = event.date;
+        $("#datetimepicker-startTime").datetimepicker('setEndDate', endTime);
+    });
+
+    var editFlag = [[${@permission.hasPermi('web:accountMedalRecord:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:accountMedalRecord:remove')}]];
+    var prefix = ctx + "web/accountMedalRecord";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            // updateUrl: prefix + "/edit/{id}",
+            // removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "用户勋章记录",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'accountMedalRecordId',
+                    title: '用户勋章记录ID',
+                    visible: false
+                },
+                {
+                    field: 'medalName',
+                    align: 'center',
+                    title: '勋章名称'
+                },
+                {
+                    field: 'accountName',
+                    align: 'center',
+                    title: '用户姓名'
+                },
+                {
+                    field: 'accountPhone',
+                    align: 'center',
+                    title: '用户手机号'
+                },
+                {
+                    field: 'score',
+                    align: 'center',
+                    title: '本次获得积分'
+                },
+
+                {
+                    field: 'remark',
+                    align: 'center',
+                    title: '备注'
+                },
+                {
+                    field: 'createTime',
+                    align: 'center',
+                    title: '创建时间'
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

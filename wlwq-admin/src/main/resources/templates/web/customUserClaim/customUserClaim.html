@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('客户认领列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>客户姓名：</label>
+                                <input type="text" name="customName"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+            <!--    <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:customUserClaim:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="web:customUserClaim:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>-->
+<!--                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="web:customUserClaim:remove">-->
+<!--                    <i class="fa fa-remove"></i> 删除-->
+<!--                </a>-->
+               <!-- <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:customUserClaim:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('web:customUserClaim:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('web:customUserClaim:remove')}]];
+        var prefix = ctx + "web/customUserClaim";
+        var prefix1 = ctx + "web/customFollow";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "客户认领",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'customClaimId',
+                    title: '',
+                    visible: false
+                },
+                {
+                    field: 'customName',
+                    align: 'center',
+                    title: '客户名称'
+                },
+                {
+                    field: 'nickName',
+                    align: 'center',
+                    title: '负责人'
+                },
+                {
+                    field: 'customFollowTime',
+                    align: 'center',
+                    title: '回访期限'
+                },
+                {
+                    field: 'customFollowLastTime',
+                    align: 'center',
+                    title: '最后跟进时间'
+                },
+                {
+                    field: 'status',
+                    align: 'center',
+                    title: '跟进状态',
+                    formatter:function (value, row, index) {
+                        if (value != null && value != "") {
+                            if (value == 0) {
+                                return "<span class=\"label label-success\">跟进中</span>";
+                            }
+                            if (value == 1) {
+                                return "<span class=\"label label-success\">战败</span>";
+                            }
+                            if (value == 2) {
+                                return "<span class=\"label label-primary\">已成交</span>";
+                            }
+                        }
+                    }
+                },
+                {
+                    field: 'sortNum',
+                    align: 'center',
+                    title: '排序(排序越大，越靠前)',
+                    visible: false
+                },
+                {
+                    field: 'showStatustiny',
+                    align: 'center',
+                    title: '是否显示(0:不显示 1:显示)',
+                    visible: false
+                },
+                {
+                    field: 'delStatus',
+                    align: 'center',
+                    title: '是否删除(0:未删除 1:已删除)',
+                    visible: false
+                },
+                {
+                    field: 'claimTime',
+                    align: 'center',
+                    title: '认领时间'
+                },
+                {
+                    field: 'releaseTime',
+                    align: 'center',
+                    title: '放弃客户时间'
+                }
+                // {
+                //     title: '操作',
+                //     align: 'center',
+                //     formatter: function(value, row, index) {
+                //         var actions = [];
+                //         actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.customClaimId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                //         actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.customClaimId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                //         actions.push('<a class="btn btn-danger btn-xs '  + '" href="javascript:void(0)" onclick="release(\'' + row.customClaimId + '\',\''+row.customInfoId +'\')"><i class="fa fa-remove"></i>释放</a>');
+                //         actions.push('<a class="btn btn-danger btn-xs '  + '" href="javascript:void(0)"  onclick="$.operate.add(\'' + row.customInfoId + '\')" shiro:hasPermission="web:customUserClaim:add""><i class="fa fa-add"></i>跟进</a>');
+                //         return actions.join('');
+                //     }
+                // }
+                ]
+            };
+            $.table.init(options);
+        });
+        //释放客户
+        function release(customClaimId,customInfoId) {
+            $.operate.post("/web/customUserClaim/release",{"customClaimId": customClaimId,
+                "status":1,"customInfoId":customInfoId},function(result){
+                if(result.code != 200){
+                    //alert(result.msg);
+                    return false;
+                }
+                alert("认领成功");
+                return true;
+            });
+        }
+        //跟进
+        function followadd() {
+            //在这里打开跟进添加的弹框
+            // $.modal.openFull("客户跟进", ctx + "web/questionManager/questionManagerList?chapterId="+chapterId+"&courseId="+courseId);
+
+        }
+    </script>
+</body>
+</html>

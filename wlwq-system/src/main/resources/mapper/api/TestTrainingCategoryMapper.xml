@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TestTrainingCategoryMapper">
+
+    <resultMap type="TestTrainingCategory" id="TestTrainingCategoryResult">
+        <result property="testTrainingCategoryId" column="test_training_category_id"/>
+        <result property="title" column="title"/>
+        <result property="coverImage" column="cover_image"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="createTime" column="create_time"/>
+        <result property="recommendStatus" column="recommend_status"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="companyId" column="company_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <sql id="selectTestTrainingCategoryVo">
+        select test_training_category_id, title, cover_image, synopsis, del_status, sort_num, create_time, recommend_status, show_status, company_id, dept_id, user_id from test_training_category
+    </sql>
+
+    <select id="selectTestTrainingCategoryList" parameterType="TestTrainingCategory"
+            resultMap="TestTrainingCategoryResult">
+        <include refid="selectTestTrainingCategoryVo"/>
+        <where>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="coverImage != null  and coverImage != ''">and cover_image = #{coverImage}</if>
+            <if test="synopsis != null  and synopsis != ''">and synopsis like concat('%', #{synopsis}, '%')</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="recommendStatus != null ">and recommend_status = #{recommendStatus}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+        </where>
+    </select>
+
+    <select id="selectTestTrainingCategoryById" parameterType="String" resultMap="TestTrainingCategoryResult">
+        <include refid="selectTestTrainingCategoryVo"/>
+        where test_training_category_id = #{testTrainingCategoryId}
+    </select>
+
+    <insert id="insertTestTrainingCategory" parameterType="TestTrainingCategory">
+        insert into test_training_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="testTrainingCategoryId != null">test_training_category_id,</if>
+            <if test="title != null">title,</if>
+            <if test="coverImage != null">cover_image,</if>
+            <if test="synopsis != null">synopsis,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="recommendStatus != null">recommend_status,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="testTrainingCategoryId != null">#{testTrainingCategoryId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="coverImage != null">#{coverImage},</if>
+            <if test="synopsis != null">#{synopsis},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="recommendStatus != null">#{recommendStatus},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTestTrainingCategory" parameterType="TestTrainingCategory">
+        update test_training_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="synopsis != null">synopsis = #{synopsis},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="recommendStatus != null">recommend_status = #{recommendStatus},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where test_training_category_id = #{testTrainingCategoryId}
+    </update>
+
+    <update id="deleteTestTrainingCategoryById" parameterType="String">
+        update test_training_category set del_status = 1 where test_training_category_id = #{testTrainingCategoryId}
+    </update>
+
+    <update id="deleteTestTrainingCategoryByIds" parameterType="String">
+        update test_training_category set del_status = 1 where test_training_category_id in
+        <foreach item="testTrainingCategoryId" collection="array" open="(" separator="," close=")">
+            #{testTrainingCategoryId}
+        </foreach>
+    </update>
+<!--    <delete id="deleteTestTrainingCategoryById" parameterType="String">
+        delete from test_training_category where test_training_category_id = #{testTrainingCategoryId}
+    </delete>
+
+    <delete id="deleteTestTrainingCategoryByIds" parameterType="String">
+        delete from test_training_category where test_training_category_id in
+        <foreach item="testTrainingCategoryId" collection="array" open="(" separator="," close=")">
+            #{testTrainingCategoryId}
+        </foreach>
+    </delete>-->
+
+</mapper>

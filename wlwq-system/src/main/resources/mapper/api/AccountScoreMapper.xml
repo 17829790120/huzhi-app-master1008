@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountScoreMapper">
+
+    <resultMap type="AccountScore" id="AccountScoreResult">
+        <result property="accountScoreId" column="account_score_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="targetId" column="target_id"/>
+        <result property="scoreType" column="score_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="scoreSource" column="score_source"/>
+        <result property="scoreStatus" column="score_status"/>
+        <result property="score" column="score"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="pics" column="pics"/>
+        <result property="rejectContent" column="reject_content"/>
+        <result property="companyId" column="company_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="examineTag" column="examine_tag"/>
+        <result property="courseId" column="course_id"/>
+    </resultMap>
+
+    <sql id="selectAccountScoreVo">
+        select account_score_id,
+               account_id,
+               target_id,
+               score_type,
+               create_time,
+               account_name,
+               account_phone,
+               account_head,
+               score_source,
+               score_status,
+               score,
+               examine_status,
+               pics,
+               reject_content,
+               company_id,
+               dept_id,
+               examine_tag,
+               course_id
+        from account_score
+    </sql>
+
+    <select id="selectAccountScoreList" parameterType="AccountScore" resultMap="AccountScoreResult">
+        <include refid="selectAccountScoreVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+            <if test="scoreType != null ">and score_type = #{scoreType}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone like concat('%', #{accountPhone},
+                '%')
+            </if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="scoreSource != null  and scoreSource != ''">and score_source = #{scoreSource}</if>
+            <if test="scoreStatus != null ">and score_status = #{scoreStatus}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+            <if test="courseId != null ">and course_id = #{courseId}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAccountScoreById" parameterType="String" resultMap="AccountScoreResult">
+        <include refid="selectAccountScoreVo"/>
+        where account_score_id = #{accountScoreId}
+    </select>
+
+    <insert id="insertAccountScore" parameterType="AccountScore">
+        insert into account_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountScoreId != null">account_score_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="targetId != null">target_id,</if>
+            <if test="scoreType != null">score_type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="scoreSource != null">score_source,</if>
+            <if test="scoreStatus != null">score_status,</if>
+            <if test="score != null">score,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="pics != null">pics,</if>
+            <if test="rejectContent != null">reject_content,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="examineTag != null">examine_tag,</if>
+            <if test="courseId != null">course_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountScoreId != null">#{accountScoreId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="targetId != null">#{targetId},</if>
+            <if test="scoreType != null">#{scoreType},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="scoreSource != null">#{scoreSource},</if>
+            <if test="scoreStatus != null">#{scoreStatus},</if>
+            <if test="score != null">#{score},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="rejectContent != null">#{rejectContent},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="examineTag != null">#{examineTag},</if>
+            <if test="courseId != null">#{courseId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountScore" parameterType="AccountScore">
+        update account_score
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+            <if test="scoreType != null">score_type = #{scoreType},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="scoreSource != null">score_source = #{scoreSource},</if>
+            <if test="scoreStatus != null">score_status = #{scoreStatus},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="rejectContent != null">reject_content = #{rejectContent},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="examineTag != null">examine_tag = #{examineTag},</if>
+            <if test="courseId != null">course_id = #{courseId},</if>
+        </trim>
+        where account_score_id = #{accountScoreId}
+    </update>
+
+    <delete id="deleteAccountScoreById" parameterType="String">
+        delete
+        from account_score
+        where account_score_id = #{accountScoreId}
+    </delete>
+
+    <delete id="deleteAccountScoreByIds" parameterType="String">
+        delete from account_score where account_score_id in
+        <foreach item="accountScoreId" collection="array" open="(" separator="," close=")">
+            #{accountScoreId}
+        </foreach>
+    </delete>
+
+    <select id="selectApiAccountScoreList" parameterType="AccountScore" resultMap="AccountScoreResult">
+        <include refid="selectAccountScoreVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+            <if test="scoreType != null ">and score_type = #{scoreType}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="scoreSource != null  and scoreSource != ''">and score_source = #{scoreSource}</if>
+            <if test="scoreStatus != null ">and score_status = #{scoreStatus}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="month != null and month != ''">and DATE_FORMAT(create_time,'%Y-%m') = #{month}
+            </if>
+            <if test="examineStatus != null and examineStatus == 1">and examine_status in (1,2)</if>
+            <if test="examineStatus != null and examineStatus != 1">and examine_status = #{examineStatus}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+            <if test="courseId != null ">and course_id = #{courseId}</if>
+        </where>
+        order by create_time desc
+    </select>
+    <!--查询考试对应的获得积分数据-->
+    <select id="selectScoreByAccountIdAndTargetId" parameterType="AccountScore" resultMap="AccountScoreResult">
+        <include refid="selectAccountScoreVo"/>
+        where
+        1=1
+        <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+        <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+        limit 1
+    </select>
+
+    <!--查询课程对应的获得积分数据-->
+    <select id="selectCourseScore" parameterType="AccountScore" resultType="Integer">
+        select sum(score) from account_score
+        where
+        1=1
+        <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+        <if test="courseId != null">and course_id = #{courseId}</if>
+    </select>
+
+    <!--根据accountId和targetId查询AccountScoreId-->
+    <select id="selectAccountScoreId" parameterType="String" resultMap="AccountScoreResult">
+        select account_score_id
+        from account_score
+        where account_id = #{accountId}
+          and target_id = #{targetId} limit 1
+    </select>
+
+
+</mapper>

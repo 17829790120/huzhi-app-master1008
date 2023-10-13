@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CustomCustomInfoMapper">
+    
+    <resultMap type="CustomCustomInfo" id="CustomCustomInfoResult">
+        <result property="customId"    column="custom_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="customSource"    column="custom_source"    />
+        <result property="customName"    column="custom_name"    />
+        <result property="customSex"    column="custom_sex"    />
+        <result property="customBirthday"    column="custom_birthday"    />
+        <result property="customLabel"    column="custom_label"    />
+        <result property="customPhone"    column="custom_phone"    />
+        <result property="customGrade"    column="custom_grade"    />
+        <result property="customCompanyName"    column="custom_company_name"    />
+        <result property="customAddress"    column="custom_address"    />
+        <result property="customDemand"    column="custom_demand"    />
+        <result property="customResponsible"    column="custom_responsible"    />
+        <result property="customRemark"    column="custom_remark"    />
+        <result property="delStatus"    column="del_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="sortNum"    column="sort_num"    />
+        <result property="showStatustiny"    column="show_statustiny"    />
+        <result property="customDecisions"    column="custom_decisions"    />
+        <result property="addSource"    column="add_source"    />
+        <result property="claimStatus"    column="claim_status"    />
+        <result property="customAnnex"    column="custom_annex"    />
+    </resultMap>
+
+    <sql id="selectCustomCustomInfoVo">
+        select custom_id, dept_id,company_id, custom_source, custom_name, custom_sex, custom_birthday, custom_label, custom_phone, custom_grade, custom_company_name, custom_address, custom_demand, custom_responsible, custom_remark, del_status, create_time, create_by, update_time, update_by, sort_num, show_statustiny, custom_decisions, add_source, claim_status,custom_annex from custom_custom_info
+    </sql>
+
+    <select id="selectCustomCustomInfoList" parameterType="CustomCustomInfo" resultMap="CustomCustomInfoResult">
+        <include refid="selectCustomCustomInfoVo"/>
+        <where>  
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="customSource != null  and customSource != ''"> and custom_source = #{customSource}</if>
+            <if test="customName != null  and customName != ''"> and custom_name like concat('%', #{customName}, '%')</if>
+            <if test="customSex != null  and customSex != ''"> and custom_sex = #{customSex}</if>
+            <if test="customBirthday != null "> and custom_birthday = #{customBirthday}</if>
+            <if test="customLabel != null  and customLabel != ''"> and custom_label = #{customLabel}</if>
+            <if test="customPhone != null  and customPhone != ''"> and custom_phone = #{customPhone}</if>
+            <if test="customGrade != null  and customGrade != ''"> and custom_grade = #{customGrade}</if>
+            <if test="customCompanyName != null  and customCompanyName != ''"> and custom_company_name like concat('%', #{customCompanyName}, '%')</if>
+            <if test="customAddress != null  and customAddress != ''"> and custom_address = #{customAddress}</if>
+            <if test="customDemand != null  and customDemand != ''"> and custom_demand = #{customDemand}</if>
+            <if test="customResponsible != null "> and custom_responsible = #{customResponsible}</if>
+            <if test="customRemark != null  and customRemark != ''"> and custom_remark = #{customRemark}</if>
+            <if test="delStatus != null  and delStatus != ''"> and del_status = #{delStatus}</if>
+            <if test="sortNum != null "> and sort_num = #{sortNum}</if>
+            <if test="showStatustiny != null "> and show_statustiny = #{showStatustiny}</if>
+            <if test="customDecisions != null "> and custom_decisions = #{customDecisions}</if>
+            <if test="addSource != null "> and add_source = #{addSource}</if>
+            <if test="claimStatus != null "> and claim_status = #{claimStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectCustomCustomInfoById" parameterType="String" resultMap="CustomCustomInfoResult">
+        <include refid="selectCustomCustomInfoVo"/>
+        where custom_id = #{customId}
+    </select>
+        
+    <insert id="insertCustomCustomInfo" parameterType="CustomCustomInfo">
+        insert into custom_custom_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customId != null">custom_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="customSource != null">custom_source,</if>
+            <if test="customAnnex != null">custom_annex,</if>
+            <if test="customName != null">custom_name,</if>
+            <if test="customSex != null">custom_sex,</if>
+            <if test="customBirthday != null">custom_birthday,</if>
+            <if test="customLabel != null">custom_label,</if>
+            <if test="customPhone != null">custom_phone,</if>
+            <if test="customGrade != null">custom_grade,</if>
+            <if test="customCompanyName != null">custom_company_name,</if>
+            <if test="customAddress != null">custom_address,</if>
+            <if test="customDemand != null">custom_demand,</if>
+            <if test="customResponsible != null">custom_responsible,</if>
+            <if test="customRemark != null">custom_remark,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatustiny != null">show_statustiny,</if>
+            <if test="customDecisions != null">custom_decisions,</if>
+            <if test="addSource != null">add_source,</if>
+            <if test="claimStatus != null">claim_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customId != null">#{customId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="customSource != null">#{customSource},</if>
+            <if test="customAnnex != null">#{customAnnex},</if>
+            <if test="customName != null">#{customName},</if>
+            <if test="customSex != null">#{customSex},</if>
+            <if test="customBirthday != null">#{customBirthday},</if>
+            <if test="customLabel != null">#{customLabel},</if>
+            <if test="customPhone != null">#{customPhone},</if>
+            <if test="customGrade != null">#{customGrade},</if>
+            <if test="customCompanyName != null">#{customCompanyName},</if>
+            <if test="customAddress != null">#{customAddress},</if>
+            <if test="customDemand != null">#{customDemand},</if>
+            <if test="customResponsible != null">#{customResponsible},</if>
+            <if test="customRemark != null">#{customRemark},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatustiny != null">#{showStatustiny},</if>
+            <if test="customDecisions != null">#{customDecisions},</if>
+            <if test="addSource != null">#{addSource},</if>
+            <if test="claimStatus != null">#{claimStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomCustomInfo" parameterType="CustomCustomInfo" >
+        update custom_custom_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="customSource != null">custom_source = #{customSource},</if>
+            <if test="customAnnex != null">custom_annex = #{customAnnex},</if>
+            <if test="customName != null">custom_name = #{customName},</if>
+            <if test="customSex != null">custom_sex = #{customSex},</if>
+            <if test="customBirthday != null">custom_birthday = #{customBirthday},</if>
+            <if test="customLabel != null">custom_label = #{customLabel},</if>
+            <if test="customPhone != null">custom_phone = #{customPhone},</if>
+            <if test="customGrade != null">custom_grade = #{customGrade},</if>
+            <if test="customCompanyName != null">custom_company_name = #{customCompanyName},</if>
+            <if test="customAddress != null">custom_address = #{customAddress},</if>
+            <if test="customDemand != null">custom_demand = #{customDemand},</if>
+            <if test="customResponsible != null">custom_responsible = #{customResponsible},</if>
+            <if test="customRemark != null">custom_remark = #{customRemark},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatustiny != null">show_statustiny = #{showStatustiny},</if>
+            <if test="customDecisions != null">custom_decisions = #{customDecisions},</if>
+            <if test="addSource != null">add_source = #{addSource},</if>
+            <if test="claimStatus != null">claim_status = #{claimStatus},</if>
+        </trim>
+        where custom_id = #{customId}
+    </update>
+
+    <delete id="deleteCustomCustomInfoById" parameterType="String">
+        delete from custom_custom_info where custom_id = #{customId}
+    </delete>
+
+    <delete id="deleteCustomCustomInfoByIds" parameterType="String">
+        delete from custom_custom_info where custom_id in 
+        <foreach item="customId" collection="array" open="(" separator="," close=")">
+            #{customId}
+        </foreach>
+    </delete>
+    <resultMap type="com.wlwq.api.resultVO.CustomInfoVO" id="CustomInfoVOResult">
+        <result property="customId"    column="custom_id"    />
+        <result property="customSource"    column="custom_source"    />
+        <result property="customName"    column="custom_name"    />
+        <result property="customAnnex"    column="custom_annex"    />
+        <result property="customSex"    column="custom_sex"    />
+        <result property="customBirthday"    column="custom_birthday"    />
+        <result property="customLabel"    column="custom_label"    />
+        <result property="customPhone"    column="custom_phone"    />
+        <result property="customGrade"    column="custom_grade"    />
+        <result property="customCompanyName"    column="custom_company_name"    />
+        <result property="customAddress"    column="custom_address"    />
+        <result property="customDemand"    column="custom_demand"    />
+        <result property="customRemark"    column="custom_remark"    />
+        <result property="customDecisions"    column="custom_decisions"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="customResponsible"    column="custom_responsible"    />
+    </resultMap>
+    <select id="getCustomInfoVO" resultMap="CustomInfoVOResult">
+        select custom_id,custom_source,custom_name,custom_annex,custom_sex,custom_birthday,custom_label,custom_phone,custom_grade,custom_company_name,custom_address,custom_demand,custom_remark,custom_decisions,create_time,custom_responsible
+        from custom_custom_info
+        where del_status=0 and custom_id=#{customId}
+    </select>
+
+    <resultMap type="com.wlwq.api.resultVO.CustomVO" id="CustomVOResult">
+        <result property="customId"    column="custom_id"    />
+        <result property="customName"    column="custom_name"    />
+        <result property="customDemand"    column="custom_demand"    />
+        <result property="addSource"    column="add_source"    />
+        <result property="status"    column="status"    />
+        <result property="customAnnex"    column="custom_annex"    />
+    </resultMap>
+    <select id="findCustomVO" resultMap="CustomVOResult">
+        select
+        custom_id,custom_name,custom_demand,add_source,`status`,custom_annex
+        from custom_custom_info cci
+        LEFT JOIN custom_user_claim cuc on cci.custom_id=cuc.custom_info_id
+        where cci.del_status=0 and cci.company_id=#{companyId} and claim_status=0
+        and custom_responsible is null
+        <if test="customSource != null">
+            and cci.custom_source=#{customSource}
+        </if>
+        <if test="customName != null and customName != ''">
+            and cci.custom_name like concat('%', #{customName}, '%')
+        </if>
+        GROUP BY custom_id
+    </select>
+
+
+    <resultMap type="com.wlwq.api.resultVO.MyCustomVO" id="MyCustomVOResult">
+        <result property="customId"    column="custom_id"    />
+        <result property="customName"    column="custom_name"    />
+        <result property="customAnnex"    column="custom_annex"    />
+        <result property="customLabel"    column="custom_label"    />
+        <result property="customGrade"    column="custom_grade"    />
+        <result property="customFollowTime"    column="custom_follow_time"    />
+        <result property="customFollowLastTime"    column="custom_follow_last_time"    />
+        <result property="customPhone"    column="custom_phone"    />
+        <result property="status"    column="status"    />
+        <result property="customDemand"    column="custom_demand"    />
+        <result property="customClaimId"    column="custom_claim_id"    />
+        <result property="addSource"    column="add_source"    />
+        <result property="isFollow"    column="is_follow"    />
+    </resultMap>
+    <select id="findMyCustomVO" resultMap="MyCustomVOResult" parameterType="com.wlwq.api.resultVO.CustomFindVO" >
+        select custom_id,custom_name,custom_annex,custom_label,custom_grade,custom_follow_time,custom_follow_last_time,custom_phone,`status`,custom_demand,custom_claim_id,add_source,is_follow
+        from custom_custom_info cci
+        LEFT JOIN custom_user_claim cuc on cci.custom_id=cuc.custom_info_id
+        where 1=1
+        <if test="companyId != null and companyId != ''">
+            and cci.company_id=#{companyId}
+        </if>
+        <if test="deptId != null and deptId != ''">
+            and cci.dept_id=#{deptId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and cci.custom_responsible=#{userId}
+        </if>
+        <if test="status != null and status != ''">
+            and `status`=#{status}
+        </if>
+        <if test="customSource != null and customSource != ''">
+            and custom_source=#{customSource}
+        </if>
+        <if test="date != null and date != '' and date == '1'.toString()">
+            and left(custom_follow_time,10) =#{date}
+        </if>
+        <if test="date != null and date != '' and date != '1'.toString()">
+            and left(custom_follow_time,10) &lt;=#{date}
+        </if>
+        <if test="customName != null and customName != ''">
+            and cci.custom_name like concat('%', #{customName}, '%')
+        </if>
+        <if test="isFollow != null and isFollow != ''">
+            and cuc.is_follow = #{isFollow}
+        </if>
+        ORDER BY FIELD( `status`, "0" ) DESC,FIELD( `status`, "2" ) DESC,custom_follow_time
+    </select>
+    <update id="updateClaimStatus">
+        update custom_custom_info set claim_status=#{status} ,custom_responsible=null
+        where custom_id=#{customId}
+    </update>
+
+    <update id="updateClaimStatuses">
+        update custom_custom_info set claim_status=#{status} ,custom_responsible=null
+        where custom_id in
+        <foreach item="customIds" collection="customIds" open="(" separator="," close=")">
+            #{customIds}
+        </foreach>
+    </update>
+
+    <select id="getCustom" resultType="java.math.BigDecimal">
+        select count(custom_id) from custom_custom_info cci
+        left join custom_user_claim cuc on cci.custom_id=cuc.custom_info_id
+        where
+        `status` &lt;&gt; #{status} and custom_responsible=#{userId}
+        <if test="startTime != null">
+            and claim_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and claim_time &lt;= #{endTime}
+        </if>
+    </select>
+    <select id="getAmount" resultType="java.math.BigDecimal">
+        select ifnull(sum(custome_strike_money),0)
+        from custom_custom_info cci
+        LEFT JOIN custom_examine_record cer on cci.custom_id =cer.custom_info_id
+        where
+        `custom_examine_status` =#{status} and custom_responsible=#{userId}
+        <if test="startTime != null">
+            and examine_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and examine_time &lt;= #{endTime}
+        </if>
+    </select>
+    <resultMap type="com.wlwq.api.resultVO.CustomDictVO" id="CustomDictVOResult">
+        <result property="dictValue"    column="dict_value"    />
+        <result property="dictLabel"    column="dict_label"    />
+    </resultMap>
+    <select id="findCustomDictVO" resultMap="CustomDictVOResult">
+        select dict_value,dict_label from sys_dict_data
+        where dict_type=#{dictType}
+        and status=0
+    </select>
+    <update id="updateCustomLabel">
+        update custom_custom_info set custom_label=#{customLabel}
+        where custom_id=#{customId}
+    </update>
+
+
+    <resultMap type="com.wlwq.api.resultVO.CustomRankingListVO" id="CustomRankingListVOResult">
+        <result property="customUserId"    column="custom_user_id"    />
+        <result property="userName"    column="nick_name"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="dealAmount"    column="deal_amount"    />
+        <result property="rankNo"    column="rank_no"    />
+        <result property="headPortrait"    column="head_portrait"    />
+    </resultMap>
+    <select id="findCustomRankingVO" resultMap="CustomRankingListVOResult">
+        SELECT a.*,@rank:=@rank + 1 AS rank_no
+        FROM (
+            select custom_user_id,nick_name,dept_name,sum(custome_strike_money) deal_amount,head_portrait
+            from custom_examine_record cer
+            LEFT JOIN api_account aa on cer.custom_user_id=aa.account_id
+            LEFT JOIN sys_dept sd on aa.dept_id=sd.dept_id
+            where cer.company_id=#{companyId}
+            GROUP BY custom_user_id
+            ORDER BY deal_amount desc
+        ) a, (SELECT @rank:= 0) b
+    </select>
+
+    <resultMap type="com.wlwq.api.resultVO.CustomThrowVO" id="CustomThrowVOResult">
+        <result property="customId"    column="custom_id"    />
+        <result property="customClaimId"    column="custom_claim_id"    />
+        <result property="customFollowTime"    column="custom_follow_time"    />
+        <result property="customFollowLastTime"    column="custom_follow_last_time"    />
+        <result property="customGrade"    column="custom_grade"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="customDays"    column="custom_days"    />
+    </resultMap>
+    <select id="findCustomThrowVO" resultMap="CustomThrowVOResult">
+        select cci.custom_id,custom_claim_id,custom_follow_time,custom_follow_last_time,custom_grade,cci.company_id,custom_days
+        from custom_custom_info cci
+        LEFT JOIN custom_user_claim cuc on cci.custom_id=cuc.custom_info_id
+        LEFT JOIN custom_level_days cld on cci.custom_grade=cld.id
+        where cuc. `status` ='0'
+        <if test="type != null and type != '' and type==1">
+            and datediff(left(custom_follow_time,10),left(custom_follow_last_time,10))=0
+        </if>
+        <if test="type != null and type != '' and type==2">
+            and custom_follow_time &lt; now()
+        </if>
+    </select>
+
+    <select id="findMyCustom" resultMap="MyCustomVOResult">
+        select custom_id,custom_name,custom_annex,custom_label,custom_grade,custom_follow_time,custom_follow_last_time,custom_phone,`status`,custom_demand,custom_claim_id,add_source
+        from custom_custom_info cci
+        LEFT JOIN custom_user_claim cuc on cci.custom_id=cuc.custom_info_id
+        where `status` !=1
+			and custom_responsible =#{userId}
+        <if test="customName != null and customName != ''">
+            and cci.custom_name like concat('%', #{customName}, '%')
+        </if>
+    </select>
+</mapper>

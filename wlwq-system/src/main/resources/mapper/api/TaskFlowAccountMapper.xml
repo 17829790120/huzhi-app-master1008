@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TaskFlowAccountMapper">
+
+    <resultMap type="TaskFlowAccount" id="TaskFlowAccountResult">
+        <result property="taskFlowAccountId" column="task_flow_account_id"/>
+        <result property="taskReceiveId" column="task_receive_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="examineSequence" column="examine_sequence"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="examineType" column="examine_type"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="rejectContent" column="reject_content"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="pics" column="pics"/>
+        <result property="examineEndTime" column="examine_end_time"/>
+        <result property="examineTag" column="examine_tag"/>
+        <result property="postName" column="post_name"/>
+    </resultMap>
+
+    <sql id="selectTaskFlowAccountVo">
+        select task_flow_account_id,
+               task_receive_id,
+               account_id,
+               post_id,
+               examine_sequence,
+               create_time,
+               update_time,
+               examine_status,
+               examine_type,
+               read_status,
+               reject_content,
+               del_status,
+               dept_id,
+               account_name,
+               account_phone,
+               account_head,
+               pics,
+               examine_end_time,
+               examine_tag
+        from task_flow_account
+    </sql>
+
+    <select id="selectTaskFlowAccountList" parameterType="TaskFlowAccount" resultMap="TaskFlowAccountResult">
+        <include refid="selectTaskFlowAccountVo"/>
+        <where>
+            del_status = 0
+            <if test="taskReceiveId != null  and taskReceiveId != ''">and task_receive_id = #{taskReceiveId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="examineEndTime != null ">and examine_end_time = #{examineEndTime}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+        </where>
+    </select>
+
+    <select id="selectTaskFlowAccountById" parameterType="String" resultMap="TaskFlowAccountResult">
+        <include refid="selectTaskFlowAccountVo"/>
+        where task_flow_account_id = #{taskFlowAccountId}
+    </select>
+
+    <insert id="insertTaskFlowAccount" parameterType="TaskFlowAccount">
+        insert into task_flow_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskFlowAccountId != null">task_flow_account_id,</if>
+            <if test="taskReceiveId != null">task_receive_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="postId != null">post_id,</if>
+            <if test="examineSequence != null">examine_sequence,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="examineType != null">examine_type,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="rejectContent != null">reject_content,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="pics != null">pics,</if>
+            <if test="examineEndTime != null">examine_end_time,</if>
+            <if test="examineTag != null">examine_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskFlowAccountId != null">#{taskFlowAccountId},</if>
+            <if test="taskReceiveId != null">#{taskReceiveId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="postId != null">#{postId},</if>
+            <if test="examineSequence != null">#{examineSequence},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="examineType != null">#{examineType},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="rejectContent != null">#{rejectContent},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="examineEndTime != null">#{examineEndTime},</if>
+            <if test="examineTag != null">#{examineTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTaskFlowAccount" parameterType="TaskFlowAccount">
+        update task_flow_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskReceiveId != null">task_receive_id = #{taskReceiveId},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="examineSequence != null">examine_sequence = #{examineSequence},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="examineType != null">examine_type = #{examineType},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="rejectContent != null">reject_content = #{rejectContent},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="examineEndTime != null">examine_end_time = #{examineEndTime},</if>
+            <if test="examineTag != null">examine_tag = #{examineTag},</if>
+        </trim>
+        where task_flow_account_id = #{taskFlowAccountId}
+    </update>
+
+    <update id="deleteTaskFlowAccountById" parameterType="String">
+        update task_flow_account
+        set del_status = 1
+        where task_flow_account_id = #{taskFlowAccountId}
+    </update>
+
+    <update id="deleteTaskFlowAccountByIds" parameterType="String">
+        update task_flow_account set del_status = 1 where task_flow_account_id in
+        <foreach item="taskFlowAccountId" collection="array" open="(" separator="," close=")">
+            #{taskFlowAccountId}
+        </foreach>
+    </update>
+
+    <!--    只查询就近的一条-->
+    <select id="selectNearLimitTaskFlowAccount" parameterType="TaskFlowAccount" resultMap="TaskFlowAccountResult">
+        select
+        task_receive_id,
+        account_id,
+        post_id,
+        examine_sequence,
+        examine_type,
+        dept_id,
+        examine_status,
+        reject_content,
+        update_time,
+        examine_tag,
+        pics
+        from task_flow_account
+        <where>
+            del_status = 0
+            <if test="taskReceiveId != null  and taskReceiveId != ''">and task_receive_id = #{taskReceiveId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="examineEndTime != null ">and examine_end_time = #{examineEndTime}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+        </where>
+        order by update_time desc limit 1
+    </select>
+
+
+    <update id="updateTaskFlowAccountByReceiveId" parameterType="TaskFlowAccount">
+        update task_flow_account set del_status = 0,examine_status = 1,read_status = 0
+        <where>
+            del_status = 1 and examine_status in (1,2,3)
+            <if test="taskFlowAccountId != null  and taskFlowAccountId != ''">and task_flow_account_id =
+                #{taskFlowAccountId}
+            </if>
+            <if test="taskReceiveId != null  and taskReceiveId != ''">and task_receive_id = #{taskReceiveId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="examineEndTime != null ">and examine_end_time = #{examineEndTime}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+        </where>
+    </update>
+
+    <!--    根据发起审批ID删除相关数据-->
+    <update id="deleteTaskFlowAccountByReceiveId" parameterType="String">
+        update task_flow_account
+        set del_status = 1
+        where task_receive_id = #{taskReceiveId}
+        <if test="examineType != null ">and examine_type = #{examineType}</if>
+    </update>
+
+    <!--    api查询相关列表-->
+    <select id="selectApiTaskFlowAccountList" parameterType="TaskFlowAccount" resultType="Map">
+        select a.examine_status as examineStatus,
+        a.task_flow_account_id as taskFlowAccountId,
+        a.task_receive_id as taskReceiveId,
+        a.create_time as createTime,
+        a.read_status as readStatus,
+        a.examine_type as examineType,
+        r.task_start_time as taskStartTime,
+        r.task_end_time as taskEndTime,
+        r.task_overdue_time as taskOverdueTime,
+        r.remark,
+        t.task_title as taskTitle,
+        t.task_describe as taskDescribe,
+        t.task_type as taskType,
+        r.account_name as accountName,
+        r.account_head as accountHead,
+        d.dept_name as deptName,
+        a.examine_tag as examineTag
+        from task_flow_account a
+        left join task_receive r on a.task_receive_id = r.task_receive_id
+        left join task_initiate t on t.task_initiate_id = r.task_initiate_id
+        left join sys_dept d on r.dept_id = d.dept_id
+        <where>
+            <if test="tag != null  and tag == 0">
+                and a.examine_status in (1,2,6,7,11,12,16,17)
+            </if>
+            <if test="tag != null  and tag == 1">
+                and a.examine_status in (3,8,14,20)
+            </if>
+            <if test="tag != null  and tag == 2">
+                and a.examine_status in (4,9,13,18)
+            </if>
+            <if test="taskReceiveId != null  and taskReceiveId != ''">and a.task_receive_id = #{taskReceiveId}</if>
+            <if test="accountId != null  and accountId != ''">and a.account_id = #{accountId}</if>
+            <if test="postId != null ">and a.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and a.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and a.examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and a.examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and a.read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and a.reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and a.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and a.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and a.account_head = #{accountHead}</if>
+            <if test="pics != null  and pics != ''">and a.pics = #{pics}</if>
+            <if test="examineEndTime != null ">and a.examine_end_time = #{examineEndTime}</if>
+            <if test="taskTitle != null  and taskTitle != ''">and (t.task_title = #{taskTitle} or t.task_describe =
+                #{taskTitle})
+            </if>
+            <if test="examineTag != null  and examineTag != ''">and a.examine_tag = #{examineTag}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+
+    <!--    api查询详情-->
+    <select id="selectApiTaskFlowAccountDetail" parameterType="TaskFlowAccount" resultType="Map">
+        select a.examine_status as examineStatus,
+        a.task_flow_account_id as taskFlowAccountId,
+        a.create_time as createTime,
+        a.read_status as readStatus,
+        a.examine_type as examineType,
+        r.task_start_time as taskStartTime,
+        r.task_end_time as taskEndTime,
+        r.task_overdue_time as taskOverdueTime,
+        t.remark,
+        t.pics,
+        t.task_initiate_id as taskInitiateId,
+        t.task_title as taskTitle,
+        t.task_describe as taskDescribe,
+        t.task_type as taskType,
+        r.account_name as accountName,
+        r.account_head as accountHead,
+        (select GROUP_CONCAT(nick_name) from api_account where find_in_set(account_id,t.execute_account_ids)) as
+        executeAccountNames,
+        (select GROUP_CONCAT(nick_name) from api_account where find_in_set(account_id,t.assist_account_ids)) as
+        assistAccountNames,
+        d.dept_name as deptName,
+        r.remark as examineRemark,
+        r.pics as examinePics,
+        a.examine_tag as examineTag
+        from task_flow_account a
+        left join task_receive r on a.task_receive_id = r.task_receive_id
+        left join task_initiate t on t.task_initiate_id = r.task_initiate_id
+        left join sys_dept d on r.dept_id = d.dept_id
+        <where>
+            <if test="taskFlowAccountId != null  and taskFlowAccountId != ''">
+                and a.task_flow_account_id = #{taskFlowAccountId}
+            </if>
+            <if test="taskReceiveId != null  and taskReceiveId != ''">and a.task_receive_id = #{taskReceiveId}</if>
+            <if test="accountId != null  and accountId != ''">and a.account_id = #{accountId}</if>
+            <if test="postId != null ">and a.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and a.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and a.examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and a.examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and a.read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and a.reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and a.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and a.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and a.account_head = #{accountHead}</if>
+            <if test="pics != null  and pics != ''">and a.pics = #{pics}</if>
+            <if test="examineEndTime != null ">and a.examine_end_time = #{examineEndTime}</if>
+            <if test="taskTitle != null  and taskTitle != ''">and (t.task_title = #{taskTitle} or t.task_describe =
+                #{taskTitle})
+            </if>
+            <if test="examineTag != null  and examineTag != ''">and a.examine_tag = #{examineTag}</if>
+        </where>
+    </select>
+
+    <!--    根据唯一标识查询审批人员信息-->
+    <select id="selectNearTaskFlowAccountList" parameterType="TaskFlowAccount" resultMap="TaskFlowAccountResult">
+        select
+        t.create_time,
+        t.update_time,
+        t.examine_status,
+        t.examine_type,
+        t.read_status,
+        t.reject_content,
+        t.dept_id,
+        t.account_name,
+        t.account_phone,
+        t.account_head,
+        p.post_name,
+        t.pics
+        from task_flow_account t left join sys_post p on t.post_id = p.post_id
+        <where>
+            t.del_status = 0
+            <if test="taskReceiveId != null  and taskReceiveId != ''">and t.task_receive_id = #{taskReceiveId}</if>
+            <if test="accountId != null  and accountId != ''">and t.account_id = #{accountId}</if>
+            <if test="postId != null ">and t.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and t.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and t.examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and t.examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and t.read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and t.reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and t.dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and t.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and t.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and t.account_head = #{accountHead}</if>
+            <if test="pics != null  and pics != ''">and t.pics = #{pics}</if>
+            <if test="examineEndTime != null ">and t.examine_end_time = #{examineEndTime}</if>
+            <if test="delStatus != null ">and t.del_status = #{delStatus}</if>
+            <if test="examineTag != null  and examineTag != ''">and t.examine_tag = #{examineTag}</if>
+        </where>
+        order by t.examine_sequence,t.create_time
+    </select>
+</mapper>

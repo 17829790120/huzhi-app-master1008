@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('训练跟进记录列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>创建者昵称：</label>
+                                <input type="text" name="creatorNickName"/>
+                            </li>
+                            <li>
+                                <label>pk/对赌类型：</label>
+                                <select class="form-control" name="pkBettingType">
+                                    <option value="">所有</option>
+                                    <option value="1">员工与员工pk</option>
+                                    <option value="2">部门与部门pk</option>
+                                    <option value="3">小组与小组pk</option>
+                                    <option value="4">个人与部门对赌</option>
+                                    <option value="5">个人与公司对赌</option>
+                                    <option value="6">部门与公司对赌</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>赢的训练类型：</label>
+                                <select class="form-control" name="winningTrainingType">
+                                    <option value="">所有</option>
+                                    <option value="1">pk</option>
+                                    <option value="2">对赌</option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+<!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:winningTrainingFollowUpRecord:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="web:winningTrainingFollowUpRecord:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>-->
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="web:winningTrainingFollowUpRecord:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('web:winningTrainingFollowUpRecord:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('web:winningTrainingFollowUpRecord:remove')}]];
+        var prefix = ctx + "web/winningTrainingFollowUpRecord";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "训练跟进记录",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'winningTrainingFollowUpRecordId',
+                    title: '赢的训练跟进记录主键id',
+                    visible: false
+                },
+                {
+                    field: 'content',
+                    align: 'center',
+                    title: '跟进内容',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'creatorHeadPortrait',
+                    align: 'center',
+                    title: '创建者头像',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'creatorNickName',
+                    align: 'center',
+                    title: '创建者昵称'
+                },
+                {
+                    field: 'pkBettingType',
+                    align: 'center',
+                    title: 'pk/对赌类型',
+                    formatter: function (value, row, index) {
+                        if (value != null && value == 1) {
+                            return "员工与员工pk";
+                        } else if (value != null && value == 2) {
+                            return "部门与部门pk";
+                        } else if (value != null && value == 3) {
+                            return "小组与小组pk";
+                        } else if (value != null && value == 4) {
+                            return "个人与部门对赌";
+                        } else if (value != null && value == 5) {
+                            return "个人与公司对赌";
+                        } else if (value != null && value == 6) {
+                            return "部门与公司对赌";
+                        }
+                    }
+                },
+                {
+                    field: 'winningTrainingType',
+                    align: 'center',
+                    title: '赢的训练类型',
+                    formatter: function (value, row, index) {
+                        if (value != null && value == 1) {
+                            return "pk";
+                        } else if (value != null && value == 2) {
+                            return "对赌";
+                        }
+                    }
+                },
+                {
+                    field: 'deptId',
+                    align: 'center',
+                    title: '用户归属部门ID'
+                },
+                {
+                    field: 'postNames',
+                    align: 'center',
+                    title: '岗位名称'
+                },
+                {
+                    field: 'deptName',
+                    align: 'center',
+                    title: '部门名称'
+                },
+                {
+                    field: 'companyName',
+                    align: 'center',
+                    title: '公司名称'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        //actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.winningTrainingFollowUpRecordId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.winningTrainingFollowUpRecordId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改直播列表')" />
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+    <!--导入下面这三个-->
+    <script th:src="@{/editor/jq.js}"></script>
+    <script th:src="@{/editor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/editor/editor.js}"></script>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-liveVideo-edit" th:object="${liveVideo}">
+            <input name="liveVideoId" th:field="*{liveVideoId}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">标题：</label>
+                <div class="col-sm-8">
+                    <textarea name="title" class="form-control">[[*{title}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">简介：</label>
+                <div class="col-sm-8">
+                    <textarea name="synopsis" class="form-control">[[*{synopsis}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">详情：</label>
+                <div class="col-sm-8">
+                    <input class="form-control" id="content" name="details" th:field="*{details}" type="hidden">
+                    <textarea id="mytextareaone" style="visibility: inherit;"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">资源链接：</label>
+                <div class="col-sm-8">
+                    <input name="resourceUrl" th:field="*{resourceUrl}"  class="form-control" type="text">
+                    <div class="file-loading">
+                        <input class="form-control file-upload1" id="resourceUrl" name="file" type="file">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">资源类型：</label>
+                <div class="col-sm-8">
+                    <select name="resourceType" class="form-control m-b" th:field="*{resourceType}">
+                        <option value=""></option>
+                        <option value="1">图片</option>
+                        <option value="2">视频</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">直播开始时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <input name="startTime" th:value="${#dates.format(liveVideo.startTime, 'yyyy-MM-dd hh:mm')}"
+                               class="form-control" placeholder="yyyy-MM-dd" type="text">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">直播结束时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <input name="endTime" th:value="${#dates.format(liveVideo.endTime, 'yyyy-MM-dd hh:mm')}"
+                               class="form-control" placeholder="yyyy-MM-dd" type="text">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">直播时长：</label>
+                <div class="col-sm-8">
+                    <input name="duration" th:field="*{duration}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">直播者名称：</label>
+                <div class="col-sm-8">
+                    <input name="liveStreamerName" th:field="*{liveStreamerName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">直播者职位：</label>
+                <div class="col-sm-8">
+                    <input name="liveStreamerPosition" th:field="*{liveStreamerPosition}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">直播者头像：<p id="images"></p></label>
+                <div class="col-sm-8">
+                    <input name="liveStreamerHead" th:field="*{liveStreamerHead}"  class="form-control" type="text">
+                    <div class="file-loading">
+                        <input class="form-control file-upload2" id="liveStreamerHead" name="file" type="file">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">直播链接：</label>
+                <div class="col-sm-8">
+                    <textarea name="liveUrl" class="form-control">[[*{liveUrl}]]</textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: select2-js"/>
+    <th:block th:include="include :: bootstrap-fileinput-js"/>
+    <th:block th:include="include :: datetimepicker-js"/>
+    <script th:inline="javascript">
+        var prefix = ctx + "web/liveVideo";
+        $("#form-liveVideo-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            GetTinyMceContent();
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-liveVideo-edit').serialize());
+            }
+        }
+
+        $("input[name='startTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:00",
+            minView: "month",
+            startView: 0,
+            minuteStep: 5,
+            autoclose: true
+        });
+
+        $("input[name='endTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:00",
+            minView: "month",
+            startView: 0,
+            minuteStep: 5,
+            autoclose: true
+        });
+        window.onload = function () {
+            // 内容
+            setMytextareaIdName('mytextareaone');
+        }
+
+        function GetTinyMceContent() {
+            $("#content").val(tinyMCE.editors[0].getContent());
+        }
+
+        var content = $("#content").val();
+        $("#mytextareaone").val(content);
+
+        $(".file-upload1").each(function (i) {
+            var val = $("#resourceUrl").val();
+            var filetype="image";
+            //获取最后一个.的位置
+            var index= val.lastIndexOf(".");
+            //获取后缀
+            var ext = val.substr(index+1);
+            if (['mp4','MP4'].indexOf(ext.toLowerCase()) !== -1) {
+                filetype="video";
+            }
+            $(this).fileinput({
+                uploadUrl: ctx + 'app/upload',
+                initialPreviewAsData: true,
+                initialPreview: [val],
+                maxFileCount: 1,
+                autoReplace: true,
+                previewFileType: 'video', // 预览类型
+                allowedFileTypes: 'mp4', // 图片上传格式限制
+                maxFileSize: 2048000, // 文件大小限制 最大2000M
+                initialPreviewConfig: [{
+                    type: filetype,
+                    filetype: 'video/mp4'
+                }]
+            }).on('fileuploaded', function (event, data, previewId, index) {
+                $("input[name='" + event.currentTarget.id + "']").val(data.response.message)
+            }).on('fileremoved', function (event, id, index) {
+                $("input[name='" + event.currentTarget.id + "']").val('')
+            })
+            $(this).fileinput('_initFileActions');
+        });
+        $(".file-upload2").each(function (i) {
+            var val = $("input[name='" + this.id + "']").val()
+            $(this).fileinput({
+                uploadUrl: ctx + 'app/upload',
+                initialPreviewAsData: true,
+                initialPreview: [val],
+                allowedFileTypes: ['image'], // 图片上传格式限制
+                //allowedFileExtensions: ['jpg', 'png', 'gif'], // 图片上传格式限制
+                maxFileCount: 1,
+                autoReplace: true
+            }).on('fileuploaded', function (event, data, previewId, index) {
+                $("input[name='" + event.currentTarget.id + "']").val(data.response.message)
+            }).on('fileremoved', function (event, id, index) {
+                $("input[name='" + event.currentTarget.id + "']").val('')
+            })
+            $(this).fileinput('_initFileActions');
+        });
+
+/*        $(".file-upload").each(function (i) {
+            var val = $("input[name='" + this.id + "']").val();
+            //获取最后一个.的位置
+            var index= val.lastIndexOf(".");
+            //获取后缀
+            var ext = val.substr(index+1);
+            if (['mp4','MP4'].indexOf(ext.toLowerCase()) !== -1) {
+                $(this).fileinput({
+                    uploadUrl: ctx + 'app/upload',
+                    initialPreviewAsData: true,
+                    initialPreview: [val],
+                    maxFileCount: 1,
+                    autoReplace: true,
+                    previewFileType: 'video', // 预览类型
+                    allowedFileTypes: 'mp4', // 图片上传格式限制
+                    maxFileSize: 2048000, // 文件大小限制 最大2000M
+                    initialPreviewConfig: [{
+                        type: 'video',
+                        filetype: 'video/mp4'
+                    }]
+                }).on('fileuploaded', function (event, data, previewId, index) {
+                    $("input[name='" + event.currentTarget.id + "']").val(data.response.message)
+                }).on('fileremoved', function (event, id, index) {
+                    $("input[name='" + event.currentTarget.id + "']").val('')
+                })
+                $(this).fileinput('_initFileActions');
+            }else{
+                $(this).fileinput({
+                    uploadUrl: ctx + 'app/upload',
+                    initialPreviewAsData: true,
+                    initialPreview: [val],
+                    maxFileCount: 1,
+                    autoReplace: true
+                }).on('fileuploaded', function (event, data, previewId, index) {
+                    $("input[name='" + event.currentTarget.id + "']").val(data.response.message)
+                }).on('fileremoved', function (event, id, index) {
+                    $("input[name='" + event.currentTarget.id + "']").val('')
+                })
+                $(this).fileinput('_initFileActions');
+            }
+        });*/
+    </script>
+</body>
+</html>

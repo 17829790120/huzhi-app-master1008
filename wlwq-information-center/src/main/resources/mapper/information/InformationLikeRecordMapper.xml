@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.information.mapper.InformationLikeRecordMapper">
+    <resultMap type="InformationLikeRecord" id="InformationLikeRecordResult">
+        <result property="informationLikeRecordId" column="information_like_record_id"/>
+        <result property="primaryId" column="primary_id"/>
+        <result property="primaryTitle" column="primaryTitle"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="accountName" column="account_name"/>
+        <result property="likeType" column="like_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="informationType" column="information_type"/>
+    </resultMap>
+
+    <sql id="selectInformationLikeRecordVo">
+        select information_like_record_id,
+               primary_id,
+               if(like_type = 0 ,(select information_post_title from information_post where information_post_id = primary_id limit 1),(select comment_content from information_comment_record where information_comment_id = primary_id limit 1)) as primaryTitle,
+               account_id,
+               account_head,
+               account_name,
+               like_type,
+               create_time,
+               information_type
+        from information_like_record
+    </sql>
+
+    <select id="selectInformationLikeRecordList" parameterType="InformationLikeRecord"
+            resultMap="InformationLikeRecordResult">
+        <include refid="selectInformationLikeRecordVo"/>
+        <where>
+            <if test="primaryId != null">
+                and primary_id = #{primaryId}
+            </if>
+            <if test="accountId != null  and accountId != ''">
+                and account_id = #{accountId}
+            </if>
+            <if test="accountHead != null  and accountHead != ''">
+                and account_head = #{accountHead}
+            </if>
+            <if test="accountName != null  and accountName != ''">
+                and account_name like concat('%', #{accountName}, '%')
+            </if>
+            <if test="likeType != null">
+                and like_type = #{likeType}
+            </if>
+            <if test="informationType != null and informationType !=0"> and information_type = #{informationType}</if>
+        </where>
+    </select>
+
+    <select id="selectInformationLikeRecordById" parameterType="Long" resultMap="InformationLikeRecordResult">
+        <include refid="selectInformationLikeRecordVo"/>
+        where information_like_record_id = #{informationLikeRecordId}
+    </select>
+    <select id="selectInformationLikeByPrimaryIdAndAccountId" resultMap="InformationLikeRecordResult">
+        SELECT
+            information_like_record_id, account_id, primary_id, account_head, account_name, create_time
+        from information_like_record
+        where primary_id = #{primaryId} and account_id = #{accountId} limit 1
+    </select>
+
+    <insert id="insertInformationLikeRecord" parameterType="InformationLikeRecord" useGeneratedKeys="true"
+            keyProperty="informationLikeRecordId">
+        insert into information_like_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="primaryId != null">
+                primary_id,
+            </if>
+            <if test="accountId != null and accountId != ''">
+                account_id,
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                account_head,
+            </if>
+            <if test="accountName != null and accountName != ''">
+                account_name,
+            </if>
+            <if test="likeType != null">
+                like_type,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="informationType != null">information_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="primaryId != null">
+                #{primaryId},
+            </if>
+            <if test="accountId != null and accountId != ''">
+                #{accountId},
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                #{accountHead},
+            </if>
+            <if test="accountName != null and accountName != ''">
+                #{accountName},
+            </if>
+            <if test="likeType != null">
+                #{likeType},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="informationType != null">#{informationType},</if>
+        </trim>
+    </insert>
+
+    <update id="updateInformationLikeRecord" parameterType="InformationLikeRecord">
+        update information_like_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="primaryId != null">
+                primary_id = #{primaryId},
+            </if>
+            <if test="accountId != null and accountId != ''">
+                account_id = #{accountId},
+            </if>
+            <if test="accountHead != null and accountHead != ''">
+                account_head = #{accountHead},
+            </if>
+            <if test="accountName != null and accountName != ''">
+                account_name = #{accountName},
+            </if>
+            <if test="likeType != null">
+                like_type = #{likeType},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="informationType != null">information_type = #{informationType},</if>
+        </trim>
+        where information_like_record_id = #{informationLikeRecordId}
+    </update>
+
+    <delete id="deleteInformationLikeRecordById" parameterType="Long">
+        delete from information_like_record where information_like_record_id = #{informationLikeRecordId}
+    </delete>
+
+    <delete id="deleteInformationLikeRecordByIds" parameterType="String">
+        delete from information_like_record where information_like_record_id in
+        <foreach item="informationLikeRecordId" collection="array" open="(" separator="," close=")">
+            #{informationLikeRecordId}
+        </foreach>
+    </delete>
+</mapper>

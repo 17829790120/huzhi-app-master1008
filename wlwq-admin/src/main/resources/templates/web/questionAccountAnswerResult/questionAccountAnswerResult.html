@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('问卷记录答案列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>得分：</label>
+                            <input type="text" name="myScore"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:questionAccountAnswerResult:add">
+                                <i class="fa fa-plus"></i> 添加
+                            </a>
+                            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="web:questionAccountAnswerResult:edit">
+                                <i class="fa fa-edit"></i> 修改
+                            </a>
+                            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="web:questionAccountAnswerResult:remove">
+                                <i class="fa fa-remove"></i> 删除
+                            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:questionAccountAnswerResult:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:questionAccountAnswerResult:remove')}]];
+    var prefix = ctx + "web/questionAccountAnswerResult";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "问卷记录答案",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'questionnaireAccountAnswerResultId',
+                    title: '下发问卷记录答案id',
+                    visible: false
+                },
+                {
+                    field: 'accountName',
+                    align: 'center',
+                    title: '用户名称'
+                },
+                {
+                    field: 'content',
+                    align: 'center',
+                    title: '答题内容'
+                },
+                {
+                    field: 'score',
+                    align: 'center',
+                    title: '答题得分'
+                },
+                {
+                    field: 'myScore',
+                    align: 'center',
+                    title: '得分'
+                },
+                {
+                    field: 'createTime',
+                    align: 'center',
+                    title: '创建时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.questionnaireAccountAnswerResultId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.questionnaireAccountAnswerResultId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ReportTrainingClassifyMapper">
+
+    <resultMap type="ReportTrainingClassify" id="ReportTrainingClassifyResult">
+        <result property="reportTrainingClassifyId" column="report_training_classify_id"/>
+        <result property="classifyName" column="classify_name"/>
+        <result property="classifyIcon" column="classify_icon"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delStatus" column="del_status"/>
+    </resultMap>
+
+    <sql id="selectReportTrainingClassifyVo">
+        select report_training_classify_id,
+               classify_name,
+               classify_icon,
+               sort_num,
+               show_status,
+               create_time,
+               update_time,
+               del_status
+        from report_training_classify
+    </sql>
+
+    <select id="selectReportTrainingClassifyList" parameterType="ReportTrainingClassify"
+            resultMap="ReportTrainingClassifyResult">
+        <include refid="selectReportTrainingClassifyVo"/>
+        <where>
+            del_status = 0
+            <if test="classifyName != null  and classifyName != ''">and classify_name like concat('%', #{classifyName},
+                '%')
+            </if>
+            <if test="classifyIcon != null  and classifyIcon != ''">and classify_icon = #{classifyIcon}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+        </where>
+        order by sort_num
+    </select>
+
+    <select id="selectReportTrainingClassifyById" parameterType="Long" resultMap="ReportTrainingClassifyResult">
+        <include refid="selectReportTrainingClassifyVo"/>
+        where del_status = 0 and report_training_classify_id = #{reportTrainingClassifyId}
+    </select>
+
+    <insert id="insertReportTrainingClassify" parameterType="ReportTrainingClassify" useGeneratedKeys="true"
+            keyProperty="reportTrainingClassifyId">
+        insert into report_training_classify
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="classifyName != null">classify_name,</if>
+            <if test="classifyIcon != null">classify_icon,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delStatus != null">del_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="classifyName != null">#{classifyName},</if>
+            <if test="classifyIcon != null">#{classifyIcon},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateReportTrainingClassify" parameterType="ReportTrainingClassify">
+        update report_training_classify
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="classifyName != null">classify_name = #{classifyName},</if>
+            <if test="classifyIcon != null">classify_icon = #{classifyIcon},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+        </trim>
+        where report_training_classify_id = #{reportTrainingClassifyId}
+    </update>
+
+    <update id="deleteReportTrainingClassifyById" parameterType="Long">
+        update report_training_classify set del_status = 1
+        where report_training_classify_id = #{reportTrainingClassifyId}
+    </update>
+
+    <update id="deleteReportTrainingClassifyByIds" parameterType="String">
+        update report_training_classify set del_status = 1 where report_training_classify_id in
+        <foreach item="reportTrainingClassifyId" collection="array" open="(" separator="," close=")">
+            #{reportTrainingClassifyId}
+        </foreach>
+    </update>
+
+</mapper>

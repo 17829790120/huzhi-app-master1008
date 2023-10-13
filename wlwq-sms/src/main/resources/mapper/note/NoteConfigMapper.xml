@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.note.mapper.NoteConfigMapper">
+
+    <resultMap type="NoteConfig" id="NoteConfigResult">
+        <result property="noteConfigId"    column="note_config_id"    />
+        <result property="accessKeyId"    column="access_key_id"    />
+        <result property="noteConfigName"    column="note_config_name"    />
+        <result property="accessKeySecret"    column="access_key_secret"    />
+        <result property="noteConfigType"    column="note_config_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="sdkAppId"    column="sdk_app_id"    />
+    </resultMap>
+
+    <sql id="selectNoteConfigVo">
+        select note_config_id, access_key_id, note_config_name, access_key_secret,sdk_app_id, note_config_type, create_time, update_time from note_config
+    </sql>
+
+    <select id="selectNoteConfigList" parameterType="NoteConfig" resultMap="NoteConfigResult">
+        <include refid="selectNoteConfigVo"/>
+        <where>
+            <if test="accessKeyId != null  and accessKeyId != ''"> and access_key_id = #{accessKeyId}</if>
+            <if test="noteConfigName != null  and noteConfigName != ''"> and note_config_name like concat('%', #{noteConfigName}, '%')</if>
+            <if test="accessKeySecret != null  and accessKeySecret != ''"> and access_key_secret = #{accessKeySecret}</if>
+            <if test="noteConfigType != null  and noteConfigType != ''"> and note_config_type = #{noteConfigType}</if>
+            <if test="sdkAppId != null  and sdkAppId != ''"> and sdk_app_id = #{sdkAppId}</if>
+        </where>
+    </select>
+
+    <select id="selectNoteConfigById" parameterType="String" resultMap="NoteConfigResult">
+        <include refid="selectNoteConfigVo"/>
+        where note_config_id = #{noteConfigId}
+    </select>
+
+    <insert id="insertNoteConfig" parameterType="NoteConfig">
+        insert into note_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noteConfigId != null">note_config_id,</if>
+            <if test="accessKeyId != null and accessKeyId != ''">access_key_id,</if>
+            <if test="noteConfigName != null and noteConfigName != ''">note_config_name,</if>
+            <if test="accessKeySecret != null and accessKeySecret != ''">access_key_secret,</if>
+            <if test="noteConfigType != null and noteConfigType != ''">note_config_type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="sdkAppId != null">sdk_app_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="noteConfigId != null">#{noteConfigId},</if>
+            <if test="accessKeyId != null and accessKeyId != ''">#{accessKeyId},</if>
+            <if test="noteConfigName != null and noteConfigName != ''">#{noteConfigName},</if>
+            <if test="accessKeySecret != null and accessKeySecret != ''">#{accessKeySecret},</if>
+            <if test="noteConfigType != null and noteConfigType != ''">#{noteConfigType},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="sdkAppId != null">#{sdkAppId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateNoteConfig" parameterType="NoteConfig">
+        update note_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accessKeyId != null and accessKeyId != ''">access_key_id = #{accessKeyId},</if>
+            <if test="noteConfigName != null and noteConfigName != ''">note_config_name = #{noteConfigName},</if>
+            <if test="accessKeySecret != null and accessKeySecret != ''">access_key_secret = #{accessKeySecret},</if>
+            <if test="noteConfigType != null and noteConfigType != ''">note_config_type = #{noteConfigType},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="sdkAppId != null">sdk_app_id = #{sdkAppId},</if>
+        </trim>
+        where note_config_id = #{noteConfigId}
+    </update>
+
+    <delete id="deleteNoteConfigById" parameterType="String">
+        delete from note_config where note_config_id = #{noteConfigId}
+    </delete>
+
+    <delete id="deleteNoteConfigByIds" parameterType="String">
+        delete from note_config where note_config_id in
+        <foreach item="noteConfigId" collection="array" open="(" separator="," close=")">
+            #{noteConfigId}
+        </foreach>
+    </delete>
+
+
+</mapper>

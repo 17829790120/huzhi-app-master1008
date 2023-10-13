@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('目标训练管理列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>年份：</label>
+                            <input type="text" name="years"/>
+                        </li>
+                        <li>
+                            <label>发布状态：</label>
+                            <select class="form-control" name="publishStatus">
+                                <option value="">所有</option>
+                                <option value="0">未发布</option>
+                                <option value="1">已发布</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:targetTraining:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="web:targetTraining:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+<!--            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:targetTraining:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:targetTraining:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:targetTraining:remove')}]];
+    var prefix = ctx + "web/targetTraining";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "目标训练管理",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'targetTrainingId',
+                    title: '目标训练主键id',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    align: 'center',
+                    title: '标题'
+                },
+                {
+                    field: 'years',
+                    align: 'center',
+                    title: '年份'
+                },
+                {
+                    field: 'creatorNickName',
+                    align: 'center',
+                    title: '创建者昵称'
+                },
+                {
+                    field: 'creatorHeadPortrait',
+                    align: 'center',
+                    title: '创建者头像',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    visible: editFlag == 'hidden' ? false : true,
+                    field: 'publishStatus',
+                    align: 'center',
+                    title: '发布状态',
+                    formatter: function (value, row, index) {
+                        return publishStatusTools(row);
+                    }
+                },
+/*                {
+                    field: 'publishStatus',
+                    align: 'center',
+                    title: '发布状态',
+                    formatter: function (value, row, index) {
+                        if (value != null && value == 0) {
+                            return $.table.tooltip("未发布");
+                        }else  if (value != null && value == 1) {
+                            return $.table.tooltip("已发布");
+                        }
+                    }
+                },*/
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="executionPost(\'' + row.targetTrainingId + '\')"><i class="fa fa-edit"></i>目标内容管理</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.targetTrainingId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        //actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.targetTrainingId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function publishStatusTools(row) {
+        // 发布
+        if (row.publishStatus === 0) {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.targetTrainingId + '\',\''+row.years +'\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.targetTrainingId + '\',\''+row.years +'\')"></i> ';
+        }
+    }
+
+    function disable(targetTrainingId,years) {
+        $.modal.confirm("确认要取消发布吗？", function () {
+            $.operate.post(prefix + "/edit", {"targetTrainingId": targetTrainingId, "publishStatus": 0,"years":years},function(result){
+                if(result.code != 200){
+                    //alert(result.msg);
+                    return false;
+                }
+                alert("发布成功");
+                return true;
+            });
+        })
+    }
+
+    function executionPost(targetTrainingId) {
+        $.modal.openFull("目标内容列表", ctx + "web/targetContent/targetContentNew?targetTrainingId=" + targetTrainingId);
+    }
+
+    function enable(targetTrainingId,years) {
+        $.modal.confirm("确认要发布吗，发布之后不能再进行修改操作？", function () {
+            $.operate.post(prefix + "/edit", {"targetTrainingId": targetTrainingId, "publishStatus": 1,"years":years},function(result){
+                if(result.code != 200){
+                    //alert(result.msg);
+                    return false;
+                }
+                alert("发布成功");
+                return true;
+            });
+        })
+    }
+</script>
+</body>
+</html>

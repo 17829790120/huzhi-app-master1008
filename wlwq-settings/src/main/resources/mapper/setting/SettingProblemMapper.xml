@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.setting.mapper.SettingProblemMapper">
+    <resultMap type="SettingProblem" id="SettingProblemResult">
+        <result property="problemId" column="problem_id"/>
+        <result property="problemTitle" column="problem_title"/>
+        <result property="problemAnswer" column="problem_answer"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectSettingProblemVo">
+        select problem_id,
+               problem_title,
+               problem_answer,
+               sort_num,
+               show_status,
+               del_status,
+               create_time,
+               update_time
+        from setting_problem
+    </sql>
+
+    <select id="selectSettingProblemList" parameterType="SettingProblem" resultMap="SettingProblemResult">
+        <include refid="selectSettingProblemVo"/>
+        <where>
+            <if test="problemTitle != null  and problemTitle != ''">
+                and problem_title = #{problemTitle}
+            </if>
+            <if test="problemAnswer != null  and problemAnswer != ''">
+                and problem_answer = #{problemAnswer}
+            </if>
+            <if test="sortNum != null">
+                and sort_num = #{sortNum}
+            </if>
+            <if test="showStatus != null">
+                and show_status = #{showStatus}
+            </if>
+            <if test="delStatus != null">
+                and del_status = #{delStatus}
+            </if>
+        </where>
+        order by sort_num desc
+    </select>
+
+    <select id="selectSettingProblemById" parameterType="Long" resultMap="SettingProblemResult">
+        <include refid="selectSettingProblemVo"/>
+        where problem_id = #{problemId}
+    </select>
+
+    <insert id="insertSettingProblem" parameterType="SettingProblem" useGeneratedKeys="true" keyProperty="problemId">
+        insert into setting_problem
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="problemTitle != null and problemTitle != ''">
+                problem_title,
+            </if>
+            <if test="problemAnswer != null and problemAnswer != ''">
+                problem_answer,
+            </if>
+            <if test="sortNum != null">
+                sort_num,
+            </if>
+            <if test="showStatus != null">
+                show_status,
+            </if>
+            <if test="delStatus != null">
+                del_status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="problemTitle != null and problemTitle != ''">
+                #{problemTitle},
+            </if>
+            <if test="problemAnswer != null and problemAnswer != ''">
+                #{problemAnswer},
+            </if>
+            <if test="sortNum != null">
+                #{sortNum},
+            </if>
+            <if test="showStatus != null">
+                #{showStatus},
+            </if>
+            <if test="delStatus != null">
+                #{delStatus},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSettingProblem" parameterType="SettingProblem">
+        update setting_problem
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="problemTitle != null and problemTitle != ''">
+                problem_title = #{problemTitle},
+            </if>
+            <if test="problemAnswer != null and problemAnswer != ''">
+                problem_answer = #{problemAnswer},
+            </if>
+            <if test="sortNum != null">
+                sort_num = #{sortNum},
+            </if>
+            <if test="showStatus != null">
+                show_status = #{showStatus},
+            </if>
+            <if test="delStatus != null">
+                del_status = #{delStatus},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </trim>
+        where problem_id = #{problemId}
+    </update>
+
+    <update id="deleteSettingProblemById" parameterType="Long">
+        update setting_problem
+        set del_status = 1
+        where problem_id = #{problemId}
+    </update>
+
+    <update id="deleteSettingProblemByIds" parameterType="String">
+        update setting_problem
+        set del_status = 1 where problem_id in
+        <foreach item="problemId" collection="array" open="(" separator="," close=")">
+            #{problemId}
+        </foreach>
+    </update>
+
+    <!--    常见问题列表-->
+    <select id="selectProblemList" resultType="com.wlwq.setting.result.ProblemListResult">
+        select problem_id as problemId, problem_title as problemTitle,problem_answer as problemAnswer
+        from setting_problem
+        <where>
+            and del_status = 0 and show_status = 1
+            <if test="problemTitle != null and problemTitle != ''">
+                and problem_title like concat('%', #{problemTitle}, '%')
+            </if>
+        </where>
+    </select>
+
+<!--    常见问题详情-->
+    <select id="selectProblemContentById" resultType="java.lang.String">
+        select problem_answer from setting_problem where problem_id = #{problemId}
+    </select>
+</mapper>

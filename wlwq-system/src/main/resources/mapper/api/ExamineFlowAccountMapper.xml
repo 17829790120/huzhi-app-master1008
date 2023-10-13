@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExamineFlowAccountMapper">
+
+    <resultMap type="ExamineFlowAccount" id="ExamineFlowAccountResult">
+        <result property="examineFlowAccountId" column="examine_flow_account_id"/>
+        <result property="examineInitiateId" column="examine_initiate_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="examineSequence" column="examine_sequence"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="examineType" column="examine_type"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="rejectContent" column="reject_content"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="pics" column="pics"/>
+        <result property="examineEndTime" column="examine_end_time"/>
+        <result property="examineTag" column="examine_tag"/>
+        <result property="postName" column="post_name"/>
+    </resultMap>
+
+    <sql id="selectExamineFlowAccountVo">
+        select examine_flow_account_id,
+               examine_initiate_id,
+               account_id,
+               post_id,
+               examine_sequence,
+               create_time,
+               update_time,
+               examine_status,
+               examine_type,
+               read_status,
+               reject_content,
+               del_status,
+               dept_id,
+               account_name,
+               account_phone,
+               account_head,
+               pics,
+               examine_end_time,
+               examine_tag
+        from examine_flow_account
+    </sql>
+
+    <select id="selectExamineFlowAccountList" parameterType="ExamineFlowAccount" resultMap="ExamineFlowAccountResult">
+        <include refid="selectExamineFlowAccountVo"/>
+        <where>
+            del_status = 0
+            <if test="examineInitiateId != null  and examineInitiateId != ''">and examine_initiate_id =
+                #{examineInitiateId}
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="examineEndTime != null ">and examine_end_time = #{examineEndTime}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+        </where>
+    </select>
+
+    <select id="selectExamineFlowAccountById" parameterType="String" resultMap="ExamineFlowAccountResult">
+        <include refid="selectExamineFlowAccountVo"/>
+        where del_status = 0 and examine_flow_account_id = #{examineFlowAccountId}
+    </select>
+
+    <insert id="insertExamineFlowAccount" parameterType="ExamineFlowAccount">
+        insert into examine_flow_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examineFlowAccountId != null">examine_flow_account_id,</if>
+            <if test="examineInitiateId != null">examine_initiate_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="postId != null">post_id,</if>
+            <if test="examineSequence != null">examine_sequence,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="examineType != null">examine_type,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="rejectContent != null">reject_content,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="pics != null">pics,</if>
+            <if test="examineEndTime != null">examine_end_time,</if>
+            <if test="examineTag != null">examine_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examineFlowAccountId != null">#{examineFlowAccountId},</if>
+            <if test="examineInitiateId != null">#{examineInitiateId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="postId != null">#{postId},</if>
+            <if test="examineSequence != null">#{examineSequence},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="examineType != null">#{examineType},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="rejectContent != null">#{rejectContent},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="examineEndTime != null">#{examineEndTime},</if>
+            <if test="examineTag != null">#{examineTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamineFlowAccount" parameterType="ExamineFlowAccount">
+        update examine_flow_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examineInitiateId != null">examine_initiate_id = #{examineInitiateId},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="examineSequence != null">examine_sequence = #{examineSequence},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="examineType != null">examine_type = #{examineType},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="rejectContent != null">reject_content = #{rejectContent},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="examineEndTime != null">examine_end_time = #{examineEndTime},</if>
+            <if test="examineTag != null">examine_tag = #{examineTag},</if>
+        </trim>
+        where examine_flow_account_id = #{examineFlowAccountId}
+    </update>
+
+    <update id="deleteExamineFlowAccountById" parameterType="String">
+        update examine_flow_account
+        set del_status = 1
+        where examine_flow_account_id = #{examineFlowAccountId}
+    </update>
+
+    <update id="deleteExamineFlowAccountByIds" parameterType="String">
+        update examine_flow_account set del_status = 1 where examine_flow_account_id in
+        <foreach item="examineFlowAccountId" collection="array" open="(" separator="," close=")">
+            #{examineFlowAccountId}
+        </foreach>
+    </update>
+
+    <!--    我审批的审批详情-->
+    <select id="selectMyExamineDetail" parameterType="String" resultType="Map">
+        select f.examine_flow_account_id as examineFlowAccountId,
+               e.examine_initiate_id     as examineInitiateId,
+               e.examine_module_id       as examineModuleId,
+               e.start_time              as startTime,
+               e.end_time                as endTime,
+               e.ask_for_leave_hour      as askForLeaveHour,
+               e.reason,
+               e.pics,
+               f.create_time             as createTime,
+               f.examine_status          as examineStatus,
+               e.reimburse_money         as reimburseMoney,
+               e.money_date              as moneyDate,
+               e.account_name            as accountName,
+               e.account_head            as accountHead,
+               f.read_status             as readStatus,
+               e.total_money             as totalMoney,
+               e.contract_text           as contractText,
+               e.contract_name           as contractName,
+               e.contract_number         as contractNumber,
+               e.contract_money_type     as contractMoneyType,
+               e.contract_deadline_type  as contractDeadlineType,
+               e.signature_date          as signatureDate,
+               e.seal_type               as sealType,
+               f.examine_sequence        as examineSequence,
+               e.content,
+               e.leave_type              as leaveType,
+               e.reissue_clocking_date   as reissueClockingDate,
+               e.raw_clocking_time       as rawClockingTime,
+               e.reissue_clocking_time   as reissueClockingTime,
+               e.clocking_status         as clockingStatus,
+               e.account_id              as accountId,
+               e.dept_id                 as deptId,
+               d.dept_name               as deptName,
+               e.company_id              as companyId,
+               f.examine_tag             as examineTag
+        from examine_flow_account f
+                 left join examine_initiate e on f.examine_initiate_id = e.examine_initiate_id
+                 left join sys_dept d on d.dept_id = e.dept_id
+        where f.del_status = 0
+          and f.account_id = #{accountId}
+          and f.examine_flow_account_id = #{flowAccountId}
+    </select>
+
+
+    <!--    只查询就近的一条-->
+    <select id="selectNearLimitExamineFlowAccount" parameterType="ExamineFlowAccount"
+            resultMap="ExamineFlowAccountResult">
+        select
+        examine_initiate_id,
+        account_id,
+        post_id,
+        examine_sequence,
+        examine_type,
+        dept_id,
+        examine_status
+        from examine_flow_account
+        <where>
+            del_status = 0
+            <if test="examineInitiateId != null  and examineInitiateId != ''">and examine_initiate_id =
+                #{examineInitiateId}
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null  and examineType != ''">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+        </where>
+        order by update_time desc limit 1
+    </select>
+
+    <!--    我审批的审批列表-->
+    <select id="selectMyExamineList" parameterType="com.wlwq.api.domain.ExamineInitiate" resultType="Map">
+        select f.examine_flow_account_id as examineFlowAccountId,
+        e.examine_initiate_id as examineInitiateId,
+        e.examine_module_id as examineModuleId,
+        e.start_time as startTime,
+        e.end_time as endTime,
+        e.ask_for_leave_hour as askForLeaveHour,
+        e.reason,
+        e.pics,
+        f.create_time as createTime,
+        f.examine_status as examineStatus,
+        e.reimburse_money as reimburseMoney,
+        e.money_date as moneyDate,
+        e.account_name as accountName,
+        e.account_head as accountHead,
+        f.read_status as readStatus,
+        e.total_money as totalMoney,
+        e.contract_text as contractText,
+        e.contract_name as contractName,
+        e.contract_number as contractNumber,
+        e.contract_money_type as contractMoneyType,
+        e.contract_deadline_type as contractDeadlineType,
+        e.signature_date as signatureDate,
+        e.seal_type as sealType,
+        f.examine_sequence as examineSequence,
+        e.content,
+        e.leave_type as leaveType,
+        e.reissue_clocking_date as reissueClockingDate,
+        e.raw_clocking_time as rawClockingTime,
+        e.reissue_clocking_time as reissueClockingTime,
+        e.clocking_status as clockingStatus,
+        e.dept_id as deptId,
+        e.company_id as companyId,
+        f.examine_tag as examineTag
+        from examine_flow_account f
+        left join examine_initiate e on f.examine_initiate_id = e.examine_initiate_id
+        where
+        f.account_id = #{accountId}
+        <if test="accountName != null  and accountName != ''">and e.account_name like concat('%', #{accountName},
+            '%')
+        </if>
+        <if test="examineStatus != null and examineStatus == 4">and f.examine_status = #{examineStatus}</if>
+        <if test="examineStatus != null and examineStatus != 4">and f.del_status = 0 and f.examine_status =
+            #{examineStatus}
+        </if>
+        <if test="examineModuleStr != null and examineModuleStr != ''">and
+            find_in_set(e.examine_module_id,#{examineModuleStr})
+        </if>
+        <if test="reason != null  and reason != ''">and e.reason = #{reason}</if>
+        <if test="examineTag != null  and examineTag != ''">and f.examine_tag = #{examineTag}</if>
+        <if test="searchTimeTag != null and searchTimeTag == 1">order by f.create_time desc</if>
+        <if test="searchTimeTag != null and searchTimeTag == 2">order by f.create_time</if>
+    </select>
+
+    <!--    我审批的审批数量-->
+    <select id="selectMyExamineCount" parameterType="com.wlwq.api.domain.ExamineInitiate" resultType="Integer">
+        select count(*)
+        from examine_flow_account f
+        left join examine_initiate e on f.examine_initiate_id = e.examine_initiate_id
+        where f.del_status = 0
+        and f.account_id = #{accountId}
+        <if test="examineStatus != null ">and f.examine_status = #{examineStatus}</if>
+        <if test="examineModuleStr != null and examineModuleStr != ''">and
+            find_in_set(e.examine_module_id,examineModuleStr)
+        </if>
+        <if test="reason != null  and reason != ''">and f.reason = #{reason}</if>
+        <if test="readStatus != null ">and f.read_status = #{readStatus}</if>
+        <if test="examineTag != null  and examineTag != ''">and f.examine_tag = #{examineTag}</if>
+    </select>
+
+    <!--    根据发起审批ID删除相关数据-->
+    <update id="deleteExamineFlowAccountByInitiateId" parameterType="String">
+        update examine_flow_account
+        set del_status = 1
+        where examine_initiate_id = #{examineInitiateId}
+    </update>
+
+    <!--    根据发起者ID修改删除状态-->
+    <update id="updateExamineFlowAccountByInitiateId" parameterType="String">
+        update examine_flow_account
+        set del_status = 0,examine_status = 1,read_status = 0
+        <where>
+            del_status = 1 and examine_status in (1,2,3)
+            <if test="examineFlowAccountId != null  and examineFlowAccountId != ''">and examine_flow_account_id !=
+                #{examineFlowAccountId}
+            </if>
+            <if test="examineInitiateId != null  and examineInitiateId != ''">and examine_initiate_id =
+                #{examineInitiateId}
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null  and examineType != ''">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+        </where>
+    </update>
+
+    <!--    根据唯一标识查询审批人员信息-->
+    <select id="selectNearExamineFlowAccountList" parameterType="ExamineFlowAccount"
+            resultMap="ExamineFlowAccountResult">
+        select
+        e.create_time,
+        e.update_time,
+        e.examine_status,
+        e.examine_type,
+        e.read_status,
+        e.reject_content,
+        e.dept_id,
+        e.account_name,
+        e.account_phone,
+        e.account_head,
+        p.post_name,
+        e.pics
+        from examine_flow_account e left join sys_post p on e.post_id = p.post_id
+        <where>
+            e.del_status = 0
+            <if test="examineInitiateId != null  and examineInitiateId != ''">and e.examine_initiate_id =
+                #{examineInitiateId}
+            </if>
+            <if test="accountId != null  and accountId != ''">and e.account_id = #{accountId}</if>
+            <if test="postId != null ">and e.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and e.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and e.examine_status = #{examineStatus}</if>
+            <if test="examineType != null  and examineType != ''">and e.examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and e.read_status = #{readStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and e.reject_content = #{rejectContent}</if>
+            <if test="deptId != null ">and e.dept_id = #{deptId}</if>
+            <if test="delStatus != null ">and e.del_status = #{delStatus}</if>
+            <if test="examineTag != null  and examineTag != ''">and e.examine_tag = #{examineTag}</if>
+        </where>
+        order by e.examine_sequence,e.create_time
+    </select>
+</mapper>

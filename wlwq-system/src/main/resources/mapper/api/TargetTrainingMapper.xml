@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TargetTrainingMapper">
+
+    <resultMap type="TargetTraining" id="TargetTrainingResult">
+        <result property="targetTrainingId" column="target_training_id"/>
+        <result property="title" column="title"/>
+        <result property="years" column="years"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="companyId" column="company_id"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorHeadPortrait" column="creator_head_portrait"/>
+        <result property="creatorNickName" column="creator_nick_name"/>
+        <result property="publishStatus" column="publish_status"/>
+    </resultMap>
+
+    <sql id="selectTargetTrainingVo">
+        select target_training_id, title, years, del_status, create_time, update_time, show_status, sort_num, company_id, creator_id, creator_head_portrait, creator_nick_name, publish_status from target_training
+    </sql>
+
+    <select id="selectTargetTrainingList" parameterType="TargetTraining" resultMap="TargetTrainingResult">
+        <include refid="selectTargetTrainingVo"/>
+        <where>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="years != null ">and years = #{years}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="creatorId != null  and creatorId != ''">and creator_id = #{creatorId}</if>
+            <if test="creatorHeadPortrait != null  and creatorHeadPortrait != ''">and creator_head_portrait =
+                #{creatorHeadPortrait}
+            </if>
+            <if test="creatorNickName != null  and creatorNickName != ''">and creator_nick_name like concat('%',
+                #{creatorNickName}, '%')
+            </if>
+            <if test="publishStatus != null ">and publish_status = #{publishStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectTargetTrainingById" parameterType="String" resultMap="TargetTrainingResult">
+        <include refid="selectTargetTrainingVo"/>
+        where target_training_id = #{targetTrainingId}
+    </select>
+
+    <insert id="insertTargetTraining" parameterType="TargetTraining">
+        insert into target_training
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="targetTrainingId != null">target_training_id,</if>
+            <if test="title != null">title,</if>
+            <if test="years != null">years,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="creatorHeadPortrait != null">creator_head_portrait,</if>
+            <if test="creatorNickName != null">creator_nick_name,</if>
+            <if test="publishStatus != null">publish_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="targetTrainingId != null">#{targetTrainingId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="years != null">#{years},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="creatorHeadPortrait != null">#{creatorHeadPortrait},</if>
+            <if test="creatorNickName != null">#{creatorNickName},</if>
+            <if test="publishStatus != null">#{publishStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTargetTraining" parameterType="TargetTraining">
+        update target_training
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="years != null">years = #{years},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="creatorHeadPortrait != null">creator_head_portrait = #{creatorHeadPortrait},</if>
+            <if test="creatorNickName != null">creator_nick_name = #{creatorNickName},</if>
+            <if test="publishStatus != null">publish_status = #{publishStatus},</if>
+        </trim>
+        where target_training_id = #{targetTrainingId}
+    </update>
+
+    <delete id="deleteTargetTrainingById" parameterType="String">
+        delete from target_training where target_training_id = #{targetTrainingId}
+    </delete>
+
+    <delete id="deleteTargetTrainingByIds" parameterType="String">
+        delete from target_training where target_training_id in
+        <foreach item="targetTrainingId" collection="array" open="(" separator="," close=")">
+            #{targetTrainingId}
+        </foreach>
+    </delete>
+
+</mapper>

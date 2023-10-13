@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountLikeMapper">
+
+    <resultMap type="AccountLike" id="AccountLikeResult">
+        <result property="accountLikeId" column="account_like_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="targetId" column="target_id"/>
+        <result property="likeType" column="like_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+    </resultMap>
+
+    <sql id="selectAccountLikeVo">
+        select account_like_id, account_id, target_id, like_type,account_name, account_phone, account_head, create_time
+        from account_like
+    </sql>
+
+    <select id="selectAccountLikeList" parameterType="AccountLike" resultMap="AccountLikeResult">
+        <include refid="selectAccountLikeVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+            <if test="likeType != null  and likeType != ''">and like_type = #{likeType}</if>
+            <if test="accountName != null  and accountName != ''"> and account_name like concat('%', #{accountName}, '%')</if>
+            <if test="accountPhone != null  and accountPhone != ''"> and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''"> and account_head = #{accountHead}</if>
+        </where>
+    </select>
+
+    <select id="selectAccountLikeById" parameterType="String" resultMap="AccountLikeResult">
+        <include refid="selectAccountLikeVo"/>
+        where account_like_id = #{accountLikeId}
+    </select>
+
+    <insert id="insertAccountLike" parameterType="AccountLike">
+        insert into account_like
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountLikeId != null">account_like_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="targetId != null">target_id,</if>
+            <if test="likeType != null">like_type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountLikeId != null">#{accountLikeId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="targetId != null">#{targetId},</if>
+            <if test="likeType != null">#{likeType},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountLike" parameterType="AccountLike">
+        update account_like
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+            <if test="likeType != null">like_type = #{likeType},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+        </trim>
+        where account_like_id = #{accountLikeId}
+    </update>
+
+    <delete id="deleteAccountLikeById" parameterType="String">
+        delete
+        from account_like
+        where account_like_id = #{accountLikeId}
+    </delete>
+
+    <delete id="deleteAccountLikeByIds" parameterType="String">
+        delete from account_like where account_like_id in
+        <foreach item="accountLikeId" collection="array" open="(" separator="," close=")">
+            #{accountLikeId}
+        </foreach>
+    </delete>
+
+    <select id="selectAccountLike" parameterType="AccountLike" resultMap="AccountLikeResult">
+        <include refid="selectAccountLikeVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+            <if test="likeType != null  and likeType != ''">and like_type = #{likeType}</if>
+        </where>
+        limit 1
+    </select>
+
+<!--    查询点赞数量-->
+    <select id="selectAccountLikeCount" parameterType="AccountLike" resultType="Integer">
+        select count(*) from account_like
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+            <if test="likeType != null  and likeType != ''">and like_type = #{likeType}</if>
+        </where>
+    </select>
+</mapper>

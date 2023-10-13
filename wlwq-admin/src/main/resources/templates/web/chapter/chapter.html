@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('课程章节列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <input type="hidden" name="courseId" id="courseId"/>
+                    <ul>
+                        <li>
+                            <label>章节名字：</label>
+                            <input type="text" name="chapterName"/>
+                        </li>
+<!--                        <li>
+                            <label>是否试看：</label>
+                            <select name="tryStatus" th:with="type=${@dict.getType('try_status')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>-->
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:chapter:add">
+                <i class="fa fa-plus"></i> 新增
+            </a>
+            <a class="btn btn-primary" onclick="$.operate.edit()" shiro:hasPermission="web:chapter:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-info" id="expandAllBtn">
+                <i class="fa fa-exchange"></i> 展开/折叠
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-tree-table"></table>
+        </div>
+    </div>
+</div>
+<!--动态窗口-->
+<div class="modal inmodal" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated flipInY">
+            <div class="modal-header">
+                <button type="button" class="close closeVideo" data-dismiss="modal"><span
+                        aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">视频</h4>
+                <small class="font-bold">
+            </div>
+            <div class="modal-body">
+                <video id="play" th:src="${videoUrl}"></video>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white closeVideo" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var addFlag = [[${@permission.hasPermi('web:chapter:add')}]];
+    var editFlag = [[${@permission.hasPermi('web:chapter:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:chapter:remove')}]];
+    var courseId = [[${courseId}]];
+    var tryStatusDatas = [[${@dict.getType('try_status')}]];
+    var prefix = ctx + "web/chapter";
+
+    $("#courseId").val(courseId);
+
+    $(function () {
+        var options = {
+            code: "chapterId",
+            parentCode: "parentId",
+            expandColumn: "1",
+            uniqueId: "chapterId",
+            url: prefix + "/list?courseId=" + courseId,
+            createUrl: prefix + "/add/?courseId=" + courseId,
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove/{id}",
+            exportUrl: prefix + "/export",
+            modalName: "课程章节",
+            columns: [{
+                field: 'selectItem',
+                radio: true
+            },
+                {
+                    field: 'chapterId',
+                    title: '章节ID',
+                    visible: false
+                },
+                {
+                    field: 'courseId',
+                    title: '课程ID',
+                    visible: false
+                },
+                {
+                    field: 'courseName',
+                    title: '课程',
+                    align: 'left',
+                    width: '150',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'chapterName',
+                    title: '章节名字',
+                    align: 'left',
+                    width: '150',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+/*                {
+                    field: 'videoUrl',
+                    title: '课程地址',
+                    align: 'left',
+                    formatter: function (value, row, index) {
+                        if (value != null && value != "") {
+                            return '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openVideo(\'' + value + '\')" data-target="#myModal2">点击查看</button> '
+                        }
+                    }
+                },*/
+                {
+                    field: 'videoUrl',
+                    title: '课程地址',
+                    align: 'left',
+                    formatter: function (value, row, index) {
+                        if (row.resourceType == 2 || row.resourceType == 3) {
+                            if (value != null && value != "") {
+                                return '<button type="button" class="btn btn-primary" onclick="openWord(\'' + value + '\')">查看</button> '
+                                //return '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openWord(\'' + value + '\')" data-target="#myModal2">查看</button> '
+                                //return "<img class=\"img-clouds\" onclick=\"clouds(this)\" src=" + replaceSpace(value) + "  style=\"height:50px;\">";
+                            }
+                            //return $.table.imageView(value);
+                        } else if (row.resourceType == 1) {
+                            if (value != null && value != "") {
+                                return '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openVideo(\'' + value + '\')" data-target="#myModal2">点击查看</button> '
+                            }
+                        }
+                    }
+                },
+                {
+                    field: 'examDuration',
+                    align: 'center',
+                    title: '考试时长(分钟)'
+                },
+                {
+                    field: 'examTypes',
+                    align: 'left',
+                    title: '考试题型',
+                    width: '100',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'fullScore',
+                    align: 'center',
+                    title: '满分'
+                },
+                {
+                    field: 'excellentScore',
+                    align: 'center',
+                    title: '优秀分数'
+                },
+                {
+                    field: 'goodScore',
+                    align: 'center',
+                    title: '良好分数'
+                },
+                {
+                    field: 'passingScore',
+                    align: 'center',
+                    title: '及格分数'
+                },
+                {
+                    field: 'fullIntegralScore',
+                    align: 'center',
+                    title: '满分获得积分'
+                },
+                {
+                    field: 'excellentIntegralScore',
+                    align: 'center',
+                    title: '优秀获得积分'
+                },
+                {
+                    field: 'goodIntegralScore',
+                    align: 'center',
+                    title: '良好获得积分'
+                },
+                {
+                    field: 'passingIntegralScore',
+                    align: 'center',
+                    title: '及格获得积分'
+                },
+                {
+                    field: 'resourceType',
+                    align: 'center',
+                    title: '资源类型',
+                    formatter: function (value, row, index) {
+                        if(value != null && value != ""){
+                            if (value == 1) {
+                                return "<span class=\"label label-success\">视频</span>";
+                            }
+                            if (value == 2) {
+                                return "<span class=\"label label-primary\">pdf</span>";
+                            }
+                            if (value == 3) {
+                                return "<span class=\"label label-primary\">PPT</span>";
+                            }
+                        }
+                    }
+                },
+                {
+                    field: 'fileDuration',
+                    align: 'center',
+                    title: '文件时长(秒)'
+                },
+                {
+                    field: 'fileSize',
+                    align: 'center',
+                    title: '文件大小(kb)'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    align: 'left',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (row.parentId !=0){
+                            actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="details(\'' + row.chapterId + '\')"><i class="fa fa-edit"></i>试题目录</a> ');
+                            actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="examRecordDetails(\'' + row.chapterId + '\')"><i class="fa fa-edit"></i>考试记录</a> ');
+                        }
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.chapterId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        if (row.parentId ==0){
+                            actions.push('<a class="btn btn-info  btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="addChapter(\'' + row.chapterId + '\')"><i class="fa fa-plus"></i>新增</a> ');
+                        }
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.chapterId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.treeTable.init(options);
+    });
+    function addChapter(chapterId) {
+        $.modal.open("新增章节", ctx + "web/chapter/add?chapterId="+chapterId+"&courseId=" + $("#courseId").val());
+    }
+    // 打开文档
+    function openWord(url) {
+        window.open(url)
+    }
+    function openVideo(video) {
+        var videoElem = document.getElementById("play");
+        videoElem.src = video;
+        // //视频自动播放
+        videoElem.play();
+    }
+
+    // 点击关闭视频按钮
+    $(function(){
+        $(".closeVideo").click(function(){
+            var videoElem = document.getElementById("play");
+            videoElem.src = '';
+        })
+    })
+    /*试题列表-详细*/
+    function details(chapterId) {
+        $.modal.openFull("试题列表", ctx + "web/questionManager/questionManagerList?chapterId="+chapterId+"&courseId="+courseId);
+    }
+    /*考试记录-详细*/
+    function examRecordDetails(chapterId) {
+        $.modal.openFull("考试记录列表", ctx + "web/examRecord/examRecordList?chapterId="+chapterId+"&courseId="+courseId);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExperienceSharingMapper">
+
+    <resultMap type="ExperienceSharing" id="ExperienceSharingResult">
+        <result property="experienceSharingId" column="experience_sharing_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="headPortrait" column="head_portrait"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="sharingContent" column="sharing_content"/>
+        <result property="chapterId" column="chapter_id"/>
+        <result property="chapterName" column="chapter_name"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="postNames" column="post_names"/>
+        <result property="courseTitle" column="course_title"/>
+        <result property="courseId" column="course_id"/>
+        <result property="delStatus" column="del_status"/>
+    </resultMap>
+
+    <sql id="selectExperienceSharingVo">
+        select e.experience_sharing_id,
+               e.account_id,
+               e.head_portrait,
+               e.nick_name,
+               e.create_time,
+               e.sharing_content,
+               e.chapter_id,
+               e.chapter_name,
+               e.company_id,
+               sd.dept_name as company_name,
+               e.dept_id,
+               d.dept_name,
+               e.post_ids,
+               e.post_names,
+               e.course_title,
+               e.course_id
+        from experience_sharing e
+                 left join sys_dept sd on e.company_id = sd.dept_id
+                 left join sys_dept d on e.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectExperienceSharingList" parameterType="ExperienceSharing" resultMap="ExperienceSharingResult">
+        <include refid="selectExperienceSharingVo"/>
+        <where>
+            del_status = 0
+            <if test="accountId != null  and accountId != ''">and e.account_id = #{accountId}</if>
+            <if test="headPortrait != null  and headPortrait != ''">and e.head_portrait = #{headPortrait}</if>
+            <if test="nickName != null  and nickName != ''">and e.nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="sharingContent != null  and sharingContent != ''">and e.sharing_content like concat('%',
+                #{sharingContent}, '%')
+            </if>
+            <if test="chapterId != null ">and e.chapter_id = #{chapterId}</if>
+            <if test="chapterName != null  and chapterName != ''">and e.chapter_name like concat('%', #{chapterName},
+                '%')
+            </if>
+            <if test="companyId != null ">and e.company_id = #{companyId}</if>
+            <if test="companyName != null  and companyName != ''">and e.company_name like concat('%', #{companyName},
+                '%')
+            </if>
+            <if test="deptId != null ">and e.dept_id = #{deptId}</if>
+            <if test="deptName != null  and deptName != ''">and e.dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="postIds != null  and postIds != ''">and e.post_ids = #{postIds}</if>
+            <if test="postNames != null  and postNames != ''">and e.post_names = #{postNames}</if>
+            <if test="courseTitle != null  and courseTitle != ''">
+                and e.course_title like concat('%', #{courseTitle}, '%')
+            </if>
+            <if test="courseId != null">
+                and e.course_id = #{courseId}
+            </if>
+            <if test="delStatus != null ">and e.del_status = #{delStatus}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by e.create_time desc
+    </select>
+
+    <select id="selectExperienceSharingById" parameterType="String" resultMap="ExperienceSharingResult">
+        <include refid="selectExperienceSharingVo"/>
+        where e.experience_sharing_id = #{experienceSharingId}
+    </select>
+
+    <insert id="insertExperienceSharing" parameterType="ExperienceSharing">
+        insert into experience_sharing
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="experienceSharingId != null">experience_sharing_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="headPortrait != null">head_portrait,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="sharingContent != null">sharing_content,</if>
+            <if test="chapterId != null">chapter_id,</if>
+            <if test="chapterName != null">chapter_name,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="postNames != null">post_names,</if>
+            <if test="courseTitle != null and courseTitle != ''">
+                course_title,
+            </if>
+            <if test="courseId != null">
+                course_id,
+            </if>
+            <if test="delStatus != null">del_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="experienceSharingId != null">#{experienceSharingId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="headPortrait != null">#{headPortrait},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="sharingContent != null">#{sharingContent},</if>
+            <if test="chapterId != null">#{chapterId},</if>
+            <if test="chapterName != null">#{chapterName},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="postNames != null">#{postNames},</if>
+            <if test="courseTitle != null and courseTitle != ''">
+                #{courseTitle},
+            </if>
+            <if test="courseId != null">
+                #{courseId},
+            </if>
+            <if test="delStatus != null">#{delStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExperienceSharing" parameterType="ExperienceSharing">
+        update experience_sharing
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="headPortrait != null">head_portrait = #{headPortrait},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="sharingContent != null">sharing_content = #{sharingContent},</if>
+            <if test="chapterId != null">chapter_id = #{chapterId},</if>
+            <if test="chapterName != null">chapter_name = #{chapterName},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="postNames != null">post_names = #{postNames},</if>
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="courseTitle != null and courseTitle != ''">course_title = #{courseTitle},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+        </trim>
+        where experience_sharing_id = #{experienceSharingId}
+    </update>
+    <update id="deleteExperienceSharingById" parameterType="String">
+        update experience_sharing set del_status = 1
+        where experience_sharing_id = #{experienceSharingId}
+    </update>
+
+    <update id="deleteExperienceSharingByIds" parameterType="String">
+        update experience_sharing set del_status = 1 where experience_sharing_id in
+        <foreach item="experienceSharingId" collection="array" open="(" separator="," close=")">
+            #{experienceSharingId}
+        </foreach>
+    </update>
+    <!--    <delete id="deleteExperienceSharingById" parameterType="String">
+            delete
+            from experience_sharing
+            where experience_sharing_id = #{experienceSharingId}
+        </delete>
+
+        <delete id="deleteExperienceSharingByIds" parameterType="String">
+            delete from experience_sharing where experience_sharing_id in
+            <foreach item="experienceSharingId" collection="array" open="(" separator="," close=")">
+                #{experienceSharingId}
+            </foreach>
+        </delete>-->
+
+</mapper>

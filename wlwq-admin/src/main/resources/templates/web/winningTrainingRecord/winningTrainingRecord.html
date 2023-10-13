@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('人与人pk列表')"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <!--            <div class="col-sm-12 search-collapse">
+                        <form id="formId">
+                            <div class="select-list">
+                                <ul>
+                                    <li>
+                                        <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                        <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>-->
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="web:winningTrainingRecord:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+<!--            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="web:winningTrainingRecord:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:winningTrainingRecord:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+        <div class="enlarge_box" style="cursor:pointer;">
+            <img id="enlarge_box_img" alt="" name="pic" src="" style="z-index: 99;">
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<th:block th:include="include :: bootstrap-table-fixed-columns-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:winningTrainingRecord:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:winningTrainingRecord:remove')}]];
+    var prefix = ctx + "web/winningTrainingRecord";
+    var templateType = [[${templateType}]];
+    var pkBettingType = [[${pkBettingType}]];
+
+    $(function () {
+        ajaxColumns();
+    });
+
+    // 动态获取列
+    function ajaxColumns() {
+        var url = prefix + "/ajaxColumns?templateType=" + templateType;
+        var dataParam = $.common.formToJSON("table-form");
+        $.modal.loading("正在查询中，请稍后...");
+        $.post(url, dataParam, function (result) {
+            if (result.code == web_status.SUCCESS) {
+                setColumns(result.data);
+            } else if (result.code == web_status.WARNING) {
+                $.modal.alertWarning(result.msg)
+            } else {
+                $.modal.alertError(result.msg);
+            }
+            $.modal.closeLoading();
+        });
+    }
+
+    // 设置列
+    function setColumns(list) {
+        var columns = [];
+        columns.push(
+            {
+                title: "序号",
+                formatter: function (value, row, index) {
+                    return $.table.serialNumber(index);
+                }
+            }
+        );
+        list.forEach(function (item) {
+            if ($.common.equals('status', item.fieldEnglishName)) {
+                columns.push({
+                    field: item.fieldEnglishName,
+                    title: item.fieldName,
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(datas, value);
+                    }
+                })
+            } else {
+                columns.push({
+                    field: item.fieldEnglishName,
+                    title: item.fieldName,
+                    formatter: function (value, row, index) {
+                        if (value != null && value != "") {
+                            // value.indexOf("")的值为-1时表示不包含
+                            if (value.indexOf("png") != -1
+                                || value.indexOf("PNG") != -1
+                                || value.indexOf("jpg") != -1
+                                || value.indexOf("JPG") != -1
+                                || value.indexOf("gif") != -1
+                                || value.indexOf("GIF") != -1) {
+                                var valueArr = value.split(",");
+                                var html = "";
+                                for (var i = 0; i < valueArr.length; i++) {
+                                    var one = '<img class="img-clouds" onclick="clouds(this)" src=' + replaceSpace(valueArr[i]) + ' style=" width:80px; height:80px;"> ';
+                                    html += one;
+                                }
+                                return html;
+                            }
+                            if (value.indexOf("xls") != -1
+                                || value.indexOf("XLS") != -1
+                                || value.indexOf("xlsx") != -1
+                                || value.indexOf("XLSX") != -1
+                                || value.indexOf("txt") != -1
+                                || value.indexOf("TXT") != -1
+                                || value.indexOf("DOC") != -1
+                                || value.indexOf("doc") != -1
+                                || value.indexOf("ppt") != -1
+                                || value.indexOf("PPT") != -1
+                                || value.indexOf("docx") != -1
+                                || value.indexOf("DOCX") != -1
+                                || value.indexOf("PPTX") != -1
+                                || value.indexOf("pptx") != -1) {
+                                var valueArr = value.split(",");
+                                var html = "";
+                                for (var i = 0; i < valueArr.length; i++) {
+                                    html += '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openWord(\'' + valueArr[i] + '\')" data-target="#myModal2">查看</button> '
+                                }
+                                return html;
+                            }
+                        }
+                        return $.table.tooltip(value);
+                    }
+                })
+            }
+        });
+        columns.push(
+            {
+                field: 'creatorHeadPortrait',
+                align: 'center',
+                title: '创建者头像',
+                formatter: function (value, row, index) {
+                    return $.table.imageView(value);
+                }
+            },
+            {
+                field: 'creatorNickName',
+                align: 'center',
+                title: '创建者昵称'
+            },
+            {
+                field: 'winningTrainingType',
+                align: 'center',
+                title: '赢的训练类型',
+                formatter: function (value, row, index) {
+                    if (value != null && value == 1) {
+                        return "pk";
+                    } else if (value != null && value == 2) {
+                        return "对赌";
+                    }
+                }
+            },
+            {
+                field: 'createTime',
+                title: '创建时间'
+            },
+            {
+                title: '操作',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    console.log(row)
+                    var actions = [];
+                    actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)"  onclick="$.operate.editFull(\'' + row.winningTrainingRecordId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                    actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)"  onclick="$.operate.remove(\'' + row.winningTrainingRecordId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                    return actions.join('');
+                }
+            });
+        if (!table.get(table.options.id)) {
+            initTable(columns);
+        } else {
+            refreshTable(columns);
+        }
+    }
+
+    // 刷新表格
+    function refreshTable(columns) {
+        var options = {
+            columns: columns
+        };
+        $("#" + table.options.id).bootstrapTable('refreshOptions', options);
+    }
+
+    // 初始化表格
+    function initTable(columns) {
+        var options = {
+            url: prefix + "/list?templateType=" + templateType+"&pkBettingType="+pkBettingType,
+            createUrl: prefix + "/add?templateType=" + templateType,
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            // exportUrl: prefix + "/export?templateType="+templateType,
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            modalName: "数据",
+            fixedColumns: true,
+            fixedNumber: 4,
+            fixedRightNumber: 1,
+            columns: columns
+        };
+        $.table.init(options);
+    }
+
+    // 重置
+    function reset() {
+        $("#table-form")[0].reset();
+        ajaxColumns();
+    }
+
+    // 打开文档
+    function openWord(url) {
+        window.open(url)
+    }
+
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+    function replaceSpace(value) {
+        return value.replace(/ /g, '%20');
+    }
+
+</script>
+</body>
+</html>

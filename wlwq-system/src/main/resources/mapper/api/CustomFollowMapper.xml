@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CustomFollowMapper">
+    
+    <resultMap type="CustomFollow" id="CustomFollowResult">
+        <result property="customFollowId"    column="custom_follow_id"    />
+        <result property="customInfoId"    column="custom_info_id"    />
+        <result property="customUserId"    column="custom_user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="customContent"    column="custom_content"    />
+        <result property="customAnnex"    column="custom_annex"    />
+        <result property="sortNum"    column="sort_num"    />
+        <result property="showStatustiny"    column="show_statustiny"    />
+        <result property="delStatus"    column="del_status"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="companyId"    column="company_id"    />
+    </resultMap>
+
+    <sql id="selectCustomFollowVo">
+        select custom_follow_id, custom_info_id, custom_user_id, create_time, create_by, update_time, update_by, custom_content, custom_annex, sort_num, show_statustiny, del_status,dept_id,company_id from custom_follow
+    </sql>
+
+    <select id="selectCustomFollowList" parameterType="CustomFollow" resultMap="CustomFollowResult">
+        <include refid="selectCustomFollowVo"/>
+        <where>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="customInfoId != null "> and custom_info_id = #{customInfoId}</if>
+            <if test="customUserId != null "> and custom_user_id = #{customUserId}</if>
+            <if test="customContent != null  and customContent != ''"> and custom_content = #{customContent}</if>
+            <if test="customAnnex != null  and customAnnex != ''"> and custom_annex = #{customAnnex}</if>
+            <if test="sortNum != null "> and sort_num = #{sortNum}</if>
+            <if test="showStatustiny != null  and showStatustiny != ''"> and show_statustiny = #{showStatustiny}</if>
+            <if test="delStatus != null "> and del_status = #{delStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectCustomFollowById" parameterType="Long" resultMap="CustomFollowResult">
+        <include refid="selectCustomFollowVo"/>
+        where custom_follow_id = #{customFollowId}
+    </select>
+        
+    <insert id="insertCustomFollow" parameterType="CustomFollow">
+        insert into custom_follow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="customFollowId != null">custom_follow_id,</if>
+            <if test="customInfoId != null">custom_info_id,</if>
+            <if test="customUserId != null">custom_user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="customContent != null">custom_content,</if>
+            <if test="customAnnex != null">custom_annex,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatustiny != null">show_statustiny,</if>
+            <if test="delStatus != null">del_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="customFollowId != null">#{customFollowId},</if>
+            <if test="customInfoId != null">#{customInfoId},</if>
+            <if test="customUserId != null">#{customUserId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="customContent != null">#{customContent},</if>
+            <if test="customAnnex != null">#{customAnnex},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatustiny != null">#{showStatustiny},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomFollow" parameterType="CustomFollow">
+        update custom_follow
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="customInfoId != null">custom_info_id = #{customInfoId},</if>
+            <if test="customUserId != null">custom_user_id = #{customUserId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="customContent != null">custom_content = #{customContent},</if>
+            <if test="customAnnex != null">custom_annex = #{customAnnex},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatustiny != null">show_statustiny = #{showStatustiny},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+        </trim>
+        where custom_follow_id = #{customFollowId}
+    </update>
+
+    <delete id="deleteCustomFollowById" parameterType="Long">
+        delete from custom_follow where custom_follow_id = #{customFollowId}
+    </delete>
+
+    <delete id="deleteCustomFollowByIds" parameterType="String">
+        delete from custom_follow where custom_follow_id in 
+        <foreach item="customFollowId" collection="array" open="(" separator="," close=")">
+            #{customFollowId}
+        </foreach>
+    </delete>
+
+    <resultMap type="com.wlwq.api.resultVO.CustomFollowVO" id="CustomFollowVOResult">
+        <result property="customFollowId"    column="custom_follow_id"    />
+        <result property="customUserId"    column="custom_user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="customContent"    column="custom_content"    />
+        <result property="customAnnex"    column="custom_annex"    />
+        <result property="nickName"    column="nick_name"    />
+    </resultMap>
+    <select id="findCustomFollowVO" resultMap="CustomFollowVOResult">
+        select custom_follow_id,custom_user_id,nick_name,cf.create_time,custom_content,custom_annex
+        from custom_follow cf
+        left join api_account su on cf.custom_user_id=su.account_id
+        where custom_info_id=#{customId}
+        <if test="userId != null and userId != ''">
+            and cf.custom_user_id =#{userId}
+        </if>
+        ORDER BY cf.create_time desc
+    </select>
+
+
+    <resultMap type="com.wlwq.api.resultVO.CustomFollowListVO" id="CustomFollowListVOResult">
+        <result property="customFollowId"    column="custom_follow_id"    />
+        <result property="customContent"    column="custom_content"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="customName"    column="custom_name"    />
+    </resultMap>
+    <select id="findCustomFollows" resultMap="CustomFollowListVOResult">
+         select custom_follow_id,custom_name,nick_name,custom_content
+            from custom_follow cf
+            LEFT JOIN custom_custom_info cci on cf.custom_info_id=cci.custom_id
+            LEFT JOIN api_account aa on aa.account_id=cci.custom_responsible
+            where  cf.company_id=#{companyId}
+        <if test="customName != null and customName != ''">
+            and custom_name like concat('%', #{customName}, '%')
+        </if>
+    </select>
+</mapper>

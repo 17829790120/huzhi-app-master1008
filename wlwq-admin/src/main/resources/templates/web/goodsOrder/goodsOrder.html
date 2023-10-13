@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('订单信息列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>订单编号：</label>
+                            <input type="text" name="orderSn"/>
+                        </li>
+                        <li>
+                            <label>订单状态：</label>
+                            <select name="orderStatus" class="form-control m-b"
+                                    th:with="type=${@dict.getType('order_status')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>支付方式：</label>
+                            <select name="payType" class="form-control m-b"
+                                    th:with="type=${@dict.getType('pay_method')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>用户昵称：</label>
+                            <input type="text" name="nickName"/>
+                        </li>
+                        <li>
+                            <label>用户手机号：</label>
+                            <input type="text" name="phone"/>
+                        </li>
+                        <li>
+                            <label>收货人：</label>
+                            <input type="text" name="consigneeName"/>
+                        </li>
+                        <li>
+                            <label>收货人手机号：</label>
+                            <input type="text" name="consigneePhone"/>
+                        </li>
+                        <li class="select-datetime">
+                            <label>下单时间： </label>
+                            <input type="text" id="startTime" name="startTime" placeholder="开始时间" autocomplete="off"/>
+                            <span>-</span>
+                            <input type="text" id="endTime" name="endTime" placeholder="结束时间" autocomplete="off"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:goodsOrder:add">
+                                <i class="fa fa-plus"></i> 添加
+                            </a>
+                            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="web:goodsOrder:edit">
+                                <i class="fa fa-edit"></i> 修改
+                            </a>
+                            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="web:goodsOrder:remove">
+                                <i class="fa fa-remove"></i> 删除
+                            </a>
+                            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:goodsOrder:export">
+                                <i class="fa fa-download"></i> 导出
+                            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-table-fixed-columns-js"/>
+<script th:inline="javascript">
+    // var editFlag = [[${@permission.hasPermi('web:goodsOrder:edit')}]];
+    // var removeFlag = [[${@permission.hasPermi('web:goodsOrder:remove')}]];
+
+    var editFlag = [[${@permission.hasPermi('web:goodsOrder:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:goodsOrder:remove')}]];
+    var invoiceFlag = [[${@permission.hasPermi('web:goodsOrder:invoice')}]];
+    var orderStatusDatas = [[${@dict.getType('order_status')}]];
+    var payTypeDatas = [[${@dict.getType('pay_method')}]];
+    var whetherStatusDatas = [[${@dict.getType('whether_status')}]];
+    var orderDetailsFlag = [[${@permission.hasPermi('web:goodsOrderDetails:view')}]];
+    var prefix = ctx + "web/goodsOrder";
+
+/*    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "订单信息",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'orderId',
+                    title: '订单ID',
+                    visible: false
+                },
+                {
+                    field: 'orderSn',
+                    align: 'center',
+                    title: '订单编号'
+                },
+                {
+                    field: 'accountId',
+                    align: 'center',
+                    title: '用户id'
+                },
+                {
+                    field: 'consigneeName',
+                    align: 'center',
+                    title: '收货人'
+                },
+                {
+                    field: 'consigneePhone',
+                    align: 'center',
+                    title: '收货人手机号'
+                },
+                {
+                    field: 'totalPrice',
+                    align: 'center',
+                    title: '商品金额'
+                },
+                {
+                    field: 'payPrice',
+                    align: 'center',
+                    title: '实付金额'
+                },
+                {
+                    field: 'orderStatus',
+                    align: 'center',
+                    title: '订单状态'
+                },
+                {
+                    field: 'payType',
+                    align: 'center',
+                    title: '支付方式'
+                },
+                {
+                    field: 'payStatus',
+                    align: 'center',
+                    title: '是否支付'
+                },
+                {
+                    field: 'payTime',
+                    align: 'center',
+                    title: '支付时间'
+                },
+                {
+                    field: 'tradeNo',
+                    align: 'center',
+                    title: '支付流水号'
+                },
+                {
+                    field: 'appId',
+                    align: 'center',
+                    title: 'AppId'
+                },
+                {
+                    field: 'moduleName',
+                    align: 'center',
+                    title: '模块名称'
+                },
+                {
+                    field: 'cancelReason',
+                    align: 'center',
+                    title: '取消原因'
+                },
+                {
+                    field: 'cancelTime',
+                    align: 'center',
+                    title: '取消时间'
+                },
+                {
+                    field: 'finishTime',
+                    align: 'center',
+                    title: '完成时间'
+                },
+                {
+                    field: 'delStatus',
+                    align: 'center',
+                    title: '是否删除(0：否 1：是）'
+                },
+                {
+                    field: 'remark',
+                    align: 'center',
+                    title: '备注'
+                },
+                {
+                    field: 'integral',
+                    align: 'center',
+                    title: '所得积分'
+                },
+                {
+                    field: 'orderType',
+                    align: 'center',
+                    title: '0：资源文件'
+                },
+                {
+                    field: 'nickName',
+                    align: 'center',
+                    title: '昵称'
+                },
+                {
+                    field: 'headPortrait',
+                    align: 'center',
+                    title: '头像'
+                },
+                {
+                    field: 'goodsId',
+                    align: 'center',
+                    title: '商品id'
+                },
+                {
+                    field: 'goodsName',
+                    align: 'center',
+                    title: '商品名称'
+                },
+                {
+                    field: 'goodsPrice',
+                    align: 'center',
+                    title: '商品价格'
+                },
+                {
+                    field: 'companyId',
+                    align: 'center',
+                    title: '公司ID'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.orderId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.orderId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });*/
+
+    $(function () {
+        layui.use('laydate', function() {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#startTime',
+                type: 'datetime',
+                trigger: 'click'
+            });
+            laydate.render({
+                elem: '#endTime',
+                type: 'datetime',
+                trigger: 'click'
+            });
+        });
+        var options = {
+            url: prefix + "/list",
+            updateUrl: prefix + "/edit/{id}",
+            detailUrl: prefix + "/detail/{id}",
+            exportUrl: prefix + "/export",
+            invoiceUrl: prefix + "/invoice/{id}",
+            modalName: "订单信息",
+            fixedColumns: true,
+            fixedNumber: 4,
+            fixedRightNumber: 1,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'orderId',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'orderSn',
+                    title: '订单编号'
+                },
+                {
+                    field: 'nickName',
+                    title: '用户昵称'
+                },
+                {
+                    field: 'orderStatus',
+                    title: '订单状态',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(orderStatusDatas, value);
+                    }
+                },
+                {
+                    field: 'totalPrice',
+                    align: 'center',
+                    title: '商品金额'
+                },
+                {
+                    field: 'payPrice',
+                    align: 'center',
+                    title: '实付金额'
+                },
+                {
+                    field: 'payType',
+                    align: 'center',
+                    title: '支付方式',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(payTypeDatas, value);
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '下单时间'
+                },
+                {
+                    field: 'remark',
+                    title: '备注',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if(row.orderStatus == "0"){
+                            actions.push('<a class="btn btn-success btn-xs"  onclick="toPay(\'' + row.orderId + '\');"><i class="fa fa-car"></i>点击支付</a> ');
+                        }
+/*                        if(row.orderStatus == "1"){
+                            actions.push('<a class="btn btn-default btn-xs"  data-toggle="modal" data-target="#myModal" onclick="auditData(\'' + row.orderId + '\');"><i class="fa fa-car"></i>点击发货</a> ');
+                        }
+                        if(row.orderStatus != "1"){
+                            actions.push('<a class="btn btn-warning btn-xs"  data-toggle="modal" data-target="#myModal" onclick="auditData(\'' + row.orderId + '\');"><i class="fa fa-car"></i>修改物流单号</a> ');
+                        }
+                        if(row.orderStatus == "2"){
+                            actions.push('<a class="btn btn-success btn-xs"  onclick="finish(\'' + row.orderId + '\');"><i class="fa fa-car"></i>点击收货</a> ');
+                        }
+                        //actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.operate.detail(\'' + row.orderSn + '\')"><i class="fa"></i>订单详情</a> ');
+                        actions.push('<a class="btn btn-info btn-xs ' + orderDetailsFlag + '" href="javascript:void(0)" onclick="orderDetails(\'' + row.orderId + '\')"><i class="fa"></i>订单明细</a> ');*/
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    /**
+     * 去支付
+     */
+    function toPay(id){
+        $.modal.confirm("确认要支付吗？", function () {
+            $.operate.post(prefix + "/toPay", {"orderId": id});
+        })
+    }
+
+    /**
+     * 去完成
+     */
+    function finish(id){
+        $.modal.confirm("确认要收货吗？", function () {
+            $.operate.post(prefix + "/finish", {"orderId": id});
+        })
+    }
+
+    function auditData(orderId){
+        $("#expressageTitle").val("");
+        $("#expressageCode").val("");
+        $("#expressageNo").val("");
+        $("#orderId").val(orderId);
+    }
+</script>
+</body>
+</html>

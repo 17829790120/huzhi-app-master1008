@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('AX话单记录列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            通话呼叫方向：
+                            <select name="direction">
+                                <option value="">所有</option>
+                                <option value="0">其他用户呼叫A</option>
+                                <option value="1">A呼叫其他用户</option>
+                                <option value="2">异常场景（如无绑定数据等）</option>
+                            </select>
+                        </li>
+                        <li>
+                            客户的云服务账号：
+                            <input type="text" name="spId"/>
+                        </li>
+                        <li>
+                            隐私保护通话应用的app_key：
+                            <input type="text" name="appKey"/>
+                        </li>
+                        <li>
+                            呼叫记录的唯一标识：
+                            <input type="text" name="icId"/>
+                        </li>
+                        <li>
+                            隐私保护号码：
+                            <input type="text" name="bindNum"/>
+                        </li>
+                        <li>
+                            通话链路的唯一标识：
+                            <input type="text" name="sessionId"/>
+                        </li>
+                        <li>
+                            主叫号码：
+                            <input type="text" name="callerNum"/>
+                        </li>
+                        <li>
+                            被叫号码：
+                            <input type="text" name="calleeNum"/>
+                        </li>
+                        <li>
+                            录音标识：
+                            <select name="recordFlag">
+                                <option value="">所有</option>
+                                <option value="1">有录音</option>
+                                <option value="0">未录音</option>
+                            </select>
+                        </li>
+                        <li>
+                            录音文件名：
+                            <input type="text" name="recordObjectName"/>
+                        </li>
+                        <li>
+                            呼叫的业务类型：
+                            <select name="serviceType">
+                                <option value="">所有</option>
+                                <option value="003">AX模式</option>
+                            </select>
+                        </li>
+                        <li>
+                            绑定ID：
+                            <input type="text" name="subscriptionId"/>
+                        </li>
+                        <li>
+                            隐私保护号码：
+                            <input type="text" name="areaCode"/>
+                        </li>
+                        <li>
+                            呼叫的通话时长，单位为秒。：
+                            <input type="text" name="callDuration"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="privatePhone:axTicketRecord:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()"
+               shiro:hasPermission="privatePhone:axTicketRecord:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var voiceFlag = [[${@permission.hasPermi('privatePhone:axTicketRecord:voice')}]];
+    var downFlag = [[${@permission.hasPermi('privatePhone:axTicketRecord:down')}]];
+    var removeFlag = [[${@permission.hasPermi('privatePhone:axTicketRecord:remove')}]];
+    var prefix = ctx + "privatePhone/axTicketRecord";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "AX话单记录",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'axTicketRecordId',
+                    title: 'AX话单记录ID',
+                    visible: false
+                },
+                {
+                    field: 'direction',
+                    title: '通话呼叫方向',
+                    formatter: function (value, row, index) {
+                        if (value === 0) {
+                            return "<span class=\"badge badge-warning\">其他用户呼叫A</span>";
+                        } else if (value === 1) {
+                            return "<span class=\"badge badge-success\">A呼叫其他用户</span>";
+                        } else {
+                            return "<span class=\"badge badge-danger\">异常场景（如无绑定数据等）</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'spId',
+                    title: '客户的云服务账号'
+                },
+                {
+                    field: 'appKey',
+                    title: '隐私保护通话应用的app_key'
+                },
+                {
+                    field: 'icId',
+                    title: '呼叫记录的唯一标识'
+                },
+                {
+                    field: 'bindNum',
+                    title: '隐私保护号码'
+                },
+                {
+                    field: 'sessionId',
+                    title: '通话链路的唯一标识'
+                },
+                {
+                    field: 'callerNum',
+                    title: '主叫号码'
+                },
+                {
+                    field: 'calleeNum',
+                    title: '被叫号码'
+                },
+                {
+                    field: 'callinTime',
+                    title: '呼入的开始时间'
+                },
+                {
+                    field: 'callEndTime',
+                    title: '呼叫结束时间'
+                },
+                {
+                    field: 'recordFlag',
+                    title: '录音标识',
+                    formatter: function (value, row, index) {
+                        if (value === 0) {
+                            return "<span class=\"badge badge-danger\">无录音</span>";
+                        } else {
+                            return "<span class=\"badge badge-info\">有录音</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'recordStartTime',
+                    title: '录音开始时间'
+                },
+                {
+                    field: 'recordObjectName',
+                    title: '录音文件名'
+                },
+                {
+                    field: 'recordBucketName',
+                    title: '录音文件名所在的目录名'
+                },
+                {
+                    field: 'recordDomain',
+                    title: '存放录音文件的域名'
+                },
+                {
+                    field: 'serviceType',
+                    title: '呼叫的业务类型',
+                    formatter: function (value, row, index) {
+                        if (value === "003") {
+                            return "<span class=\"badge badge-info\">AX模式</span>";
+                        } else {
+                            return "<span class=\"badge badge-danger\">未知业务类型</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'hostName',
+                    title: '话单生成的服务器设备对应的主机名'
+                },
+                {
+                    field: 'subscriptionId',
+                    title: '绑定ID'
+                },
+                {
+                    field: 'areaCode',
+                    title: '隐私保护号码'
+                },
+                {
+                    field: 'callDuration',
+                    title: '呼叫的通话时长，单位为秒。'
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (row.recordFlag === 1) {
+                            if (row.recordFileUrlLocal === '' || row.recordFileUrlLocal == null) {
+                                actions.push('<a class="btn btn-success btn-xs ' + voiceFlag + '" href="javascript:void(0)" onclick="getVoice(\'' + row.axTicketRecordId + '\')"><i class="fa fa-refresh"></i>获取录音</a> ');
+                            } else {
+                                actions.push('<a class="btn btn-info btn-xs ' + downFlag + '" href="javascript:void(0)" onclick="downloadVoice(\'' + row.recordFileUrlLocal + '\')"><i class="fa fa-download"></i>打开录音</a> ');
+                            }
+                        }
+
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.axTicketRecordId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 获取华为云录音地址
+    function getVoice(axTicketRecordId) {
+        $.operate.post(prefix + "/getVoice", {axTicketRecordId: axTicketRecordId});
+    }
+
+    // 下载录音
+    function downloadVoice(recordFileUrlLocal) {
+        window.open(recordFileUrlLocal);
+    }
+
+
+</script>
+</body>
+</html>

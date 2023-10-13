@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.HouseTrainingCategoryMapper">
+
+    <resultMap type="HouseTrainingCategory" id="HouseTrainingCategoryResult">
+        <result property="houseTrainingCategoryId" column="house_training_category_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="title" column="title"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="imgUrl" column="img_url"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="ancestors" column="ancestors"/>
+    </resultMap>
+
+    <sql id="selectHouseTrainingCategoryVo">
+        select house_training_category_id, dept_id, user_id, parent_id, title, sort_num, del_status, create_time, update_time, img_url,ancestors
+        from house_training_category
+    </sql>
+    <sql id="selectHouseTrainingCategory">
+        select c.house_training_category_id,
+               c.dept_id,
+               c.user_id,
+               c.parent_id,
+               c.title,
+               c.sort_num,
+               c.del_status,
+               c.create_time,
+               c.update_time,
+               c.img_url
+        from house_training_category c left join sys_dept d on c.dept_id = d.dept_id
+        left join sys_user u on c.user_id = u.user_id
+    </sql>
+    <select id="selectHouseTrainingCategoryVoList" parameterType="HouseTrainingCategory"
+            resultMap="HouseTrainingCategoryResult">
+        <include refid="selectHouseTrainingCategoryVo"/>
+        <where>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="imgUrl != null  and imgUrl != ''">and img_url = #{imgUrl}</if>
+        </where>
+    </select>
+    <select id="selectHouseTrainingCategoryList" parameterType="HouseTrainingCategory"
+            resultMap="HouseTrainingCategoryResult">
+        <include refid="selectHouseTrainingCategory"/>
+        <where>
+            del_status = 0
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="imgUrl != null  and imgUrl != ''">and img_url = #{imgUrl}</if>
+        </where>
+        ${params.dataScope}
+    </select>
+    <select id="selectHouseTrainingCategoryById" parameterType="Long" resultMap="HouseTrainingCategoryResult">
+        <!--        <include refid="selectHouseTrainingCategoryVo"/>
+                where house_training_category_id = #{houseTrainingCategoryId}-->
+        select
+            t.house_training_category_id,
+            t.parent_id,
+            t.dept_id,
+            t.user_id,
+            t.title,
+            t.sort_num,
+            t.del_status,
+            t.create_time,
+            t.update_time,
+            t.img_url,
+            t.ancestors,
+            p.title as parent_name
+        from house_training_category t
+        left join house_training_category p on p.house_training_category_id = t.parent_id
+        where t.house_training_category_id = #{houseTrainingCategoryId}
+    </select>
+
+    <insert id="insertHouseTrainingCategory" parameterType="HouseTrainingCategory" useGeneratedKeys="true"
+            keyProperty="houseTrainingCategoryId">
+        insert into house_training_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="imgUrl != null">img_url,</if>
+            <if test="ancestors != null and ancestors != ''">ancestors,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="imgUrl != null">#{imgUrl},</if>
+            <if test="ancestors != null and ancestors != ''">#{ancestors},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHouseTrainingCategory" parameterType="HouseTrainingCategory">
+        update house_training_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="imgUrl != null">img_url = #{imgUrl},</if>
+            <if test="ancestors != null and ancestors != ''">ancestors = #{ancestors},</if>
+        </trim>
+        where house_training_category_id = #{houseTrainingCategoryId}
+    </update>
+    <update id="deleteHouseTrainingCategoryById" parameterType="Long">
+        update house_training_category set del_status = 1 where house_training_category_id = #{houseTrainingCategoryId}
+    </update>
+
+    <update id="deleteHouseTrainingCategoryByIds" parameterType="String">
+        update house_training_category set del_status = 1 where house_training_category_id in
+        <foreach item="houseTrainingCategoryId" collection="array" open="(" separator="," close=")">
+            #{houseTrainingCategoryId}
+        </foreach>
+    </update>
+<!--    <delete id="deleteHouseTrainingCategoryById" parameterType="Long">
+        delete from house_training_category where house_training_category_id = #{houseTrainingCategoryId}
+    </delete>
+
+    <delete id="deleteHouseTrainingCategoryByIds" parameterType="String">
+        delete from house_training_category where house_training_category_id in
+        <foreach item="houseTrainingCategoryId" collection="array" open="(" separator="," close=")">
+            #{houseTrainingCategoryId}
+        </foreach>
+    </delete>-->
+
+</mapper>

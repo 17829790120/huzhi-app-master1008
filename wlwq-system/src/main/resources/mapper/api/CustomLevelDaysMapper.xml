@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CustomLevelDaysMapper">
+    
+    <resultMap type="CustomLevelDays" id="CustomLevelDaysResult">
+        <result property="id"    column="id"    />
+        <result property="customLevel"    column="custom_level"    />
+        <result property="customDays"    column="custom_days"    />
+        <result property="sortNum"    column="sort_num"    />
+        <result property="showStatustiny"    column="show_statustiny"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delStatus"    column="del_status"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="companyId"    column="company_id"    />
+    </resultMap>
+
+    <sql id="selectCustomLevelDaysVo">
+        select id, custom_level, custom_days, sort_num, show_statustiny, create_time, update_time, del_status, dept_id,company_id from custom_level_days
+    </sql>
+
+    <select id="selectCustomLevelDaysList" parameterType="CustomLevelDays" resultMap="CustomLevelDaysResult">
+        <include refid="selectCustomLevelDaysVo"/>
+        <where>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="customLevel != null  and customLevel != ''"> and custom_level like concat('%', #{customLevel}, '%')</if>
+            <if test="customDays != null "> and custom_days = #{customDays}</if>
+            <if test="sortNum != null "> and sort_num = #{sortNum}</if>
+            <if test="showStatustiny != null "> and show_statustiny = #{showStatustiny}</if>
+            <if test="delStatus != null "> and del_status = #{delStatus}</if>
+            <if test="deptId != null  and deptId != ''"> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectCustomLevelDaysById" parameterType="String" resultMap="CustomLevelDaysResult">
+        <include refid="selectCustomLevelDaysVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertCustomLevelDays" parameterType="CustomLevelDays">
+        insert into custom_level_days
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="customLevel != null">custom_level,</if>
+            <if test="customDays != null">custom_days,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatustiny != null">show_statustiny,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="customLevel != null">#{customLevel},</if>
+            <if test="customDays != null">#{customDays},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatustiny != null">#{showStatustiny},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomLevelDays" parameterType="CustomLevelDays">
+        update custom_level_days
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customLevel != null">custom_level = #{customLevel},</if>
+            <if test="customDays != null">custom_days = #{customDays},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatustiny != null">show_statustiny = #{showStatustiny},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCustomLevelDaysById" parameterType="String">
+        delete from custom_level_days where id = #{id}
+    </delete>
+
+    <delete id="deleteCustomLevelDaysByIds" parameterType="String">
+        delete from custom_level_days where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getCustomDays" resultType="java.lang.Integer">
+        select custom_days from custom_level_days
+        where del_status=0 and id=#{level} and company_id=#{companyId}
+    </select>
+
+
+
+    <resultMap type="com.wlwq.api.resultVO.CustomLevelVO" id="CustomLevelVOResult">
+        <result property="id"    column="id"    />
+        <result property="customLevel"    column="custom_level"    />
+        <result property="customDays"    column="custom_days"    />
+    </resultMap>
+    <select id="findCustomLevelVO" resultMap="CustomLevelVOResult">
+        select id,custom_level,custom_days from custom_level_days
+        where del_status=0 and company_id=#{companyId}
+    </select>
+
+    <update id="updateCustomFollowTime">
+        UPDATE custom_user_claim cuc
+        LEFT JOIN custom_custom_info cci on cci.custom_id=cuc.custom_info_id
+        LEFT JOIN custom_level_days cld on cci.custom_grade=cld.id
+        set custom_follow_time=date_add(custom_follow_time, interval cld.custom_days day),is_follow=0
+        where cuc.`status` ='0' and cuc.custom_claim_id in
+        <foreach item="customClaimId" collection="customClaimIds" open="(" separator="," close=")">
+            #{customClaimId}
+        </foreach>
+    </update>
+</mapper>

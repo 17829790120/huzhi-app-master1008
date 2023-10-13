@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.bestPay.pay.mapper.PayConfigMapper">
+    <resultMap type="PayConfig" id="PayConfigResult">
+        <result property="payConfigId" column="pay_config_id"/>
+        <result property="applicationName" column="application_name"/>
+        <result property="payPlatform" column="pay_platform"/>
+        <result property="payType" column="pay_type"/>
+        <result property="appId" column="app_id"/>
+        <result property="appSecret" column="app_secret"/>
+        <result property="privateKey" column="private_key"/>
+        <result property="notifyUrl" column="notify_url"/>
+        <result property="certPath" column="cert_path"/>
+        <result property="publicCertPath" column="public_cert_path"/>
+        <result property="rootCertPath" column="root_cert_path"/>
+        <result property="mchId" column="mch_id"/>
+        <result property="mchKey" column="mch_key"/>
+        <result property="subAppId" column="sub_app_id"/>
+        <result property="subMchId" column="sub_mch_id"/>
+        <result property="keyPath" column="key_path"/>
+        <result property="apiclientKey" column="apiclient_key"/>
+        <result property="apiclientCert" column="apiclient_cert"/>
+        <result property="apiV3Key" column="api_v3_key"/>
+        <result property="certSerialNo" column="cert_serial_no"/>
+        <result property="startStatus" column="start_status"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectPayConfigVo">
+        select pay_config_id,
+               application_name,
+               pay_platform,
+               pay_type,
+               app_id,
+               app_secret,
+               private_key,
+               notify_url,
+               cert_path,
+               public_cert_path,
+               root_cert_path,
+               mch_id,
+               mch_key,
+               sub_app_id,
+               sub_mch_id,
+               key_path,
+               apiclient_key,
+               apiclient_cert,
+               api_v3_key,
+               cert_serial_no,
+               start_status,
+               update_time,
+               create_time
+        from pay_config
+    </sql>
+
+    <select id="selectPayConfigList" parameterType="PayConfig" resultMap="PayConfigResult">
+        <include refid="selectPayConfigVo"/>
+        <where>
+            <if test="applicationName != null  and applicationName != ''">
+                and application_name like concat('%', #{applicationName}, '%')
+            </if>
+            <if test="payPlatform != null  and payPlatform != ''">
+                and pay_platform = #{payPlatform}
+            </if>
+            <if test="payType != null  and payType != ''">
+                and pay_type = #{payType}
+            </if>
+            <if test="appId != null  and appId != ''">
+                and app_id = #{appId}
+            </if>
+            <if test="appSecret != null  and appSecret != ''">
+                and app_secret = #{appSecret}
+            </if>
+            <if test="privateKey != null  and privateKey != ''">
+                and private_key = #{privateKey}
+            </if>
+            <if test="notifyUrl != null  and notifyUrl != ''">
+                and notify_url = #{notifyUrl}
+            </if>
+            <if test="certPath != null  and certPath != ''">
+                and cert_path = #{certPath}
+            </if>
+            <if test="publicCertPath != null  and publicCertPath != ''">
+                and public_cert_path = #{publicCertPath}
+            </if>
+            <if test="rootCertPath != null  and rootCertPath != ''">
+                and root_cert_path = #{rootCertPath}
+            </if>
+            <if test="mchId != null  and mchId != ''">
+                and mch_id = #{mchId}
+            </if>
+            <if test="mchKey != null  and mchKey != ''">
+                and mch_key = #{mchKey}
+            </if>
+            <if test="subAppId != null  and subAppId != ''">
+                and sub_app_id = #{subAppId}
+            </if>
+            <if test="subMchId != null  and subMchId != ''">
+                and sub_mch_id = #{subMchId}
+            </if>
+            <if test="keyPath != null  and keyPath != ''">
+                and key_path = #{keyPath}
+            </if>
+            <if test="apiclientKey != null  and apiclientKey != ''">
+                and apiclient_key = #{apiclientKey}
+            </if>
+            <if test="apiclientCert != null  and apiclientCert != ''">
+                and apiclient_cert = #{apiclientCert}
+            </if>
+            <if test="apiV3Key != null  and apiV3Key != ''">
+                and api_v3_key = #{apiV3Key}
+            </if>
+            <if test="certSerialNo != null  and certSerialNo != ''">
+                and cert_serial_no = #{certSerialNo}
+            </if>
+            <if test="startStatus != null">
+                and start_status = #{startStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPayConfigById" parameterType="String" resultMap="PayConfigResult">
+        <include refid="selectPayConfigVo"/>
+        where pay_config_id = #{payConfigId}
+    </select>
+
+    <insert id="insertPayConfig" parameterType="PayConfig">
+        insert into pay_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="payConfigId != null">
+                pay_config_id,
+            </if>
+            <if test="applicationName != null and applicationName != ''">
+                application_name,
+            </if>
+            <if test="payPlatform != null and payPlatform != ''">
+                pay_platform,
+            </if>
+            <if test="payType != null and payType != ''">
+                pay_type,
+            </if>
+            <if test="appId != null and appId != ''">
+                app_id,
+            </if>
+            <if test="appSecret != null">
+                app_secret,
+            </if>
+            <if test="privateKey != null">
+                private_key,
+            </if>
+            <if test="notifyUrl != null">
+                notify_url,
+            </if>
+            <if test="certPath != null">
+                cert_path,
+            </if>
+            <if test="publicCertPath != null">
+                public_cert_path,
+            </if>
+            <if test="rootCertPath != null">
+                root_cert_path,
+            </if>
+            <if test="mchId != null">
+                mch_id,
+            </if>
+            <if test="mchKey != null">
+                mch_key,
+            </if>
+            <if test="subAppId != null">
+                sub_app_id,
+            </if>
+            <if test="subMchId != null">
+                sub_mch_id,
+            </if>
+            <if test="keyPath != null">
+                key_path,
+            </if>
+            <if test="apiclientKey != null">
+                apiclient_key,
+            </if>
+            <if test="apiclientCert != null">
+                apiclient_cert,
+            </if>
+            <if test="apiV3Key != null">
+                api_v3_key,
+            </if>
+            <if test="certSerialNo != null">
+                cert_serial_no,
+            </if>
+            <if test="startStatus != null">
+                start_status,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="payConfigId != null">
+                #{payConfigId},
+            </if>
+            <if test="applicationName != null and applicationName != ''">
+                #{applicationName},
+            </if>
+            <if test="payPlatform != null and payPlatform != ''">
+                #{payPlatform},
+            </if>
+            <if test="payType != null and payType != ''">
+                #{payType},
+            </if>
+            <if test="appId != null and appId != ''">
+                #{appId},
+            </if>
+            <if test="appSecret != null">
+                #{appSecret},
+            </if>
+            <if test="privateKey != null">
+                #{privateKey},
+            </if>
+            <if test="notifyUrl != null">
+                #{notifyUrl},
+            </if>
+            <if test="certPath != null">
+                #{certPath},
+            </if>
+            <if test="publicCertPath != null">
+                #{publicCertPath},
+            </if>
+            <if test="rootCertPath != null">
+                #{rootCertPath},
+            </if>
+            <if test="mchId != null">
+                #{mchId},
+            </if>
+            <if test="mchKey != null">
+                #{mchKey},
+            </if>
+            <if test="subAppId != null">
+                #{subAppId},
+            </if>
+            <if test="subMchId != null">
+                #{subMchId},
+            </if>
+            <if test="keyPath != null">
+                #{keyPath},
+            </if>
+            <if test="apiclientKey != null">
+                #{apiclientKey},
+            </if>
+            <if test="apiclientCert != null">
+                #{apiclientCert},
+            </if>
+            <if test="apiV3Key != null">
+                #{apiV3Key},
+            </if>
+            <if test="certSerialNo != null">
+                #{certSerialNo},
+            </if>
+            <if test="startStatus != null">
+                #{startStatus},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updatePayConfig" parameterType="PayConfig">
+        update pay_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applicationName != null and applicationName != ''">
+                application_name = #{applicationName},
+            </if>
+            <if test="payPlatform != null and payPlatform != ''">
+                pay_platform = #{payPlatform},
+            </if>
+            <if test="payType != null and payType != ''">
+                pay_type = #{payType},
+            </if>
+            <if test="appId != null and appId != ''">
+                app_id = #{appId},
+            </if>
+            <if test="appSecret != null">
+                app_secret = #{appSecret},
+            </if>
+            <if test="privateKey != null">
+                private_key = #{privateKey},
+            </if>
+            <if test="notifyUrl != null">
+                notify_url = #{notifyUrl},
+            </if>
+            <if test="certPath != null">
+                cert_path = #{certPath},
+            </if>
+            <if test="publicCertPath != null">
+                public_cert_path = #{publicCertPath},
+            </if>
+            <if test="rootCertPath != null">
+                root_cert_path = #{rootCertPath},
+            </if>
+            <if test="mchId != null">
+                mch_id = #{mchId},
+            </if>
+            <if test="mchKey != null">
+                mch_key = #{mchKey},
+            </if>
+            <if test="subAppId != null">
+                sub_app_id = #{subAppId},
+            </if>
+            <if test="subMchId != null">
+                sub_mch_id = #{subMchId},
+            </if>
+            <if test="keyPath != null">
+                key_path = #{keyPath},
+            </if>
+            <if test="apiclientKey != null">
+                apiclient_key = #{apiclientKey},
+            </if>
+            <if test="apiclientCert != null">
+                apiclient_cert = #{apiclientCert},
+            </if>
+            <if test="apiV3Key != null">
+                api_v3_key = #{apiV3Key},
+            </if>
+            <if test="certSerialNo != null">
+                cert_serial_no = #{certSerialNo},
+            </if>
+            <if test="startStatus != null">
+                start_status = #{startStatus},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </trim>
+        where pay_config_id = #{payConfigId}
+    </update>
+
+    <delete id="deletePayConfigById" parameterType="String">
+        delete
+        from pay_config
+        where pay_config_id = #{payConfigId}
+    </delete>
+
+    <delete id="deletePayConfigByIds" parameterType="String">
+        delete
+        from pay_config where pay_config_id in
+        <foreach item="payConfigId" collection="array" open="(" separator="," close=")">
+            #{payConfigId}
+        </foreach>
+    </delete>
+
+    <!--    根据APP_ID获取支付配置信息-->
+    <select id="selectPayConfigByAppId" resultMap="PayConfigResult">
+        select pay_config_id,
+               application_name,
+               pay_platform,
+               pay_type,
+               app_id,
+               app_secret,
+               private_key,
+               notify_url,
+               cert_path,
+               public_cert_path,
+               root_cert_path,
+               mch_id,
+               mch_key,
+               sub_app_id,
+               sub_mch_id,
+               key_path,
+               apiclient_key,
+               apiclient_cert,
+               api_v3_key,
+               cert_serial_no,
+               start_status,
+               update_time,
+               create_time
+        from pay_config
+        where app_id = #{appId}
+          and start_status = 1
+    </select>
+</mapper>

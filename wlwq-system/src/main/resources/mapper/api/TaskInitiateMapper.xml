@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TaskInitiateMapper">
+
+    <resultMap type="TaskInitiate" id="TaskInitiateResult">
+        <result property="taskInitiateId" column="task_initiate_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="taskDescribe" column="task_describe"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskScore" column="task_score"/>
+        <result property="taskStartTime" column="task_start_time"/>
+        <result property="taskEndTime" column="task_end_time"/>
+        <result property="executeName" column="execute_name"/>
+        <result property="executeAccountIds" column="execute_account_ids"/>
+        <result property="assistName" column="assist_name"/>
+        <result property="assistAccountIds" column="assist_account_ids"/>
+        <result property="remark" column="remark"/>
+        <result property="pics" column="pics"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="executeStatus" column="execute_status"/>
+        <result property="assistStatus" column="assist_status"/>
+        <result property="taskReceiveId" column="task_receive_id"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="taskOverdueTime" column="task_overdue_time"/>
+        <result property="executeAccountNames" column="executeAccountNames"/>
+        <result property="assistAccountNames" column="assistAccountNames"/>
+        <result property="examineTag" column="examine_tag"/>
+    </resultMap>
+
+    <sql id="selectTaskInitiateVo">
+        select task_initiate_id,
+               account_id,
+               account_name,
+               account_phone,
+               account_head,
+               dept_id,
+               company_id,
+               task_title,
+               task_describe,
+               task_type,
+               task_score,
+               task_start_time,
+               task_end_time,
+               execute_name,
+               execute_account_ids,
+               assist_name,
+               assist_account_ids,
+               remark,
+               pics,
+               del_status,
+               create_time,
+               update_time
+        from task_initiate
+    </sql>
+
+    <select id="selectTaskInitiateList" parameterType="TaskInitiate" resultMap="TaskInitiateResult">
+        <include refid="selectTaskInitiateVo"/>
+        <where>
+            del_status = 0
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="taskTitle != null  and taskTitle != ''">and task_title = #{taskTitle}</if>
+            <if test="taskDescribe != null  and taskDescribe != ''">and task_describe = #{taskDescribe}</if>
+            <if test="taskType != null ">and task_type = #{taskType}</if>
+            <if test="taskScore != null ">and task_score = #{taskScore}</if>
+            <if test="taskStartTime != null ">and task_start_time = #{taskStartTime}</if>
+            <if test="taskEndTime != null ">and task_end_time = #{taskEndTime}</if>
+            <if test="executeName != null  and executeName != ''">and execute_name like concat('%', #{executeName},
+                '%')
+            </if>
+            <if test="executeAccountIds != null  and executeAccountIds != ''">and execute_account_ids =
+                #{executeAccountIds}
+            </if>
+            <if test="assistName != null  and assistName != ''">and assist_name like concat('%', #{assistName}, '%')
+            </if>
+            <if test="assistAccountIds != null  and assistAccountIds != ''">and assist_account_ids =
+                #{assistAccountIds}
+            </if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectTaskInitiateById" parameterType="String" resultMap="TaskInitiateResult">
+        <include refid="selectTaskInitiateVo"/>
+        where del_status = 0 and task_initiate_id = #{taskInitiateId}
+    </select>
+
+    <insert id="insertTaskInitiate" parameterType="TaskInitiate" useGeneratedKeys="true"
+            keyProperty="taskInitiateId">
+        insert into task_initiate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskInitiateId != null">task_initiate_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="taskTitle != null">task_title,</if>
+            <if test="taskDescribe != null">task_describe,</if>
+            <if test="taskType != null">task_type,</if>
+            <if test="taskScore != null">task_score,</if>
+            <if test="taskStartTime != null">task_start_time,</if>
+            <if test="taskEndTime != null">task_end_time,</if>
+            <if test="executeName != null">execute_name,</if>
+            <if test="executeAccountIds != null">execute_account_ids,</if>
+            <if test="assistName != null">assist_name,</if>
+            <if test="assistAccountIds != null">assist_account_ids,</if>
+            <if test="remark != null">remark,</if>
+            <if test="pics != null">pics,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskInitiateId != null">#{taskInitiateId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="taskTitle != null">#{taskTitle},</if>
+            <if test="taskDescribe != null">#{taskDescribe},</if>
+            <if test="taskType != null">#{taskType},</if>
+            <if test="taskScore != null">#{taskScore},</if>
+            <if test="taskStartTime != null">#{taskStartTime},</if>
+            <if test="taskEndTime != null">#{taskEndTime},</if>
+            <if test="executeName != null">#{executeName},</if>
+            <if test="executeAccountIds != null">#{executeAccountIds},</if>
+            <if test="assistName != null">#{assistName},</if>
+            <if test="assistAccountIds != null">#{assistAccountIds},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTaskInitiate" parameterType="TaskInitiate">
+        update task_initiate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="taskTitle != null">task_title = #{taskTitle},</if>
+            <if test="taskDescribe != null">task_describe = #{taskDescribe},</if>
+            <if test="taskType != null">task_type = #{taskType},</if>
+            <if test="taskScore != null">task_score = #{taskScore},</if>
+            <if test="taskStartTime != null">task_start_time = #{taskStartTime},</if>
+            <if test="taskEndTime != null">task_end_time = #{taskEndTime},</if>
+            <if test="executeName != null">execute_name = #{executeName},</if>
+            <if test="executeAccountIds != null">execute_account_ids = #{executeAccountIds},</if>
+            <if test="assistName != null">assist_name = #{assistName},</if>
+            <if test="assistAccountIds != null">assist_account_ids = #{assistAccountIds},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where task_initiate_id = #{taskInitiateId}
+    </update>
+
+    <update id="deleteTaskInitiateById" parameterType="String">
+        update task_initiate set del_status = 1
+        where task_initiate_id = #{taskInitiateId}
+    </update>
+
+    <update id="deleteTaskInitiateByIds" parameterType="String">
+        update task_initiate set del_status = 1 where task_initiate_id in
+        <foreach item="taskInitiateId" collection="array" open="(" separator="," close=")">
+            #{taskInitiateId}
+        </foreach>
+    </update>
+
+    <select id="selectApiTaskInitiateList" parameterType="TaskInitiate" resultMap="TaskInitiateResult">
+        select task_initiate_id,
+        account_id,
+        account_name,
+        account_phone,
+        account_head,
+        dept_id,
+        company_id,
+        task_title,
+        task_describe,
+        task_type,
+        task_score,
+        task_start_time,
+        task_end_time,
+        (select count(*) from task_initiate t where t.task_initiate_id = task_initiate.task_initiate_id and find_in_set(#{accountId},execute_account_ids)) as execute_status,
+        execute_name,
+        execute_account_ids,
+        (select count(*) from task_initiate t where t.task_initiate_id = task_initiate.task_initiate_id and find_in_set(#{accountId},assist_account_ids)) as assist_status,
+        assist_name,
+        assist_account_ids,
+        remark,
+        pics,
+        create_time,
+        update_time
+        from task_initiate
+        <where>
+            del_status = 0
+            <if test="accountId != null  and accountId != ''">
+                and (find_in_set(#{accountId},execute_account_ids) or find_in_set(#{accountId},assist_account_ids))
+                and task_initiate_id not in (select distinct task_initiate_id from task_receive where del_status = 0 and account_id = #{accountId})
+            </if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="taskTitle != null  and taskTitle != ''">and (task_title = #{taskTitle} or task_describe = #{taskTitle})</if>
+        </where>
+        order by create_time desc
+    </select>
+
+<!--    查询待接收详情-->
+    <select id="selectApiTaskInitiateDetail" parameterType="TaskInitiate" resultMap="TaskInitiateResult">
+        select t.task_initiate_id,
+        t.account_id,
+        t.account_name,
+        t.account_phone,
+        t.account_head,
+        t.dept_id,
+        t.company_id,
+        t.task_title,
+        t.task_describe,
+        t.task_type,
+        t.task_score,
+        t.task_start_time,
+        t.task_end_time,
+        (select count(*) from task_initiate  where task_initiate_id = t.task_initiate_id and find_in_set(#{accountId},execute_account_ids)) as execute_status,
+        t.execute_name,
+        t.execute_account_ids,
+        (select count(*) from task_initiate  where task_initiate_id = t.task_initiate_id and find_in_set(#{accountId},assist_account_ids)) as assist_status,
+        (select GROUP_CONCAT(nick_name) from api_account  where find_in_set(account_id,t.execute_account_ids)) as executeAccountNames,
+        (select GROUP_CONCAT(nick_name) from api_account  where find_in_set(account_id,t.assist_account_ids)) as assistAccountNames,
+        t.assist_name,
+        t.assist_account_ids,
+        t.remark,
+        t.pics,
+        t.create_time,
+        t.update_time
+        from task_initiate t
+        <where>
+            t.del_status = 0
+            <if test="accountId != null  and accountId != ''">and (find_in_set(#{accountId},t.execute_account_ids) or find_in_set(#{accountId},t.assist_account_ids))</if>
+            <if test="taskInitiateId != null  and taskInitiateId != ''">and t.task_initiate_id = #{taskInitiateId}</if>
+            <if test="accountName != null  and accountName != ''">and t.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and t.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and at.ccount_head = #{accountHead}</if>
+            <if test="deptId != null ">and t.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and t.company_id = #{companyId}</if>
+            <if test="taskTitle != null  and taskTitle != ''">and (t.task_title = #{taskTitle} or t.task_describe = #{taskTitle})</if>
+        </where>
+    </select>
+
+<!--    已接收任务列表/已逾期任务列表/已完成任务列表-->
+    <select id="selectApiTaskReceiveList" parameterType="TaskInitiate" resultMap="TaskInitiateResult">
+        select
+        r.task_receive_id,
+        t.task_initiate_id,
+        t.account_id,
+        t.account_name,
+        t.account_phone,
+        t.account_head,
+        t.execute_name,
+        t.assist_name,
+        t.dept_id,
+        t.company_id,
+        t.task_title,
+        t.task_describe,
+        t.task_type,
+        t.task_score,
+        r.task_start_time,
+        r.task_end_time,
+        r.task_overdue_time,
+        r.examine_status,
+        r.create_time,
+        r.update_time,
+        r.examine_tag
+        from task_receive r left join task_initiate t on r.task_initiate_id = t.task_initiate_id
+        <where>
+            r.del_status = 0
+            <if test="tag != null  and tag == 0">
+                and r.examine_status not in (8,14,20) and r.task_end_time >= now()
+            </if>
+            <if test="tag != null  and tag == 1">
+                and r.examine_status not in (8,14,20) and r.task_end_time <![CDATA[ < ]]> now()
+            </if>
+            <if test="tag != null  and tag == 2">
+                and r.examine_status in (8,14,20)
+            </if>
+            <if test="accountId != null  and accountId != ''">
+                and r.account_id = #{accountId}
+            </if>
+            <if test="accountName != null  and accountName != ''">and t.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and t.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and t.account_head = #{accountHead}</if>
+            <if test="taskTitle != null  and taskTitle != ''">and (t.task_title = #{taskTitle} or t.task_describe =
+                #{taskTitle})
+            </if>
+        </where>
+        order by r.create_time desc
+    </select>
+
+
+    <!--    已接收任务数量/已逾期任务数量/已完成任务数量-->
+    <select id="selectApiTaskReceiveCount" parameterType="TaskInitiate" resultType="Integer">
+        select count(*)
+        from task_receive r left join task_initiate t on r.task_initiate_id = t.task_initiate_id
+        <where>
+            r.del_status = 0
+            <if test="tag != null  and tag == 0">
+                and r.examine_status not in (8,14,20) and r.task_end_time >= now()
+            </if>
+            <if test="tag != null  and tag == 1">
+                and r.examine_status not in (8,14,20) and r.task_end_time <![CDATA[ < ]]> now()
+            </if>
+            <if test="tag != null  and tag == 2">
+                and r.examine_status in (8,14,20)
+            </if>
+            <if test="accountId != null  and accountId != ''">
+                and r.account_id = #{accountId}
+            </if>
+            <if test="accountName != null  and accountName != ''">and t.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and t.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and t.account_head = #{accountHead}</if>
+            <if test="taskTitle != null  and taskTitle != ''">and (t.task_title = #{taskTitle} or t.task_describe = #{taskTitle})</if>
+        </where>
+    </select>
+
+<!--    待接收数量-->
+    <select id="selectApiTaskInitiateCount" parameterType="TaskInitiate" resultType="Integer">
+        select count(*)
+        from task_initiate
+        <where>
+            del_status = 0
+            <if test="accountId != null  and accountId != ''">
+                and (find_in_set(#{accountId},execute_account_ids) or find_in_set(#{accountId},assist_account_ids))
+                and task_initiate_id not in (select distinct task_initiate_id from task_receive where del_status = 0 and account_id = #{accountId})
+            </if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="taskTitle != null  and taskTitle != ''">and (task_title = #{taskTitle} or task_describe = #{taskTitle})</if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('资讯设置列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>标题：</label>
+                            <input type="text" name="informationSettingTitle"/>
+                        </li>
+                        <li>
+                            <label>状态：</label>
+                            <select name="informationSettingStatus" class="form-control m-b">
+                                <option value="">所有</option>
+                                <option value="0">关闭</option>
+                                <option value="1">开启</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('information:informationSetting:edit')}]];
+    var prefix = ctx + "information/informationSetting";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            modalName: "资讯设置",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    title: "序号",
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+                {
+                    field: 'informationSettingTitle',
+                    title: '标题',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    visible: editFlag == 'hidden' ? false : true,
+                    field: 'informationSettingStatus',
+                    title: '状态',
+                    formatter: function (value, row, index) {
+                        return informationSettingStatusTools(row);
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'updateTime',
+                    title: '修改时间',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                }
+            ]
+        };
+        $.table.init(options);
+    });
+
+
+    /* 状态显示 */
+    function informationSettingStatusTools(row) {
+        if (row.informationSettingStatus === 0) {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.informationSettingId + '\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.informationSettingId + '\')"></i> ';
+        }
+    }
+
+    /* 关闭 */
+    function disable(informationSettingId) {
+        $.modal.confirm("确认要关闭吗？", function () {
+            $.operate.post(prefix + "/edit", {
+                "informationSettingId": informationSettingId,
+                "informationSettingStatus": 0
+            });
+        })
+    }
+
+    /* 开启 */
+    function enable(informationSettingId) {
+        $.modal.confirm("确认要开启吗？", function () {
+            $.operate.post(prefix + "/edit", {
+                "informationSettingId": informationSettingId,
+                "informationSettingStatus": 1
+            });
+        })
+    }
+</script>
+</body>
+</html>

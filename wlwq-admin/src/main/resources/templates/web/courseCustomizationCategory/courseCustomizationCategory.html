@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('课程定制类别列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>分类标题：</label>
+                                <input type="text" name="categoryTitle"/>
+                            </li>
+                            <li>
+                                <label>显示状态：</label>
+                                <select class="form-control" name="showStatus">
+                                    <option value="">所有</option>
+                                    <option value="0">不显示</option>
+                                    <option value="1">显示</option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:courseCustomizationCategory:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="web:courseCustomizationCategory:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-info" id="expandAllBtn">
+                    <i class="fa fa-exchange"></i> 展开/折叠
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-tree-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var addFlag = [[${@permission.hasPermi('web:courseCustomizationCategory:add')}]];
+        var editFlag = [[${@permission.hasPermi('web:courseCustomizationCategory:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('web:courseCustomizationCategory:remove')}]];
+        var prefix = ctx + "web/courseCustomizationCategory";
+
+        $(function() {
+            var options = {
+                code: "courseCustomizationCategoryId",
+                parentCode: "parentId",
+                expandColumn: "1",
+                uniqueId: "courseCustomizationCategoryId",
+                url: prefix + "/list",
+                createUrl: prefix + "/add/{id}",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove/{id}",
+                exportUrl: prefix + "/export",
+                modalName: "课程定制类别",
+                columns: [{
+                    field: 'selectItem',
+                    radio: true
+                },
+/*                {
+                    field: 'courseCustomizationCategoryId',
+                    title: '课程定制类别ID',
+                    visible: false
+                },*/
+                {
+                    field: 'categoryTitle',
+                    align: 'center',
+                    title: '分类标题'
+                },
+                {
+                    field: 'sortNum',
+                    align: 'y',
+                    title: '排序'
+                },
+                {
+                    field: 'level',
+                    align: 'center',
+                    title: '级别'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if (row.level > 0 && row.level < 3 ) {
+                            actions.push('<a class="btn btn-info btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="$.operate.add(\'' + row.courseCustomizationCategoryId + '\')"><i class="fa fa-plus"></i>新增</a> ');
+                        }
+                        //actions.push('<a class="btn btn-info btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="$.operate.add(\'' + row.courseCustomizationCategoryId + '\')"><i class="fa fa-plus"></i>新增</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.courseCustomizationCategoryId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.courseCustomizationCategoryId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.treeTable.init(options);
+        });
+    </script>
+</body>
+</html>

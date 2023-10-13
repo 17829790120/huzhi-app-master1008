@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ReportTrainingMapper">
+
+    <resultMap type="ReportTraining" id="ReportTrainingResult">
+        <result property="reportTrainingId" column="report_training_id"/>
+        <result property="templateType" column="template_type"/>
+        <result property="content" column="content"/>
+        <result property="accountId" column="account_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="companyId" column="company_id"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="likeTag" column="likeTag"/>
+        <result property="likePeople" column="likePeople"/>
+        <result property="postNames" column="postNames"/>
+    </resultMap>
+
+    <sql id="selectReportTrainingVo">
+        select report_training_id,
+               template_type,
+               content,
+               account_id,
+               post_ids,
+               dept_id,
+               account_name,
+               account_phone,
+               account_head,
+               company_id,
+               (SELECT GROUP_CONCAT(post_name)
+                FROM sys_post
+                WHERE FIND_IN_SET(sys_post.post_id, report_training.post_ids)) as postNames,
+               create_time,
+               update_time
+        from report_training
+    </sql>
+
+    <select id="selectWebReportTrainingList" parameterType="ReportTraining" resultType="Map">
+        select r.report_training_id as reportTrainingId,
+        r.template_type as templateType,
+        r.content,
+        r.account_id as accountId,
+        r.post_ids as postIds,
+        r.dept_id as deptId,
+        r.account_name as accountName,
+        r.account_phone as accountPhone,
+        r.account_head as accountHead,
+        r.company_id as companyId,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, r.post_ids)) as postNames,
+        r.create_time as createTime,
+        r.update_time as updateTime
+        from report_training r left join sys_dept d on r.dept_id = d.dept_id
+        <where>
+            r.del_status = 0
+            <if test="templateType != null ">and r.template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and r.content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and r.account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and r.post_ids = #{postIds}</if>
+            <if test="deptId != null ">and r.dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and r.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and r.account_phone like concat('%', #{accountPhone},
+                '%')</if>
+            <if test="accountHead != null  and accountHead != ''">and r.account_head = #{accountHead}</if>
+            <if test="companyId != null ">and r.company_id = #{companyId}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(r.create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(r.create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by r.create_time desc
+    </select>
+
+
+    <select id="selectReportTrainingList" parameterType="ReportTraining" resultMap="ReportTrainingResult">
+        <include refid="selectReportTrainingVo"/>
+        <where>
+            del_status = 0
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectReportTrainingById" parameterType="String" resultMap="ReportTrainingResult">
+        <include refid="selectReportTrainingVo"/>
+        where del_status = 0 and report_training_id = #{reportTrainingId}
+    </select>
+
+    <insert id="insertReportTraining" parameterType="ReportTraining" >
+        insert into report_training
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportTrainingId != null">report_training_id,</if>
+            <if test="templateType != null">template_type,</if>
+            <if test="content != null">content,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportTrainingId != null">#{reportTrainingId},</if>
+            <if test="templateType != null">#{templateType},</if>
+            <if test="content != null">#{content},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateReportTraining" parameterType="ReportTraining">
+        update report_training
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="templateType != null">template_type = #{templateType},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where report_training_id = #{reportTrainingId}
+    </update>
+
+    <update id="deleteReportTrainingById" parameterType="String">
+        update report_training set del_status = 1
+        where report_training_id = #{reportTrainingId}
+    </update>
+
+    <update id="deleteReportTrainingByIds" parameterType="String">
+        update report_training set del_status = 1 where report_training_id in
+        <foreach item="reportTrainingId" collection="array" open="(" separator="," close=")">
+            #{reportTrainingId}
+        </foreach>
+    </update>
+
+    <select id="selectApiReportTrainingList" parameterType="ReportTraining" resultMap="ReportTrainingResult">
+        select report_training_id,
+        template_type,
+        content,
+        account_id,
+        post_ids,
+        dept_id,
+        account_name,
+        account_phone,
+        account_head,
+        company_id,
+        (select count(*) from account_like where like_type = 1 and account_id = #{accountId} and target_id =
+        report_training.report_training_id) as likeTag,
+        (select GROUP_CONCAT(account_name) from account_like where like_type = 1 and target_id =
+        report_training.report_training_id) as likePeople,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, report_training.post_ids)) as postNames,
+        create_time,
+        update_time
+        from report_training
+        <where>
+            del_status = 0
+            <if test="tag != null  and tag == 0">and account_id = #{accountId}</if>
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and (account_name like concat('%', #{accountName},
+                '%') or account_phone like concat('%', #{accountName},'%'))
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="date != null and date != ''">and DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+            </if>
+            <if test="month != null and month != ''">and DATE_FORMAT(create_time,'%Y-%m') = #{month}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectApiReportTrainingCount" parameterType="ReportTraining" resultType="Integer">
+        select count(*)
+        from report_training
+        <where>
+            del_status = 0
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="tag != null  and tag == 0">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and (account_name like concat('%', #{accountName},
+                '%') or account_phone like concat('%', #{accountName},'%'))
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="date != null and date != ''">and DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+            </if>
+            <if test="month != null and month != ''">and DATE_FORMAT(create_time,'%Y-%m') = #{month}
+            </if>
+        </where>
+    </select>
+
+<!--    查询提交的人数-->
+    <select id="selectApiReportTrainingAccountCount" parameterType="ReportTraining" resultType="Integer">
+        select count(distinct account_id)
+        from report_training
+        <where>
+            del_status = 0
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="tag != null  and tag == 0">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and (account_name like concat('%', #{accountName},
+                '%') or account_phone like concat('%', #{accountName},'%'))
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="date != null and date != ''">and DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+            </if>
+            <if test="month != null and month != ''">and DATE_FORMAT(create_time,'%Y-%m') = #{month}
+            </if>
+        </where>
+    </select>
+</mapper>

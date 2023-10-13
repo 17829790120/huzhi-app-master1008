@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ImageDemoMapper">
+
+    <resultMap type="ImageDemo" id="ImageDemoResult">
+        <result property="id" column="id"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="image" column="image"/>
+        <result property="images" column="images"/>
+        <result property="video" column="video"/>
+        <result property="videos" column="videos"/>
+        <result property="content" column="content"/>
+        <result property="createDate" column="create_date"/>
+        <result property="lastDate" column="last_date"/>
+    </resultMap>
+
+    <sql id="selectImageDemoVo">
+        select id,
+               sort_num,
+               image,
+               images,
+               video,
+               videos,
+               content,
+               create_date,
+               last_date
+        from image_demo
+    </sql>
+
+    <select id="selectImageDemoList" parameterType="ImageDemo" resultMap="ImageDemoResult">
+        <include refid="selectImageDemoVo"/>
+        <where>
+            <if test="image != null  and image != ''">and image = #{image}</if>
+            <if test="images != null  and images != ''">and images = #{images}</if>
+            <if test="video != null  and video != ''">and video = #{video}</if>
+            <if test="videos != null  and videos != ''">and videos = #{videos}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="createDate != null ">and create_date = #{createDate}</if>
+            <if test="lastDate != null ">and last_date = #{lastDate}</if>
+        </where>
+        order by sort_num desc
+    </select>
+
+    <select id="selectImageDemoById" parameterType="Long" resultMap="ImageDemoResult">
+        <include refid="selectImageDemoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertImageDemo" parameterType="ImageDemo" useGeneratedKeys="true" keyProperty="id">
+        insert into image_demo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sortNum != null">sort_num,</if>
+            <if test="image != null">image,</if>
+            <if test="images != null">images,</if>
+            <if test="video != null">video,</if>
+            <if test="videos != null">videos,</if>
+            <if test="content != null">content,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="lastDate != null">last_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="image != null">#{image},</if>
+            <if test="images != null">#{images},</if>
+            <if test="video != null">#{video},</if>
+            <if test="videos != null">#{videos},</if>
+            <if test="content != null">#{content},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="lastDate != null">#{lastDate},</if>
+        </trim>
+    </insert>
+
+    <update id="updateImageDemo" parameterType="ImageDemo">
+        update image_demo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="video != null">video = #{video},</if>
+            <if test="videos != null">videos = #{videos},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="lastDate != null">last_date = #{lastDate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteImageDemoById" parameterType="Long">
+        delete
+        from image_demo
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteImageDemoByIds" parameterType="String">
+        delete from image_demo where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增测试训练试题列表')"/>
+    <th:block th:include="include :: select2-css"/>
+    <script th:src="@{/editor/jq.js}"></script>
+    <script th:src="@{/editor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/editor/editor.js}"></script>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-questionManagerTestTraining-add">
+        <input name="testTrainingCategoryTitle" id="testTrainingCategoryTitle" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">试题类型：</label>
+            <div class="col-sm-8">
+                <select name="testTrainingCategoryId" id="testTrainingCategoryId" onchange="sourceNameChange()" class="form-control m-b" required>
+                    <option value="">请选择</option>
+                    <option th:each="testTrainingCategory : ${testTrainingCategoryList}" th:text="${testTrainingCategory.title}"
+                            th:value="${testTrainingCategory.testTrainingCategoryId}">
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">类型：</label>
+            <div class="col-sm-8">
+                <select name="questionStatus" class="form-control m-b" required>
+                    <option value="">请选择</option>
+                    <option value="1">单项选择题</option>
+                    <option value="2">多项选择题</option>
+                    <option value="3">解答题</option>
+                    <option value="4">判断题</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">题目：</label>
+            <div class="col-sm-8">
+                <textarea id="mytextareaone" style="visibility: inherit;"></textarea>
+                <input id="content" name="content" class="form-control" type="hidden">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">解析：</label>
+            <div class="col-sm-8">
+                <textarea id="mytextareaTwo" style="visibility: inherit;"></textarea>
+                <input id="analysis" name="analysis" class="form-control" type="hidden">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">分数：</label>
+            <div class="col-sm-8">
+                <input name="score" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">显示状态：</label>
+            <div class="col-sm-8">
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" value="0" name="showStatus"> <i></i> 否</label>
+                </div>
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" checked value="1" name="showStatus"> <i></i> 显示</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">难易程度：</label>
+            <div class="col-sm-8">
+                <select name="complexityStatus" class="form-control m-b" required>
+                    <option value="3">易</option>
+                    <option value="2">中等</option>
+                    <option value="1">难</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">排序，数字越小越靠前：</label>
+            <div class="col-sm-8">
+                <input name="sortNum" class="form-control" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">选项A：</label>
+            <div class="col-sm-8">
+                <textarea id="mytextareaThree" style="visibility: inherit;"></textarea>
+                <input id="optionA" name="optionA" class="form-control" type="hidden">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">选项B：</label>
+            <div class="col-sm-8">
+                <textarea id="mytextareaFour" style="visibility: inherit;"></textarea>
+                <input id="optionB" name="optionB" class="form-control" type="hidden">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">选项C：</label>
+            <div class="col-sm-8">
+                <textarea id="mytextareaFive" style="visibility: inherit;"></textarea>
+                <input id="optionC" name="optionC" class="form-control" type="hidden">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">选项D：</label>
+            <div class="col-sm-8">
+                <textarea id="mytextareaSix" style="visibility: inherit;"></textarea>
+                <input id="optionD" name="optionD" class="form-control" type="hidden">
+            </div>
+        </div>
+<!--        <div class="form-group">
+            <label class="col-sm-3 control-label">选项E：</label>
+            <div class="col-sm-8">
+                <textarea id="mytextareaSeven" style="visibility: inherit;"></textarea>
+                <input id="optionE" name="optionE" class="form-control" type="hidden">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">选项F：</label>
+            <div class="col-sm-8">
+                <textarea id="mytextareaEight" style="visibility: inherit;"></textarea>
+                <input id="optionF" name="optionF" class="form-control" type="hidden">
+            </div>
+        </div>-->
+<!--        <div class="form-group">
+            <label class="col-sm-3 control-label">正确答案：</label>
+            <div class="col-sm-8">
+                <input name="answerStatus" class="form-control" type="text">
+            </div>
+        </div>-->
+        <div class="form-group">
+            <label class="col-sm-3 control-label">正确答案：</label>
+            <div class="col-sm-8">
+                <select name="answerStatus" class="form-control m-b select2-multiple" multiple>
+                    <option value="">请选择</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+            </div>
+        </div>
+<!--        <div class="form-group">
+            <label class="col-sm-3 control-label" hidden>章节ID：</label>
+            <div class="col-sm-8" hidden>
+                <input name="chapterId" id="chapterId" class="form-control" type="text" hidden>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" hidden>课程ID：</label>
+            <div class="col-sm-8" hidden>
+                <input name="courseId" id="courseId" class="form-control" type="text" hidden>
+            </div>
+        </div>-->
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/questionManagerTestTraining";
+/*    var courseId = [[${courseId}]];
+    var chapterId = [[${chapterId}]];
+
+    $("#chapterId").val(chapterId);
+    $("#courseId").val(courseId);*/
+
+    $("#form-questionManagerTestTraining-add").validate({
+        focusCleanup: true
+    });
+
+    window.onload = function () {
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaone');
+
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaTwo');
+
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaThree');
+
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaFour');
+
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaFive');
+
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaSix');
+
+/*        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaSeven');
+
+        //传入自己定义的id然后
+        setMytextareaIdName('mytextareaEight');*/
+    }
+    // 编辑器
+    function GetTinyMceContent() {
+        $("#content").val(tinyMCE.editors[0].getContent());
+        $("#analysis").val(tinyMCE.editors[1].getContent());
+        $("#optionA").val(tinyMCE.editors[2].getContent());
+        $("#optionB").val(tinyMCE.editors[3].getContent());
+        $("#optionC").val(tinyMCE.editors[4].getContent());
+        $("#optionD").val(tinyMCE.editors[5].getContent());
+        // $("#optionE").val(tinyMCE.editors[6].getContent());
+        // $("#optionF").val(tinyMCE.editors[7].getContent());
+    }
+
+    function submitHandler() {
+        GetTinyMceContent();
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-questionManagerTestTraining-add').serialize());
+        }
+    }
+
+    function sourceNameChange() {
+        var options = $("#testTrainingCategoryId option:selected");
+        $("#testTrainingCategoryTitle").val(options.text());
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TemplateMapper">
+
+    <resultMap type="Template" id="TemplateResult">
+        <result property="templateId" column="template_id"/>
+        <result property="templateType" column="template_type"/>
+        <result property="templateContent" column="template_content"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectTemplateVo">
+        select template_id, template_type, template_content, del_status, create_time, update_time
+        from template
+    </sql>
+
+    <select id="selectTemplateList" parameterType="Template" resultMap="TemplateResult">
+        <include refid="selectTemplateVo"/>
+        <where>
+            del_status = 0
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="templateContent != null  and templateContent != ''">and template_content = #{templateContent}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectTemplateById" parameterType="String" resultMap="TemplateResult">
+        <include refid="selectTemplateVo"/>
+        where template_id = #{templateId}
+    </select>
+
+    <insert id="insertTemplate" parameterType="Template">
+        insert into template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">template_id,</if>
+            <if test="templateType != null">template_type,</if>
+            <if test="templateContent != null">template_content,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="templateId != null">#{templateId},</if>
+            <if test="templateType != null">#{templateType},</if>
+            <if test="templateContent != null">#{templateContent},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTemplate" parameterType="Template">
+        update template
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="templateType != null">template_type = #{templateType},</if>
+            <if test="templateContent != null">template_content = #{templateContent},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where template_id = #{templateId}
+    </update>
+
+    <update id="deleteTemplateById" parameterType="String">
+        update  template set del_status = 1
+        where template_id = #{templateId}
+    </update>
+
+    <update id="deleteTemplateByIds" parameterType="String">
+        update  template set del_status = 1 where template_id in
+        <foreach item="templateId" collection="array" open="(" separator="," close=")">
+            #{templateId}
+        </foreach>
+    </update>
+
+    <select id="selectTemplate" parameterType="Template" resultMap="TemplateResult">
+        <include refid="selectTemplateVo"/>
+        <where>
+            del_status = 0
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="templateContent != null  and templateContent != ''">and template_content = #{templateContent}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+        </where>
+        order by create_time desc limit 1
+    </select>
+</mapper>

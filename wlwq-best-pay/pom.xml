@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.wlwq</groupId>
+        <artifactId>huzhi-app</artifactId>
+        <version>4.6.0</version>
+    </parent>
+    <artifactId>wlwq-best-pay</artifactId>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <hutool.version>5.3.10</hutool.version>
+        <wxJava.version>4.1.0</wxJava.version>
+        <alipay.version>4.15.0.ALL</alipay.version>
+    </properties>
+
+
+    <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>org.redisson</groupId>-->
+<!--            <artifactId>redisson-spring-boot-starter</artifactId>-->
+<!--            <version>3.14.0</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>${alipay.version}</version>
+        </dependency>
+
+        <!-- 微信支付(pay) 开发文档-->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+<!--            <artifactId>wx-java-pay-spring-boot-starter</artifactId>-->
+            <artifactId>weixin-java-pay</artifactId>
+            <version>${wxJava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wlwq</groupId>
+            <artifactId>wlwq-common</artifactId>
+        </dependency>
+    </dependencies>
+</project>

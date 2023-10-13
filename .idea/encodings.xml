@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/wlwq-admin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-admin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-baidu-ai/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-best-pay/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-best-pay/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-fluorite-cloud/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-framework/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-generator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-generator/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-jwt/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-printer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-private-phone/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-private-phone/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-quartz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-quartz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-settings/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-settings/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-sms/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-sms/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-system/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/wlwq-system/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CustomTypeMapper">
+    
+    <resultMap type="CustomType" id="CustomTypeResult">
+        <result property="customTypeId"    column="custom_type_id"    />
+        <result property="customTypeName"    column="custom_type_name"    />
+        <result property="sortNum"    column="sort_num"    />
+        <result property="showStatustiny"    column="show_statustiny"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delStatus"    column="del_status"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="companyId"    column="company_id"    />
+    </resultMap>
+
+    <sql id="selectCustomTypeVo">
+        select custom_type_id, custom_type_name, sort_num, show_statustiny, create_time, update_time, del_status, dept_id, company_id from custom_type
+    </sql>
+
+    <select id="selectCustomTypeList" parameterType="CustomType" resultMap="CustomTypeResult">
+        <include refid="selectCustomTypeVo"/>
+        <where>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="customTypeName != null  and customTypeName != ''"> and custom_type_name like concat('%', #{customTypeName}, '%')</if>
+            <if test="sortNum != null "> and sort_num = #{sortNum}</if>
+            <if test="showStatustiny != null "> and show_statustiny = #{showStatustiny}</if>
+            <if test="delStatus != null "> and del_status = #{delStatus}</if>
+            <if test="deptId != null  and deptId != ''"> and dept_id = #{deptId}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+        </where>
+    </select>
+    
+    <select id="selectCustomTypeById" parameterType="String" resultMap="CustomTypeResult">
+        <include refid="selectCustomTypeVo"/>
+        where custom_type_id = #{customTypeId}
+    </select>
+        
+    <insert id="insertCustomType" parameterType="CustomType">
+        insert into custom_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customTypeId != null">custom_type_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="customTypeName != null">custom_type_name,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatustiny != null">show_statustiny,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delStatus != null">del_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customTypeId != null">#{customTypeId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="customTypeName != null">#{customTypeName},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatustiny != null">#{showStatustiny},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomType" parameterType="CustomType">
+        update custom_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="customTypeName != null">custom_type_name = #{customTypeName},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatustiny != null">show_statustiny = #{showStatustiny},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+        </trim>
+        where custom_type_id = #{customTypeId}
+    </update>
+
+    <delete id="deleteCustomTypeById" parameterType="String">
+        delete from custom_type where custom_type_id = #{customTypeId}
+    </delete>
+
+    <delete id="deleteCustomTypeByIds" parameterType="String">
+        delete from custom_type where custom_type_id in 
+        <foreach item="customTypeId" collection="array" open="(" separator="," close=")">
+            #{customTypeId}
+        </foreach>
+    </delete>
+
+    <resultMap type="com.wlwq.api.resultVO.CustomTypeVO" id="CustomTypeVOResult">
+        <result property="customTypeId"    column="custom_type_id"    />
+        <result property="customTypeName"    column="custom_type_name"    />
+    </resultMap>
+    <select id="findCustomTypeVO" resultMap="CustomTypeVOResult">
+        select custom_type_id,custom_type_name from custom_type
+        where company_id=#{companyId}
+        <if test="name != null and name != ''">
+            and custom_type_name like concat('%', #{name}, '%')
+        </if>
+    </select>
+
+    <select id="findLabel" resultType="java.lang.String">
+        select custom_type_name from custom_type
+        where del_status=0
+        and custom_type_id in
+        <if test="customLabel != null">
+            <foreach item="customLabel" collection="customLabel.split(',')" open="(" separator="," close=")">
+                #{customLabel}
+            </foreach>
+        </if>
+    </select>
+</mapper>

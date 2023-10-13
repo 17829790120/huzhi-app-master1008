@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.system.mapper.SysDeptMapper">
+
+    <resultMap type="SysDept" id="SysDeptResult">
+        <id property="deptId" column="dept_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="leader" column="leader"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deptLevel" column="dept_level"/>
+        <result property="countyCoding" column="county_coding"/>
+        <result property="onWork" column="on_work"/>
+        <result property="offWork" column="off_work"/>
+        <result property="clockingRange" column="clocking_range"/>
+        <result property="clockingScore" column="clocking_score"/>
+        <result property="outwardCheckScore" column="outward_check_score"/>
+        <result property="lon" column="lon"/>
+        <result property="lat" column="lat"/>
+        <result property="address" column="address"/>
+        <result property="addressDetail" column="address_detail"/>
+        <result property="reissueNum" column="reissue_num"/>
+        <result property="weeks" column="weeks"/>
+        <result property="holidaysStatus" column="holidays_status"/>
+        <result property="companyImg" column="company_img"/>
+    </resultMap>
+
+    <sql id="selectDeptVo">
+        select d.dept_id,
+               d.parent_id,
+               d.ancestors,
+               d.dept_name,
+               d.order_num,
+               d.leader,
+               d.phone,
+               d.email,
+               d.status,
+               d.del_flag,
+               d.create_by,
+               d.dept_level,
+               d.county_coding,
+               d.create_time,
+               d.on_work,
+               d.off_work,
+               d.clocking_range,
+               d.clocking_score,
+               d.outward_check_score,
+               d.lon,
+               d.lat,
+               d.address,
+               d.address_detail,
+               d.reissue_num,
+               d.weeks,
+               d.holidays_status,
+               d.company_img
+        from sys_dept d
+    </sql>
+
+    <select id="selectRoleDeptTree" parameterType="Long" resultType="String">
+        select concat(d.dept_id, d.dept_name) as dept_name
+        from sys_dept d
+                 left join sys_role_dept rd on d.dept_id = rd.dept_id
+        where d.del_flag = '0'
+          and rd.role_id = #{roleId}
+        order by d.parent_id, d.order_num
+    </select>
+
+    <select id="selectDeptList" parameterType="SysDept" resultMap="SysDeptResult">
+        <include refid="selectDeptVo"/>
+        where d.del_flag = '0'
+        <if test="parentId != null and parentId != 0">
+            AND d.parent_id = #{parentId}
+        </if>
+        <if test="deptName != null and deptName != ''">
+            AND d.dept_name like concat('%', #{deptName}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND d.status = #{status}
+        </if>
+        <if test="tag != null and tag == 1">
+            AND d.dept_id != 100
+        </if>
+        <if test="onWork != null  and onWork != ''">and d.on_work = #{onWork}</if>
+        <if test="offWork != null  and offWork != ''">and d.off_work = #{offWork}</if>
+        <if test="clockingRange != null ">and d.clocking_range = #{clockingRange}</if>
+        <if test="clockingScore != null ">and d.clocking_score = #{clockingScore}</if>
+        <if test="outwardCheckScore != null ">and d.outward_check_score = #{outwardCheckScore}</if>
+        <if test="countyCoding != null  and countyCoding != ''">and d.county_coding = #{countyCoding}</if>
+        <if test="deptLevel != null and deptLevel == -1">and (d.dept_level = 1 or dept_level = 2)</if>
+        <if test="deptLevel != null and deptLevel == 0">and (d.dept_level = 2 or dept_level = 3)</if>
+        <if test="deptLevel != null and deptLevel > 0">and d.dept_level = #{deptLevel}</if>
+        <if test="lon != null  and lon != ''">and d.lon = #{lon}</if>
+        <if test="lat != null  and lat != ''">and d.lat = #{lat}</if>
+        <if test="weeks != null  and weeks != ''">and d.weeks = #{weeks}</if>
+        <if test="holidaysStatus != null ">and d.holidays_status = #{holidaysStatus}</if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by d.parent_id, d.order_num
+    </select>
+
+    <select id="treeDataByCompany" parameterType="SysDept" resultMap="SysDeptResult">
+        <include refid="selectDeptVo"/>
+        where d.del_flag = '0'
+        <!--        <if test="parentId != null">
+                    AND d.parent_id = #{parentId}
+                </if>
+                <if test="deptId != null">
+                    AND d.dept_id = #{deptId}
+                </if>-->
+        <!-- 数据范围过滤 -->
+        AND (d.dept_id = #{deptId} or d.parent_id = #{deptId})
+        order by d.parent_id, d.order_num
+    </select>
+
+    <select id="checkDeptExistUser" parameterType="Long" resultType="int">
+        select count(1)
+        from sys_user
+        where dept_id = #{deptId}
+          and del_flag = '0'
+    </select>
+
+    <select id="selectDeptCount" parameterType="SysDept" resultType="int">
+        select count(1) from sys_dept
+        where del_flag = '0'
+        <if test="deptId != null and deptId != 0">and dept_id = #{deptId}</if>
+        <if test="parentId != null and parentId != 0">and parent_id = #{parentId}</if>
+        <if test="deptLevel != null ">and dept_level = #{deptLevel}</if>
+        <if test="countyCoding != null  and countyCoding != ''">and county_coding = #{countyCoding}</if>
+    </select>
+
+    <select id="checkDeptNameUnique" resultMap="SysDeptResult">
+        <include refid="selectDeptVo"/>
+        where del_flag = '0' and dept_name=#{deptName} and parent_id = #{parentId} limit 1
+    </select>
+
+    <select id="selectDeptById" parameterType="Long" resultMap="SysDeptResult">
+        select d.dept_id,
+               d.parent_id,
+               d.ancestors,
+               d.dept_name,
+               d.order_num,
+               d.leader,
+               d.phone,
+               d.email,
+               d.status,
+               d.dept_level,
+               d.county_coding,
+               d.on_work,
+               d.off_work,
+               d.clocking_range,
+               d.clocking_score,
+               d.outward_check_score,
+               d.lon,
+               d.lat,
+               d.address,
+               d.address_detail,
+               d.reissue_num,
+               d.weeks,
+               d.holidays_status,
+               d.company_img,
+               (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        from sys_dept d
+        where d.dept_id = #{deptId}
+    </select>
+
+    <select id="selectChildrenDeptById" parameterType="Long" resultMap="SysDeptResult">
+        select *
+        from sys_dept
+        where find_in_set(#{deptId}, ancestors)
+    </select>
+
+    <select id="selectNormalChildrenDeptById" parameterType="Long" resultType="int">
+        select count(*)
+        from sys_dept
+        where status = 0
+          and del_flag = '0'
+          and find_in_set(#{deptId}, ancestors)
+    </select>
+
+    <insert id="insertDept" parameterType="SysDept">
+        insert into sys_dept(
+        <if test="deptId != null and deptId != 0">dept_id,</if>
+        <if test="parentId != null and parentId != 0">parent_id,</if>
+        <if test="deptName != null and deptName != ''">dept_name,</if>
+        <if test="ancestors != null and ancestors != ''">ancestors,</if>
+        <if test="orderNum != null and orderNum != ''">order_num,</if>
+        <if test="leader != null and leader != ''">leader,</if>
+        <if test="phone != null and phone != ''">phone,</if>
+        <if test="email != null and email != ''">email,</if>
+        <if test="status != null">status,</if>
+        <if test="deptLevel != null">dept_level,</if>
+        <if test="countyCoding != null">county_coding,</if>
+        <if test="onWork != null">on_work,</if>
+        <if test="offWork != null">off_work,</if>
+        <if test="clockingRange != null">clocking_range,</if>
+        <if test="clockingScore != null">clocking_score,</if>
+        <if test="outwardCheckScore != null">outward_check_score,</if>
+        <if test="lon != null">lon,</if>
+        <if test="lat != null">lat,</if>
+        <if test="address != null">address,</if>
+        <if test="addressDetail != null">address_detail,</if>
+        <if test="reissueNum != null">reissue_num,</if>
+        <if test="weeks != null">weeks,</if>
+        <if test="holidaysStatus != null">holidays_status,</if>
+        <if test="companyImg != null">company_img,</if>
+        <if test="createBy != null and createBy != ''">create_by,</if>
+        create_time
+        )values(
+        <if test="deptId != null and deptId != 0">#{deptId},</if>
+        <if test="parentId != null and parentId != 0">#{parentId},</if>
+        <if test="deptName != null and deptName != ''">#{deptName},</if>
+        <if test="ancestors != null and ancestors != ''">#{ancestors},</if>
+        <if test="orderNum != null and orderNum != ''">#{orderNum},</if>
+        <if test="leader != null and leader != ''">#{leader},</if>
+        <if test="phone != null and phone != ''">#{phone},</if>
+        <if test="email != null and email != ''">#{email},</if>
+        <if test="status != null">#{status},</if>
+        <if test="deptLevel != null">#{deptLevel},</if>
+        <if test="countyCoding != null">#{countyCoding},</if>
+        <if test="onWork != null">#{onWork},</if>
+        <if test="offWork != null">#{offWork},</if>
+        <if test="clockingRange != null">#{clockingRange},</if>
+        <if test="clockingScore != null">#{clockingScore},</if>
+        <if test="outwardCheckScore != null">#{outwardCheckScore},</if>
+        <if test="lon != null">#{lon},</if>
+        <if test="lat != null">#{lat},</if>
+        <if test="address != null">#{address},</if>
+        <if test="addressDetail != null">#{addressDetail},</if>
+        <if test="reissueNum != null">#{reissueNum},</if>
+        <if test="weeks != null">#{weeks},</if>
+        <if test="holidaysStatus != null">#{holidaysStatus},</if>
+        <if test="companyImg != null">#{companyImg},</if>
+        <if test="createBy != null and createBy != ''">#{createBy},</if>
+        sysdate()
+        )
+    </insert>
+
+    <update id="updateDept" parameterType="SysDept">
+        update sys_dept
+        <set>
+            <if test="parentId != null and parentId != 0">parent_id = #{parentId},</if>
+            <if test="deptName != null and deptName != ''">dept_name = #{deptName},</if>
+            <if test="ancestors != null and ancestors != ''">ancestors = #{ancestors},</if>
+            <if test="orderNum != null and orderNum != ''">order_num = #{orderNum},</if>
+            <if test="leader != null">leader = #{leader},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="deptLevel != null">dept_level = #{deptLevel},</if>
+            <if test="countyCoding != null">county_coding = #{countyCoding},</if>
+            <if test="onWork != null">on_work = #{onWork},</if>
+            <if test="offWork != null">off_work = #{offWork},</if>
+            <if test="clockingRange != null">clocking_range = #{clockingRange},</if>
+            <if test="clockingScore != null">clocking_score = #{clockingScore},</if>
+            <if test="outwardCheckScore != null">outward_check_score = #{outwardCheckScore},</if>
+            <if test="lon != null">lon = #{lon},</if>
+            <if test="lat != null">lat = #{lat},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="addressDetail != null">address_detail = #{addressDetail},</if>
+            <if test="reissueNum != null">reissue_num = #{reissueNum},</if>
+            <if test="weeks != null">weeks = #{weeks},</if>
+            <if test="holidaysStatus != null">holidays_status = #{holidaysStatus},</if>
+            <if test="companyImg != null">company_img = #{companyImg},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where dept_id = #{deptId}
+    </update>
+
+    <update id="updateDeptChildren" parameterType="java.util.List">
+        update sys_dept set ancestors =
+        <foreach collection="depts" item="item" index="index"
+                 separator=" " open="case dept_id" close="end">
+            when #{item.deptId} then #{item.ancestors}
+        </foreach>
+        where dept_id in
+        <foreach collection="depts" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item.deptId}
+        </foreach>
+    </update>
+
+    <delete id="deleteDeptById" parameterType="Long">
+        update sys_dept
+        set del_flag = '2'
+        where dept_id = #{deptId}
+    </delete>
+
+    <update id="updateDeptStatus" parameterType="SysDept">
+        update sys_dept
+        <set>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where dept_id in (${ancestors})
+    </update>
+
+    <!--	Api查询城市列表-->
+    <select id="selectApiDeptList" parameterType="SysDept" resultMap="SysDeptResult">
+        select dept_id,dept_name,parent_id from sys_dept
+        where del_flag = '0' and status = '0' and dept_id != 100
+        <if test="deptId != null and deptId != 0">and dept_id = #{deptId}</if>
+        <if test="parentId != null and parentId != 0">and parent_id = #{parentId}</if>
+        <if test="deptName != null and deptName != ''">
+            AND dept_name like concat('%', #{deptName}, '%')
+        </if>
+    </select>
+
+    <!--	Api查询某个城市-->
+    <select id="selectApiNearbyCity" parameterType="SysDept" resultMap="SysDeptResult">
+        select dept_id,dept_name from sys_dept
+        where del_flag = '0' and status = '0' and dept_id != 100
+        <if test="countyCoding != null and countyCoding != ''">and county_coding = #{countyCoding}</if>
+        <if test="deptName != null and deptName != ''">
+            AND dept_name = #{deptName}
+        </if>
+        <if test="deptId != null and deptId != 0">and dept_id = #{deptId}</if>
+        <if test="parentId != null and parentId != 0">and parent_id = #{parentId}</if>
+        limit 1
+    </select>
+    <select id="selectDeptMap" resultType="java.util.HashMap">
+        SELECT dept_id   as                                                                                      deptId,
+               dept_name as                                                                                      deptName,
+               (SELECT COUNT(*) FROM api_account WHERE company_id = #{companyId} AND dept_id = sys_dept.dept_id) num
+        FROM sys_dept
+        WHERE parent_id = #{companyId}
+        ORDER BY order_num
+    </select>
+    <!--查询部门及部门下的人-->
+    <select id="selectDeptAndAccountMap" resultType="java.util.HashMap">
+        SELECT dept_id   as                                                                                      deptId,
+               dept_name as                                                                                      deptName,
+               (SELECT COUNT(*) FROM api_account WHERE company_id = #{companyId} AND dept_id = sys_dept.dept_id) num
+        FROM sys_dept
+        WHERE parent_id = #{companyId} and del_flag=0
+            /*and parent_id != 100*/
+        ORDER BY order_num
+    </select>
+
+    <!--查询某个公司下面的打卡时间及打卡范围-->
+    <select id="selectClock" resultType="java.util.HashMap">
+        SELECT dept_id                                                     as companyId,
+               dept_name                                                   as companyName,
+               clocking_range                                              as clockingRange,
+               on_work                                                     as onWork,
+               off_work                                                    as offWork,
+               lon,
+               lat,
+               address,
+               address_detail                                              as addressDetail,
+               reissue_num                                                 as reissueNum,
+               round((st_distance_sphere(
+                              point(lon, lat),
+                              point(#{lon}, #{lat}))), 1) AS distance,
+               if(round((st_distance_sphere(
+                       point(lon, lat),
+                       point(#{lon}, #{lat}))), 1) > clocking_range, 0, 1) as clockingStatus
+        FROM sys_dept
+        WHERE del_flag = 0
+          and status = 0
+          and dept_id = #{deptId}
+    </select>
+</mapper> 

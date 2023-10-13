@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.note.mapper.NoteSendRecordMapper">
+
+    <resultMap type="NoteSendRecord" id="NoteSendRecordResult">
+        <result property="noteSendRecordId" column="note_send_record_id"/>
+        <result property="noteConfigId" column="note_config_id"/>
+        <result property="noteConfigType" column="note_config_type"/>
+        <result property="noteTemplateId" column="note_template_id"/>
+        <result property="noteTemplateName" column="note_template_name"/>
+        <result property="noteTemplateCode" column="note_template_code"/>
+        <result property="noteTemplateType" column="note_template_type"/>
+        <result property="receivePhone" column="receive_phone"/>
+        <result property="noteContent" column="note_content"/>
+        <result property="resultBizId" column="result_biz_id"/>
+        <result property="resultCode" column="result_code"/>
+        <result property="resultMessage" column="result_message"/>
+        <result property="resultRequestId" column="result_request_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectNoteSendRecordVo">
+        select note_send_record_id,
+               note_config_id,
+               note_config_type,
+               note_template_id,
+               note_template_name,
+               note_template_code,
+               note_template_type,
+               receive_phone,
+               note_content,
+               result_biz_id,
+               result_code,
+               result_message,
+               result_request_id,
+               create_time
+        from note_send_record
+    </sql>
+
+    <select id="selectNoteSendRecordList" parameterType="NoteSendRecord" resultMap="NoteSendRecordResult">
+        <include refid="selectNoteSendRecordVo"/>
+        <where>
+            <if test="noteConfigId != null  and noteConfigId != ''">and note_config_id = #{noteConfigId}</if>
+            <if test="noteConfigType != null  and noteConfigType != ''">and note_config_type = #{noteConfigType}</if>
+            <if test="noteTemplateId != null  and noteTemplateId != ''">and note_template_id = #{noteTemplateId}</if>
+            <if test="noteTemplateName != null  and noteTemplateName != ''">and note_template_name like concat('%',
+                #{noteTemplateName}, '%')
+            </if>
+            <if test="noteTemplateCode != null  and noteTemplateCode != ''">and note_template_code =
+                #{noteTemplateCode}
+            </if>
+            <if test="noteTemplateType != null  and noteTemplateType != ''">and note_template_type =
+                #{noteTemplateType}
+            </if>
+            <if test="receivePhone != null  and receivePhone != ''">and receive_phone = #{receivePhone}</if>
+            <if test="noteContent != null  and noteContent != ''">and note_content = #{noteContent}</if>
+            <if test="resultBizId != null  and resultBizId != ''">and result_biz_id = #{resultBizId}</if>
+            <if test="resultCode != null  and resultCode != ''">and result_code = #{resultCode}</if>
+            <if test="resultMessage != null  and resultMessage != ''">and result_message = #{resultMessage}</if>
+            <if test="resultRequestId != null  and resultRequestId != ''">and result_request_id = #{resultRequestId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectNoteSendRecordById" parameterType="Long" resultMap="NoteSendRecordResult">
+        <include refid="selectNoteSendRecordVo"/>
+        where note_send_record_id = #{noteSendRecordId}
+    </select>
+
+    <insert id="insertNoteSendRecord" parameterType="NoteSendRecord" useGeneratedKeys="true"
+            keyProperty="noteSendRecordId">
+        insert into note_send_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noteConfigId != null and noteConfigId != ''">note_config_id,</if>
+            <if test="noteConfigType != null and noteConfigType != ''">note_config_type,</if>
+            <if test="noteTemplateId != null and noteTemplateId != ''">note_template_id,</if>
+            <if test="noteTemplateName != null and noteTemplateName != ''">note_template_name,</if>
+            <if test="noteTemplateCode != null and noteTemplateCode != ''">note_template_code,</if>
+            <if test="noteTemplateType != null and noteTemplateType != ''">note_template_type,</if>
+            <if test="receivePhone != null and receivePhone != ''">receive_phone,</if>
+            <if test="noteContent != null and noteContent != ''">note_content,</if>
+            <if test="resultBizId != null and resultBizId != ''">result_biz_id,</if>
+            <if test="resultCode != null and resultCode != ''">result_code,</if>
+            <if test="resultMessage != null and resultMessage != ''">result_message,</if>
+            <if test="resultRequestId != null and resultRequestId != ''">result_request_id,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="noteConfigId != null and noteConfigId != ''">#{noteConfigId},</if>
+            <if test="noteConfigType != null and noteConfigType != ''">#{noteConfigType},</if>
+            <if test="noteTemplateId != null and noteTemplateId != ''">#{noteTemplateId},</if>
+            <if test="noteTemplateName != null and noteTemplateName != ''">#{noteTemplateName},</if>
+            <if test="noteTemplateCode != null and noteTemplateCode != ''">#{noteTemplateCode},</if>
+            <if test="noteTemplateType != null and noteTemplateType != ''">#{noteTemplateType},</if>
+            <if test="receivePhone != null and receivePhone != ''">#{receivePhone},</if>
+            <if test="noteContent != null and noteContent != ''">#{noteContent},</if>
+            <if test="resultBizId != null and resultBizId != ''">#{resultBizId},</if>
+            <if test="resultCode != null and resultCode != ''">#{resultCode},</if>
+            <if test="resultMessage != null and resultMessage != ''">#{resultMessage},</if>
+            <if test="resultRequestId != null and resultRequestId != ''">#{resultRequestId},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateNoteSendRecord" parameterType="NoteSendRecord">
+        update note_send_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="noteConfigId != null and noteConfigId != ''">note_config_id = #{noteConfigId},</if>
+            <if test="noteConfigType != null and noteConfigType != ''">note_config_type = #{noteConfigType},</if>
+            <if test="noteTemplateId != null and noteTemplateId != ''">note_template_id = #{noteTemplateId},</if>
+            <if test="noteTemplateName != null and noteTemplateName != ''">note_template_name = #{noteTemplateName},
+            </if>
+            <if test="noteTemplateCode != null and noteTemplateCode != ''">note_template_code = #{noteTemplateCode},
+            </if>
+            <if test="noteTemplateType != null and noteTemplateType != ''">note_template_type = #{noteTemplateType},
+            </if>
+            <if test="receivePhone != null and receivePhone != ''">receive_phone = #{receivePhone},</if>
+            <if test="noteContent != null and noteContent != ''">note_content = #{noteContent},</if>
+            <if test="resultBizId != null and resultBizId != ''">result_biz_id = #{resultBizId},</if>
+            <if test="resultCode != null and resultCode != ''">result_code = #{resultCode},</if>
+            <if test="resultMessage != null and resultMessage != ''">result_message = #{resultMessage},</if>
+            <if test="resultRequestId != null and resultRequestId != ''">result_request_id = #{resultRequestId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where note_send_record_id = #{noteSendRecordId}
+    </update>
+
+    <delete id="deleteNoteSendRecordById" parameterType="Long">
+        delete
+        from note_send_record
+        where note_send_record_id = #{noteSendRecordId}
+    </delete>
+
+    <delete id="deleteNoteSendRecordByIds" parameterType="String">
+        delete from note_send_record where note_send_record_id in
+        <foreach item="noteSendRecordId" collection="array" open="(" separator="," close=")">
+            #{noteSendRecordId}
+        </foreach>
+    </delete>
+
+</mapper>

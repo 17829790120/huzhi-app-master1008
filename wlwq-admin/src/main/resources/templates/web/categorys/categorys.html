@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('自己与自己的关系类目列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>分类：</label>
+                            <input type="text" name="categoryName"/>
+                        </li>
+                        <li>
+                            <label>模块名称：</label>
+                            <select name="trainingModuleId"
+                                    class="form-control m-b">
+                                <option value="">请选择</option>
+                                <option value="0">自己与自己的关系</option>
+                                <option th:each="module : ${moduleList}" th:text="${module.titleName}"
+                                        th:value="${module.trainingModuleId}">
+                            </select>
+                        </li>
+                        <li>
+                            <label>是否显示：</label>
+                            <select name="showStatus" class="form-control m-b">
+                                <option value="">所有</option>
+                                <option value="0">不显示</option>
+                                <option value="1">显示</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:categorys:add">
+                <i class="fa fa-plus"></i> 新增
+            </a>
+            <a class="btn btn-primary" onclick="$.operate.edit()" shiro:hasPermission="web:categorys:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-info" id="expandAllBtn">
+                <i class="fa fa-exchange"></i> 展开/折叠
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-tree-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var addFlag = [[${@permission.hasPermi('web:categorys:add')}]];
+    var editFlag = [[${@permission.hasPermi('web:categorys:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:categorys:remove')}]];
+    var prefix = ctx + "web/categorys";
+
+    $(function () {
+        var options = {
+            code: "categoryId",
+            parentCode: "parentId",
+            expandColumn: "1",
+            uniqueId: "categoryId",
+            url: prefix + "/list",
+            createUrl: prefix + "/add/{id}",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove/{id}",
+            exportUrl: prefix + "/export",
+            modalName: "自己与自己的关系类目",
+            columns: [{
+                field: 'selectItem',
+                radio: true
+            },
+
+                {
+                    field: 'categoryName',
+                    title: '分类名字',
+                    align: 'left'
+                },
+
+                {
+                    field: 'categoryCode',
+                    title: '图片',
+                    align: 'left',
+                    formatter: function(value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'description',
+                    title: '描述',
+                    align: 'left',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'sortNum',
+                    title: '排序',
+                    align: 'left'
+                },
+                {
+                    field: 'showStatus',
+                    title: '显示状态',
+                    align: 'left',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                 {
+                    field: 'trainingModuleName',
+                    title: '模块名称',
+                    align: 'left'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    align: 'left',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.categoryId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        if (row.level != 3) {
+                            actions.push('<a class="btn btn-info  btn-xs ' + addFlag + '" href="javascript:void(0)" onclick="$.operate.add(\'' + row.categoryId + '\')"><i class="fa fa-plus"></i>新增</a> ');
+                        }
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.categoryId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.treeTable.init(options);
+    });
+
+
+    //显示不显示
+    function statusTools(row) {
+        // 显示
+        if (row.showStatus == 1) {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.categoryId + '\',0)"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.categoryId + '\',1)"></i> ';
+        }
+    }
+
+    function disable(categoryId) {
+        $.modal.confirm("确认要隐藏吗？", function () {
+            $.operate.post(prefix + "/edit", {"categoryId": categoryId, "showStatus": 0});
+        })
+    }
+
+    function enable(categoryId) {
+        $.modal.confirm("确认要显示吗？", function () {
+            $.operate.post(prefix + "/edit", {"categoryId": categoryId, "showStatus": 1});
+        })
+    }
+
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2;
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+</script>
+</body>
+</html>

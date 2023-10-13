@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.setting.mapper.SettingFeedbackTypeMapper">
+    
+    <resultMap type="SettingFeedbackType" id="SettingFeedbackTypeResult">
+        <result property="feedbackTypeId"    column="feedback_type_id"    />
+        <result property="title"    column="title"    />
+        <result property="sortNum"    column="sort_num"    />
+        <result property="delStatus"    column="del_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSettingFeedbackTypeVo">
+        select feedback_type_id, title, sort_num, del_status, create_time, update_time from setting_feedback_type
+    </sql>
+
+    <select id="selectSettingFeedbackTypeList" parameterType="SettingFeedbackType" resultMap="SettingFeedbackTypeResult">
+        <include refid="selectSettingFeedbackTypeVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="sortNum != null "> and sort_num = #{sortNum}</if>
+            <if test="delStatus != null "> and del_status = #{delStatus}</if>
+        </where>
+        order by sort_num desc
+    </select>
+    
+    <select id="selectSettingFeedbackTypeById" parameterType="Long" resultMap="SettingFeedbackTypeResult">
+        <include refid="selectSettingFeedbackTypeVo"/>
+        where feedback_type_id = #{feedbackTypeId}
+    </select>
+        
+    <insert id="insertSettingFeedbackType" parameterType="SettingFeedbackType" useGeneratedKeys="true" keyProperty="feedbackTypeId">
+        insert into setting_feedback_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSettingFeedbackType" parameterType="SettingFeedbackType">
+        update setting_feedback_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where feedback_type_id = #{feedbackTypeId}
+    </update>
+
+    <update id="deleteSettingFeedbackTypeById" parameterType="Long">
+        update setting_feedback_type set del_status = 1 where feedback_type_id = #{feedbackTypeId}
+    </update>
+
+    <update id="deleteSettingFeedbackTypeByIds" parameterType="String">
+        update setting_feedback_type set del_status = 1 where feedback_type_id in
+        <foreach item="feedbackTypeId" collection="array" open="(" separator="," close=")">
+            #{feedbackTypeId}
+        </foreach>
+    </update>
+
+<!--    意见反馈类型-->
+    <select id="selectTypeList" resultType="java.lang.String">
+        select title from setting_feedback_type where del_status = 0 order by sort_num desc
+    </select>
+</mapper>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:include="include :: header('修改部门')"/>
+  <th:block th:include="include :: select2-css"/>
+  <style type="text/css">
+    #map {
+      height: 660px
+    }
+  </style>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+  <form class="form-horizontal m" id="form-dept-edit" th:object="${dept}">
+    <input name="deptId" type="hidden" th:field="*{deptId}"/>
+    <input id="treeId" name="parentId" type="hidden" th:field="*{parentId}"/>
+    <div class="form-group">
+      <label class="col-sm-3 control-label is-required">名称：</label>
+      <div class="col-sm-8">
+        <input class="form-control" type="text" name="deptName" th:field="*{deptName}" id="deptName" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">企业员工上班时间选择：</label>
+      <div class="col-sm-8">
+        <select name="weeks" class="form-control select2-multiple" multiple>
+          <option th:each="week : ${weekList}" th:text="${week.name}"
+                  th:value="${week.num}"  th:selected="${week.flag}"></option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">企业员工上班时间：</label>
+      <div class="col-sm-8">
+        <input name="onWork" th:field="*{onWork}" placeholder="比如 09:00" class="form-control" type="text">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">企业员工下班时间：</label>
+      <div class="col-sm-8">
+        <input name="offWork" th:field="*{offWork}" placeholder="比如 18:00" class="form-control" type="text">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">节假日是否休息：</label>
+      <div class="col-sm-8">
+        <div class="radio check-box">
+          <label>
+            <input type="radio" value="0" th:field="*{holidaysStatus}" name="holidaysStatus"> <i></i> 否</label>
+        </div>
+        <div class="radio check-box">
+          <label>
+            <input type="radio" value="1" th:field="*{holidaysStatus}" name="holidaysStatus"> <i></i>
+            是</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">企业员工打卡范围(米)：</label>
+      <div class="col-sm-8">
+        <input name="clockingRange" th:field="*{clockingRange}" class="form-control" type="text">
+      </div>
+    </div>
+<!--    <div class="form-group">-->
+<!--      <label class="col-sm-3 control-label">企业员工考勤打卡赠送积分：</label>-->
+<!--      <div class="col-sm-8">-->
+<!--        <input name="clockingScore" th:field="*{clockingScore}" class="form-control" type="text">-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--      <label class="col-sm-3 control-label">企业员工外出签到赠送积分：</label>-->
+<!--      <div class="col-sm-8">-->
+<!--        <input name="outwardCheckScore" th:field="*{outwardCheckScore}" class="form-control" type="text">-->
+<!--      </div>-->
+<!--    </div>-->
+    <div class="form-group">
+      <label class="col-sm-3 control-label">补卡次数：</label>
+      <div class="col-sm-8">
+        <input name="reissueNum" class="form-control" type="number" th:field="*{reissueNum}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">企业地址：</label>
+      <div class="col-sm-8">
+        <input name="address" id="address" th:field="*{address}" class="form-control" type="text">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">企业详细地址：</label>
+      <div class="col-sm-8">
+        <input name="addressDetail" th:field="*{addressDetail}" class="form-control" type="text">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">企业经度：</label>
+      <div class="col-sm-8">
+        <input name="lon" id="lon" th:field="*{lon}" class="form-control" type="text">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">企业纬度：</label>
+      <div class="col-sm-8">
+        <input name="lat" id="lat" th:field="*{lat}" class="form-control" type="text">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-md-3 control-label">高德地图：</label>
+      <div class="col-md-8">
+        <div id="map"></div>
+      </div>
+    </div>
+  </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<!-- 高德地图插件 -->
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.14&key=988cfa47be0f65e939ec7234adb39ec8&plugin=AMap.Autocomplete,AMap.PlaceSearch"></script>
+<script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+<script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+<script th:inline="javascript">
+  var prefix = ctx + "system/dept";
+
+
+  function submitHandler() {
+    if ($.validate.form()) {
+      $.operate.save(prefix + "/edit", $('#form-dept-edit').serialize());
+    }
+  }
+
+  var weblongitude = [[${dept.lon}]];
+  var weblatitude = [[${dept.lat}]];
+
+  if (weblongitude == "") {
+    weblongitude = "116.397428";  //初始化地图中心点
+  }
+  if (weblatitude == "") {
+    weblatitude = "39.90923";  //初始化地图中心点
+  }
+  var arrayObj = new Array();
+  arrayObj[0] = weblongitude;
+  arrayObj[1] = weblatitude;
+
+  //生成高德地图
+  var map = new AMap.Map('map', {
+    resizeEnable: true, //是否监控地图容器尺寸变化
+    zoom: 11, //初始化地图层级
+    center: arrayObj //初始化地图中心点
+  });
+
+  //输入提示
+  var auto = new AMap.Autocomplete({
+    input: "address"
+  });
+
+  var autoOptions = {
+    input: "address"
+  };
+
+  var auto = new AMap.Autocomplete(autoOptions);
+  var placeSearch = new AMap.PlaceSearch({
+    map: map
+  });
+
+  //构造地点查询类
+  AMap.event.addListener(auto, "select", select);//注册监听，当选中某条记录时会触发
+  function select(e) {
+    placeSearch.setCity(e.poi.adcode);
+    placeSearch.search(e.poi.name);  //关键字查询查询
+  }
+
+  //为地图注册click事件获取鼠标点击出的经纬度坐标
+  map.on('click', function (e) {
+    $("#lon").val(e.lnglat.getLng());
+    $("#lat").val(e.lnglat.getLat());
+  });
+</script>
+</body>
+</html>

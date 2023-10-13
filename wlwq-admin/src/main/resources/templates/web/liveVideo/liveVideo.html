@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('直播列表列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>直播者名称：</label>
+                            <input type="text" name="liveStreamerName"/>
+                        </li>
+                        <li>
+                            <label>直播者职位：</label>
+                            <input type="text" name="liveStreamerPosition"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:liveVideo:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single" onclick="$.operate.edit()"
+               shiro:hasPermission="web:liveVideo:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:liveVideo:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+        <div class="enlarge_box" style="cursor:pointer;">
+            <img alt="" id="enlarge_box_img" name="pic" src="" style="z-index: 99;">
+        </div>
+    </div>
+</div>
+<!--动态窗口-->
+<div aria-hidden="true" class="modal inmodal" id="myModal2" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content animated flipInY">
+            <div class="modal-header">
+                <button class="close closeVideo" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">视频</h4>
+                <small class="font-bold">
+            </div>
+            <div class="modal-body">
+                <video id="play" th:src="${videoUrl}"></video>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-white closeVideo" data-dismiss="modal" type="button">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:liveVideo:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:liveVideo:remove')}]];
+    var prefix = ctx + "web/liveVideo";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "直播列表",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'liveVideoId',
+                    title: '直播id',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    align: 'center',
+                    title: '标题'
+                },
+                {
+                    field: 'synopsis',
+                    align: 'center',
+                    title: '简介'
+                },
+                {
+                    field: 'resourceUrl',
+                    align: 'center',
+                    title: '资源链接',
+                    formatter: function (value, row, index) {
+                        if (row.resourceType == 1) {
+                            if (value != null && value != "") {
+                                return "<img class=\"img-clouds\" onclick=\"clouds(this)\" src=" + replaceSpace(value) + "  style=\"height:50px;\">";
+                            }
+                            //return $.table.imageView(value);
+                        } else if (row.resourceType == 2) {
+                            if (value != null && value != "") {
+                                return '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openVideo(\'' + value + '\')" data-target="#myModal2">点击查看</button> '
+                            }
+                        }
+                    }
+                },
+                {
+                    field: 'resourceType',
+                    align: 'center',
+                    title: '资源类型',
+                    formatter: function (value, row, index) {
+                        if (value == 1) {
+                            return "图片"
+                        } else if (value == 2) {
+                            return "视频"
+                        }
+                    }
+                },
+                {
+                    field: 'startTime',
+                    align: 'center',
+                    title: '直播开始时间'
+                },
+                {
+                    field: 'endTime',
+                    align: 'center',
+                    title: '直播结束时间'
+                },
+                {
+                    field: 'duration',
+                    align: 'center',
+                    title: '直播时长'
+                },
+                {
+                    field: 'liveStreamerName',
+                    align: 'center',
+                    title: '直播者名称'
+                },
+                {
+                    field: 'liveStreamerPosition',
+                    align: 'center',
+                    title: '直播者职位'
+                },
+                {
+                    field: 'liveStreamerHead',
+                    align: 'center',
+                    title: '直播者头像',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'liveVideo.registrationsNumber',
+                    align: 'center',
+                    title: '报名人数'
+                },
+                {
+                    field: 'liveUrl',
+                    align: 'center',
+                    title: '直播链接'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.liveVideoId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.liveVideoId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function openVideo(video) {
+        var videoElem = document.getElementById("play");
+        videoElem.src = video;
+        // //视频自动播放
+        videoElem.play();
+    }
+
+    // 点击关闭视频按钮
+    $(function () {
+        $(".closeVideo").click(function () {
+            var videoElem = document.getElementById("play");
+            videoElem.src = '';
+        })
+    })
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+    function replaceSpace(value) {
+        return value.replace(/ /g, '%20');
+    }
+</script>
+</body>
+</html>

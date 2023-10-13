@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.BannersMapper">
+
+    <resultMap type="Banners" id="BannersResult">
+        <result property="bannerId" column="banner_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="cityId" column="city_id"/>
+        <result property="fileType" column="file_type"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="bannerLocation" column="banner_location"/>
+        <result property="sourceName" column="source_name"/>
+        <result property="jumpType" column="jump_type"/>
+        <result property="jumpUrl" column="jump_url"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="content" column="content"/>
+    </resultMap>
+
+    <sql id="selectBannersVo">
+        select b.banner_id,
+               b.user_id,
+               b.dept_id,
+               d.dept_name,
+               b.city_id,
+               b.file_type,
+               b.image_url,
+               b.banner_location,
+               b.source_name,
+               b.jump_type,
+               b.jump_url,
+               b.sort_num,
+               b.show_status,
+               b.create_time,
+               b.update_time,
+               b.content
+        from banners b
+                 left join sys_dept d on b.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectBannersList" parameterType="Banners" resultMap="BannersResult">
+        <include refid="selectBannersVo"/>
+        <where>
+            b.del_status = 0
+            <if test="userId != null ">and b.user_id = #{userId}</if>
+            <if test="deptId != null ">and b.dept_id = #{deptId}</if>
+            <if test="cityId != null ">and b.city_id = #{cityId}</if>
+            <if test="fileType != null  and fileType != ''">and b.file_type = #{fileType}</if>
+            <if test="imageUrl != null  and imageUrl != ''">and b.image_url = #{imageUrl}</if>
+            <if test="bannerLocation != null  and bannerLocation != ''">and b.banner_location = #{bannerLocation}</if>
+            <if test="sourceName != null  and sourceName != ''">and b.source_name like concat('%', #{sourceName}, '%')
+            </if>
+            <if test="jumpType != null  and jumpType != ''">and b.jump_type = #{jumpType}</if>
+            <if test="jumpUrl != null  and jumpUrl != ''">and b.jump_url = #{jumpUrl}</if>
+            <if test="sortNum != null ">and b.sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and b.show_status = #{showStatus}</if>
+            <if test="content != null  and content != ''">and b.content = #{content}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by b.sort_num
+    </select>
+
+    <select id="selectBannersById" parameterType="String" resultMap="BannersResult">
+        <include refid="selectBannersVo"/>
+        where b.del_status = 0 and b.banner_id = #{bannerId}
+    </select>
+
+    <insert id="insertBanners" parameterType="Banners">
+        insert into banners
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bannerId != null">banner_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="cityId != null">city_id,</if>
+            <if test="fileType != null">file_type,</if>
+            <if test="imageUrl != null">image_url,</if>
+            <if test="bannerLocation != null">banner_location,</if>
+            <if test="sourceName != null">source_name,</if>
+            <if test="jumpType != null">jump_type,</if>
+            <if test="jumpUrl != null">jump_url,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="content != null">content,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bannerId != null">#{bannerId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="cityId != null">#{cityId},</if>
+            <if test="fileType != null">#{fileType},</if>
+            <if test="imageUrl != null">#{imageUrl},</if>
+            <if test="bannerLocation != null">#{bannerLocation},</if>
+            <if test="sourceName != null">#{sourceName},</if>
+            <if test="jumpType != null">#{jumpType},</if>
+            <if test="jumpUrl != null">#{jumpUrl},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="content != null">#{content},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBanners" parameterType="Banners">
+        update banners
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="cityId != null">city_id = #{cityId},</if>
+            <if test="fileType != null">file_type = #{fileType},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="bannerLocation != null">banner_location = #{bannerLocation},</if>
+            <if test="sourceName != null">source_name = #{sourceName},</if>
+            <if test="jumpType != null">jump_type = #{jumpType},</if>
+            <if test="jumpUrl != null">jump_url = #{jumpUrl},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="content != null">content = #{content},</if>
+        </trim>
+        where banner_id = #{bannerId}
+    </update>
+
+    <update id="deleteBannersById" parameterType="String">
+        update banners
+        set del_status = 1
+        where banner_id = #{bannerId}
+    </update>
+
+    <update id="deleteBannersByIds" parameterType="String">
+        update banners set del_status = 1 where banner_id in
+        <foreach item="bannerId" collection="array" open="(" separator="," close=")">
+            #{bannerId}
+        </foreach>
+    </update>
+
+    <select id="selectApiBannersList" parameterType="Banners" resultMap="BannersResult">
+        <include refid="selectBannersVo"/>
+        <where>
+            b.del_status = 0
+            <if test="tag != null and tag == -1 and deptId != null ">and (b.dept_id = 100 or b.dept_id = #{deptId})</if>
+            <if test="tag == null and deptId != null ">and b.dept_id = #{deptId}</if>
+            <if test="fileType != null  and fileType != ''">and b.file_type = #{fileType}</if>
+            <if test="imageUrl != null  and imageUrl != ''">and b.image_url = #{imageUrl}</if>
+            <if test="bannerLocation != null  and bannerLocation != ''">and b.banner_location = #{bannerLocation}</if>
+            <if test="sourceName != null  and sourceName != ''">and b.source_name like concat('%', #{sourceName}, '%')
+            </if>
+            <if test="jumpType != null  and jumpType != ''">and b.jump_type = #{jumpType}</if>
+            <if test="jumpUrl != null  and jumpUrl != ''">and b.jump_url = #{jumpUrl}</if>
+            <if test="sortNum != null ">and b.sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and b.show_status = #{showStatus}</if>
+        </where>
+        order by b.sort_num desc
+    </select>
+</mapper>

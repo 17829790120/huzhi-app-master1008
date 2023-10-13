@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.LiveRegistrationMapper">
+
+    <resultMap type="LiveRegistration" id="LiveRegistrationResult">
+        <result property="liveRegistrationId" column="live_registration_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="headPortrait" column="head_portrait"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="liveVideoId" column="live_video_id"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectLiveRegistrationVo">
+        select r.live_registration_id,
+               r.account_id,
+               r.nick_name,
+               r.head_portrait,
+               r.company_id,
+               r.company_name,
+               r.dept_id,
+               r.dept_name,
+               r.live_video_id,
+               r.create_time,
+               r.update_time
+        from live_registration r
+                 left join sys_dept d on r.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectLiveRegistrationList" parameterType="LiveRegistration" resultMap="LiveRegistrationResult">
+        <include refid="selectLiveRegistrationVo"/>
+        <where>
+            r.del_status = 0
+            <if test="accountId != null  and accountId != ''">and r.account_id = #{accountId}</if>
+            <if test="nickName != null  and nickName != ''">and r.nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="headPortrait != null  and headPortrait != ''">and r.head_portrait = #{headPortrait}</if>
+            <if test="companyId != null ">and r.company_id = #{companyId}</if>
+            <if test="companyName != null  and companyName != ''">and r.company_name like concat('%', #{companyName},
+                '%')
+            </if>
+            <if test="deptId != null ">and r.dept_id = #{deptId}</if>
+            <if test="deptName != null  and deptName != ''">and r.dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="liveVideoId != null  and liveVideoId != ''">and r.live_video_id = #{liveVideoId}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by r.create_time desc
+    </select>
+
+    <select id="selectLiveRegistrationById" parameterType="String" resultMap="LiveRegistrationResult">
+        <include refid="selectLiveRegistrationVo"/>
+        where r.del_status = 0 and r.live_registration_id = #{liveRegistrationId}
+    </select>
+
+    <insert id="insertLiveRegistration" parameterType="LiveRegistration">
+        insert into live_registration
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="liveRegistrationId != null">live_registration_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="headPortrait != null">head_portrait,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="liveVideoId != null">live_video_id,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="liveRegistrationId != null">#{liveRegistrationId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="headPortrait != null">#{headPortrait},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="liveVideoId != null">#{liveVideoId},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLiveRegistration" parameterType="LiveRegistration">
+        update live_registration
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="headPortrait != null">head_portrait = #{headPortrait},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="liveVideoId != null">live_video_id = #{liveVideoId},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where live_registration_id = #{liveRegistrationId}
+    </update>
+
+    <delete id="deleteLiveRegistrationById" parameterType="String">
+        delete
+        from live_registration
+        where live_registration_id = #{liveRegistrationId}
+    </delete>
+
+    <delete id="deleteLiveRegistrationByIds" parameterType="String">
+        delete from live_registration where live_registration_id in
+        <foreach item="liveRegistrationId" collection="array" open="(" separator="," close=")">
+            #{liveRegistrationId}
+        </foreach>
+    </delete>
+
+</mapper>

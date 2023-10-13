@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.QuestionnaireRecordAnswerMapper">
+
+    <resultMap type="QuestionnaireRecordAnswer" id="QuestionnaireRecordAnswerResult">
+        <result property="questionnaireRecordAnswerId" column="questionnaire_record_answer_id"/>
+        <result property="questionnaireRecordId" column="questionnaire_record_id"/>
+        <result property="content" column="content"/>
+        <result property="score" column="score"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="creatorDeptId" column="creator_dept_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="delStatus" column="del_status"/>
+    </resultMap>
+
+    <sql id="selectQuestionnaireRecordAnswerVo">
+        select questionnaire_record_answer_id, questionnaire_record_id, content, score, creator_id, creator_name, creator_dept_id, create_time, del_status from questionnaire_record_answer
+    </sql>
+
+    <select id="selectQuestionnaireRecordAnswerList" parameterType="QuestionnaireRecordAnswer"
+            resultMap="QuestionnaireRecordAnswerResult">
+        <include refid="selectQuestionnaireRecordAnswerVo"/>
+        <where>
+            <if test="questionnaireRecordId != null  and questionnaireRecordId != ''">and questionnaire_record_id =
+                #{questionnaireRecordId}
+            </if>
+            <if test="content != null  and content != ''">and content like concat('%', #{content}, '%')</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="creatorId != null ">and creator_id = #{creatorId}</if>
+            <if test="creatorName != null  and creatorName != ''">and creator_name like concat('%', #{creatorName},
+                '%')
+            </if>
+            <if test="creatorDeptId != null ">and creator_dept_id = #{creatorDeptId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectQuestionnaireRecordAnswerById" parameterType="String" resultMap="QuestionnaireRecordAnswerResult">
+        <include refid="selectQuestionnaireRecordAnswerVo"/>
+        where questionnaire_record_answer_id = #{questionnaireRecordAnswerId}
+    </select>
+
+    <insert id="insertQuestionnaireRecordAnswer" parameterType="QuestionnaireRecordAnswer">
+        insert into questionnaire_record_answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionnaireRecordAnswerId != null">questionnaire_record_answer_id,</if>
+            <if test="questionnaireRecordId != null">questionnaire_record_id,</if>
+            <if test="content != null">content,</if>
+            <if test="score != null">score,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="creatorName != null">creator_name,</if>
+            <if test="creatorDeptId != null">creator_dept_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="delStatus != null">del_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionnaireRecordAnswerId != null">#{questionnaireRecordAnswerId},</if>
+            <if test="questionnaireRecordId != null">#{questionnaireRecordId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="score != null">#{score},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="creatorName != null">#{creatorName},</if>
+            <if test="creatorDeptId != null">#{creatorDeptId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateQuestionnaireRecordAnswer" parameterType="QuestionnaireRecordAnswer">
+        update questionnaire_record_answer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionnaireRecordId != null">questionnaire_record_id = #{questionnaireRecordId},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="creatorName != null">creator_name = #{creatorName},</if>
+            <if test="creatorDeptId != null">creator_dept_id = #{creatorDeptId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+        </trim>
+        where questionnaire_record_answer_id = #{questionnaireRecordAnswerId}
+    </update>
+
+    <delete id="deleteQuestionnaireRecordAnswerById" parameterType="String">
+        delete from questionnaire_record_answer where questionnaire_record_answer_id = #{questionnaireRecordAnswerId}
+    </delete>
+
+    <delete id="deleteQuestionnaireRecordAnswerByIds" parameterType="String">
+        delete from questionnaire_record_answer where questionnaire_record_answer_id in
+        <foreach item="questionnaireRecordAnswerId" collection="array" open="(" separator="," close=")">
+            #{questionnaireRecordAnswerId}
+        </foreach>
+    </delete>
+
+</mapper>

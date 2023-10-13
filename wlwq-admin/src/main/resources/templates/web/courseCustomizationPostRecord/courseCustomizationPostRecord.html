@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('预约记录列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <input type="hidden" name="courseCustomizationPostId" id="courseCustomizationPostId"/>
+                    <ul>
+                        <li>
+                            <label>资讯标题：</label>
+                            <input type="text" name="informationPostTitle"/>
+                        </li>
+                        <li>
+                            <label>昵称：</label>
+                            <input type="text" name="nickName"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:courseCustomizationPostRecord:add">
+                                <i class="fa fa-plus"></i> 添加
+                            </a>-->
+<!--            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="web:courseCustomizationPostRecord:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:courseCustomizationPostRecord:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>-->
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+        <div class="enlarge_box" style="cursor:pointer;">
+            <img id="enlarge_box_img" alt="" name="pic" src="" style="z-index: 99;">
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:courseCustomizationPostRecord:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:courseCustomizationPostRecord:remove')}]];
+    var prefix = ctx + "web/courseCustomizationPostRecord";
+
+    var courseCustomizationPostId = [[${courseCustomizationPostId}]];
+    $("#courseCustomizationPostId").val(courseCustomizationPostId);
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "预约记录",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'courseCustomizationPostRecordId',
+                    title: '预约记录主键ID',
+                    visible: false
+                },
+/*                {
+                    field: 'courseCustomizationPostId',
+                    align: 'center',
+                    title: '资讯ID'
+                },
+                {
+                    field: 'informationCategoryId',
+                    align: 'center',
+                    title: '资讯分类ID'
+                },*/
+                {
+                    field: 'informationPostTitle',
+                    align: 'center',
+                    title: '资讯标题'
+                },
+                {
+                    field: 'synopsis',
+                    align: 'center',
+                    title: '简介'
+                },
+                {
+                    field: 'informationPostImages',
+                    align: 'center',
+                    title: '封面图片',
+                    formatter: function (value, row, index) {
+                        return "<img class=\"img-clouds\" onclick=\"clouds(this)\" src=" + replaceSpace(value) + "  style=\" width:50px; height:50px;\">";
+                    }
+                },
+                {
+                    field: 'informationPostImagesType',
+                    align: 'center',
+                    title: '封面图片类型'
+                },
+                {
+                    field: 'headPortrait',
+                    align: 'center',
+                    title: '头像',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'nickName',
+                    align: 'center',
+                    title: '昵称'
+                },
+                {
+                    field: 'companyName',
+                    align: 'center',
+                    title: '公司名称'
+                },
+                {
+                    field: 'companyAddress',
+                    align: 'center',
+                    title: '公司地址'
+                },
+                {
+                    field: 'reservationTime',
+                    align: 'center',
+                    title: '预约时间'
+                },
+                {
+                    field: 'contacts',
+                    align: 'center',
+                    title: '联系人'
+                },
+                {
+                    field: 'telephone',
+                    align: 'center',
+                    title: '联系电话'
+                },
+                {
+                    field: 'remark',
+                    align: 'center',
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        //actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.courseCustomizationPostRecordId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.courseCustomizationPostRecordId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+    function replaceSpace(value) {
+        return value.replace(/ /g, '%20');
+    }
+
+</script>
+</body>
+</html>

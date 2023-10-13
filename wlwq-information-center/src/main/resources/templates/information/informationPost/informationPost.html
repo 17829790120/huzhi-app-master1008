@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('资讯文章列表')"/>
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: layout-latest-css"/>
+    <th:block th:include="include :: ztree-css"/>
+</head>
+<body class="gray-bg">
+
+<div class="ui-layout-west">
+    <div class="box box-main">
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa icon-grid"></i> 资讯分类
+            </div>
+            <div class="box-tools pull-right">
+                <a type="button" class="btn btn-box-tool" href="#" onclick="category()" title="管理资讯分类"><i
+                        class="fa fa-edit"></i></a>
+                <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i
+                        class="fa fa-chevron-up"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i
+                        class="fa fa-chevron-down"></i></button>
+                <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新"><i
+                        class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+        <div class="ui-layout-content">
+            <div id="tree" class="ztree"></div>
+        </div>
+    </div>
+</div>
+<div class="ui-layout-center">
+
+    <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+
+                            <input type="hidden" id="informationCategoryId" name="informationCategoryId"/>
+                            <input type="hidden" id="parentId" name="parentId">
+                            <li>
+                                资讯标题：
+                                <input type="text" name="informationPostTitle"/>
+                            </li>
+                            <li>
+                                置顶状态：
+                                <select name="topStatus" class="form-control ">
+                                    <option value="">所有</option>
+                                    <option value="0">正常</option>
+                                    <option value="1">热门</option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                        class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                        class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()"
+                   shiro:hasPermission="information:informationPost:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+<!--                <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+                   shiro:hasPermission="information:informationPost:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+                   shiro:hasPermission="information:informationPost:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+            <div class="enlarge_box" style="cursor:pointer;">
+                <img id="enlarge_box_img" alt="" name="pic" src="" style="z-index: 99;">
+            </div>
+        </div>
+    </div>
+</div>
+<!--动态窗口-->
+<div class="modal inmodal" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated flipInY">
+            <div class="modal-header">
+                <button type="button" class="close closeVideo" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">视频</h4>
+                <small class="font-bold">
+            </div>
+            <div class="modal-body">
+                <video id="play" th:src="${videoUrl}"></video>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white closeVideo" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: layout-latest-js"/>
+<th:block th:include="include :: ztree-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('information:informationPost:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('information:informationPost:remove')}]];
+    var commentFlag = [[${@permission.hasPermi('information:informationCommentRecord:view')}]];
+    var likeFlag = [[${@permission.hasPermi('information:informationLikeRecord:view')}]];
+    var browseFlag = [[${@permission.hasPermi('information:informationBrowseRecord:view')}]];
+    var prefix = ctx + "information/informationPost";
+
+    $(function () {
+        var panehHidden = false;
+        if ($(this).width() < 769) {
+            panehHidden = true;
+        }
+        $('body').layout({initClosed: panehHidden, west__size: 185});
+        // 回到顶部绑定
+        if ($.fn.toTop !== undefined) {
+            var opt = {
+                win: $('.ui-layout-center'),
+                doc: $('.ui-layout-center')
+            };
+            $('#scroll-up').toTop(opt);
+        }
+        queryPostList();
+        queryCategoryTree();
+    });
+
+    function queryCategoryTree() {
+        var url = ctx + "information/informationCategory/treeData";
+        var options = {
+            url: url,
+            expandLevel: 2,
+            onClick: zOnClick
+        };
+        $.tree.init(options);
+
+        function zOnClick(event, treeId, treeNode) {
+            $("#informationCategoryId").val(treeNode.id);
+            $("#parentId").val(treeNode.pId);
+            $.table.search();
+        }
+    }
+
+    $('#btnExpand').click(function () {
+        $._tree.expandAll(true);
+        $(this).hide();
+        $('#btnCollapse').show();
+    });
+
+    $('#btnCollapse').click(function () {
+        $._tree.expandAll(false);
+        $(this).hide();
+        $('#btnExpand').show();
+    });
+
+    $('#btnRefresh').click(function () {
+        queryCategoryTree();
+    });
+
+    function queryPostList() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "资讯文章",
+            onClickCell: onClickCell,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    title: "序号",
+                    formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+                {
+                    field: 'deptName',
+                    title: '部门',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'userName',
+                    title: '用户',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'informationCategoryTitle',
+                    title: '资讯分类',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'informationPostTitle',
+                    title: '资讯标题',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'informationPostImages',
+                    title: '封面图片/视频',
+                    formatter: function (value, row, index) {
+                        if (value != null && value != "") {
+                            var str = value.split(",");
+                            if (row.informationPostImagesType == 1) {
+                                var html = "";
+                                for (var i = 0; i < str.length; i++) {
+                                    var one = '<img class="img-clouds" onclick="clouds(this)" src=' + str[i] + ' style=" width:80px; height:80px;"> ';
+                                    html += one;
+                                }
+                                return html;
+                            } else {
+                                var html = '';
+                                for (var i = 0; i < str.length; i++) {
+                                    html += '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openVideo(\'' + str[i] + '\')" data-target="#myModal2">查看</button> '
+                                }
+                                return html;
+                            }
+                        }
+                    }
+                }, {
+                    field: 'informationPostImagesType',
+                    title: '封面类型',
+                    formatter: function (value, row, index) {
+                        if (value === 1) {
+                            return "<span class=\"badge badge-success\">图片</span>";
+                        }
+                        if (value === 2) {
+                            return "<span class=\"badge badge-primary\">视频</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'sortNum',
+                    title: '排序',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+<!--                {-->
+<!--                    field: 'basicsBrowseNumber',-->
+<!--                    title: '基础浏览数量',-->
+<!--                    align: 'center',-->
+<!--                    sortable: false,-->
+<!--                    formatter: function (value, row, index) {-->
+<!--                        return $.table.tooltip(value);-->
+<!--                    }-->
+<!--                },-->
+<!--                {-->
+<!--                    visible: browseFlag == 'hidden' ? false : true,-->
+<!--                    field: 'realBrowseNumber',-->
+<!--                    title: '实际浏览数量',-->
+<!--                    align: 'center',-->
+<!--                    sortable: false,-->
+<!--                    formatter: function (value, row, index) {-->
+<!--                        return "<a style='text-decoration: underline;'>" + value + "</a>"-->
+<!--                    }-->
+<!--                },-->
+<!--                {-->
+<!--                    field: 'basicsLikeNumber',-->
+<!--                    title: '基础点赞数量',-->
+<!--                    align: 'center',-->
+<!--                    sortable: false,-->
+<!--                    formatter: function (value, row, index) {-->
+<!--                        return $.table.tooltip(value);-->
+<!--                    }-->
+<!--                },-->
+<!--                {-->
+<!--                    visible: likeFlag == 'hidden' ? false : true,-->
+<!--                    field: 'realLikeNumber',-->
+<!--                    title: '实际点赞数量',-->
+<!--                    align: 'center',-->
+<!--                    sortable: false,-->
+<!--                    formatter: function (value, row, index) {-->
+<!--                        return "<a style='text-decoration: underline;'>" + value + "</a>";-->
+<!--                    }-->
+<!--                },-->
+                {
+                    visible: editFlag == 'hidden' ? false : true,
+                    field: 'topStatus',
+                    title: '置顶状态',
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.informationPostId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.informationPostId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    }
+
+    function openVideo(video) {
+        var videoElem = document.getElementById("play");
+        videoElem.src = video;
+        // //视频自动播放
+        videoElem.play();
+    }
+
+    // 点击关闭视频按钮
+    $(function(){
+        $(".closeVideo").click(function(){
+            var videoElem = document.getElementById("play");
+            videoElem.src = '';
+        })
+    })
+
+    function onClickCell(field, value, row, $element) {
+        if (field === 'realBrowseNumber') {
+            $.modal.openTab("实际预览记录列表", ctx + "information/informationBrowseRecord?informationPostId=" + row.informationPostId);
+        }
+        if (field === 'realLikeNumber') {
+            $.modal.openTab("实际点赞记录列表", ctx + "information/informationLikeRecord?likeType=1&primaryId=" + row.informationPostId);
+        }
+        if (field === 'realCommentNumber') {
+            $.modal.openTab("实际评论记录列表", ctx + "information/informationCommentRecord?informationPostId=" + row.informationPostId);
+        }
+    }
+
+    /* 资讯分类管理 */
+    function category() {
+        var url = ctx + "information/informationCategory";
+        $.modal.openTab("资讯分类管理", url);
+    }
+
+    function statusTools(row) {
+        // 置顶
+        if (row.topStatus === 0) {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.informationPostId + '\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.informationPostId + '\')"></i> ';
+        }
+
+    }
+
+    function disable(informationPostId) {
+        $.modal.confirm("确认要取消置顶吗？", function () {
+            $.operate.post(prefix + "/edit", {"informationPostId": informationPostId, "topStatus": 0});
+        })
+    }
+    function enable(informationPostId) {
+        $.modal.confirm("确认要置顶吗？", function () {
+            $.operate.post(prefix + "/edit", {"informationPostId": informationPostId, "topStatus": 1});
+        })
+    }
+
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+</script>
+</body>
+</html>

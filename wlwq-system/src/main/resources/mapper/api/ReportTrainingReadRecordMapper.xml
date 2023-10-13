@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ReportTrainingReadRecordMapper">
+
+    <resultMap type="ReportTrainingReadRecord" id="ReportTrainingReadRecordResult">
+        <result property="reportTrainingReadRecordId" column="report_training_read_record_id"/>
+        <result property="reportTrainingId" column="report_training_id"/>
+        <result property="templateType" column="template_type"/>
+        <result property="content" column="content"/>
+        <result property="accountId" column="account_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="companyId" column="company_id"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectReportTrainingReadRecordVo">
+        select report_training_read_record_id,
+               report_training_id,
+               template_type,
+               content,
+               account_id,
+               post_ids,
+               dept_id,
+               account_name,
+               account_phone,
+               account_head,
+               company_id,
+               del_status,
+               create_time,
+               update_time
+        from report_training_read_record
+    </sql>
+
+    <select id="selectReportTrainingReadRecordList" parameterType="ReportTrainingReadRecord"
+            resultMap="ReportTrainingReadRecordResult">
+        <include refid="selectReportTrainingReadRecordVo"/>
+        <where>
+            <if test="reportTrainingId != null  and reportTrainingId != ''">and report_training_id =
+                #{reportTrainingId}
+            </if>
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectReportTrainingReadRecordById" parameterType="String" resultMap="ReportTrainingReadRecordResult">
+        <include refid="selectReportTrainingReadRecordVo"/>
+        where report_training_read_record_id = #{reportTrainingReadRecordId}
+    </select>
+
+    <insert id="insertReportTrainingReadRecord" parameterType="ReportTrainingReadRecord">
+        insert into report_training_read_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportTrainingReadRecordId != null">report_training_read_record_id,</if>
+            <if test="reportTrainingId != null">report_training_id,</if>
+            <if test="templateType != null">template_type,</if>
+            <if test="content != null">content,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportTrainingReadRecordId != null">#{reportTrainingReadRecordId},</if>
+            <if test="reportTrainingId != null">#{reportTrainingId},</if>
+            <if test="templateType != null">#{templateType},</if>
+            <if test="content != null">#{content},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateReportTrainingReadRecord" parameterType="ReportTrainingReadRecord">
+        update report_training_read_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reportTrainingId != null">report_training_id = #{reportTrainingId},</if>
+            <if test="templateType != null">template_type = #{templateType},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where report_training_read_record_id = #{reportTrainingReadRecordId}
+    </update>
+
+    <delete id="deleteReportTrainingReadRecordById" parameterType="String">
+        delete
+        from report_training_read_record
+        where report_training_read_record_id = #{reportTrainingReadRecordId}
+    </delete>
+
+    <delete id="deleteReportTrainingReadRecordByIds" parameterType="String">
+        delete from report_training_read_record where report_training_read_record_id in
+        <foreach item="reportTrainingReadRecordId" collection="array" open="(" separator="," close=")">
+            #{reportTrainingReadRecordId}
+        </foreach>
+    </delete>
+
+    <select id="selectReportTrainingReadRecord" parameterType="ReportTrainingReadRecord"
+            resultMap="ReportTrainingReadRecordResult">
+        <include refid="selectReportTrainingReadRecordVo"/>
+        <where>
+            <if test="reportTrainingId != null  and reportTrainingId != ''">and report_training_id =
+                #{reportTrainingId}
+            </if>
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+        </where>
+        limit 1
+    </select>
+
+    <!--    根据条件删除信息-->
+    <delete id="delReportTrainingReadRecord" parameterType="ReportTrainingReadRecord">
+        delete from report_training_read_record where find_in_set(report_training_id,#{reportTrainingId})
+    </delete>
+
+
+    <select id="selectReportTrainingReadRecordCount" parameterType="ReportTrainingReadRecord"
+            resultType="Integer">
+        select count(*) from report_training_read_record
+        <where>
+            <if test="reportTrainingId != null  and reportTrainingId != ''">and report_training_id =
+                #{reportTrainingId}
+            </if>
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="date != null and date != ''">and DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+            </if>
+            <if test="month != null and month != ''">and DATE_FORMAT(create_time,'%Y-%m') = #{month}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增四类关系已读记录')" />
+    <th:block th:include="include :: summernote-css" />
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-fourRelationshipsReadRecord-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">六大架构ID：</label>
+                <div class="col-sm-8">
+                    <input name="fourRelationshipsId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">1:日精进 2:周汇报 3:月总结 4：季度工作报告 5：半年工作报告 6：年度工作报告 7：述职报告 8：其他汇报：</label>
+                <div class="col-sm-8">
+                    <select name="templateType" class="form-control m-b">
+                        <option value="">所有</option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">内容：</label>
+                <div class="col-sm-8">
+                    <input type="hidden" class="form-control" name="content">
+                    <div class="summernote" id="content"></div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户ID：</label>
+                <div class="col-sm-8">
+                    <input name="accountId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">岗位IDS：</label>
+                <div class="col-sm-8">
+                    <input name="postIds" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">所属部门ID：</label>
+                <div class="col-sm-8">
+                    <input name="deptId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">姓名：</label>
+                <div class="col-sm-8">
+                    <input name="accountName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">手机号：</label>
+                <div class="col-sm-8">
+                    <input name="accountPhone" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">头像：</label>
+                <div class="col-sm-8">
+                    <input name="accountHead" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">公司ID：</label>
+                <div class="col-sm-8">
+                    <input name="companyId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">0:否 1:删除：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box">
+                        <input type="radio" name="delStatus" value="">
+                        <label th:for="delStatus" th:text="未知"></label>
+                    </div>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">一级分类ID：</label>
+                <div class="col-sm-8">
+                    <input name="oneStoreClassId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">二级分类ID：</label>
+                <div class="col-sm-8">
+                    <input name="twoStoreClassId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">三级分类ID：</label>
+                <div class="col-sm-8">
+                    <input name="threeStoreClassId" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: summernote-js" />
+    <th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/fourRelationshipsReadRecord"
+    $("#form-fourRelationshipsReadRecord-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-fourRelationshipsReadRecord-add').serialize());
+        }
+    }
+
+    $(function() {
+        $('.summernote').summernote({
+            lang: 'zh-CN',
+            callbacks: {
+                onChange: function(contents, $edittable) {
+                    $("input[name='" + this.id + "']").val(contents);
+                },
+                onImageUpload: function(files) {
+                    var obj = this;
+                    var data = new FormData();
+                    data.append("file", files[0]);
+                    $.ajax({
+                        type: "post",
+                        url: ctx + "common/upload",
+                        data: data,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json',
+                        success: function(result) {
+                            if (result.code == web_status.SUCCESS) {
+                                $('#' + obj.id).summernote('insertImage', result.url);
+                            } else {
+                                $.modal.alertError(result.msg);
+                            }
+                        },
+                        error: function(error) {
+                            $.modal.alertWarning("图片上传失败。");
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:include="include :: header('广告管理')"/>
+</head>
+<body class="gray-bg">
+
+<div class="tabs-container">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">服务</a>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div id="tab-1" class="tab-pane active">
+      <div class="panel-body">
+        <div class="container-div">
+          <div class="row">
+            <div class="col-sm-12 select-table table-striped">
+              <div class="" style="height: 60px;">
+                <form id="queryParamsOne">
+                  <div class="select-list">
+                    <ul style="display:flex;justify-content: flex-start;align-items: center ">
+                      搜索名称:
+                      <li>
+                        <input type="text" name="name" placeholder="请输入搜索内容">
+                      </li>
+
+                      <li>
+                        <a class="btn btn-primary btn-rounded btn-sm"
+                           onclick="$.table.search()"><i
+                                class="fa fa-search"></i>&nbsp;搜索</a>
+                        <a class="btn btn-warning btn-rounded btn-sm"
+                           onclick="$.form.reset()"><i
+                                class="fa fa-refresh"></i>&nbsp;重置</a>
+                      </li>
+                    </ul>
+                  </div>
+                </form>
+              </div>
+              <table id="bootstrapTableOne"></table>
+              <div class="enlarge_box" style="cursor:pointer;">
+                <img id="enlarge_box_img" alt="" name="pic" src="" style="z-index: 99;">
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+  var prefixOne = ctx + "web/serve";
+  var deptId = [[${deptId}]];
+  $(function () {
+    var optionsOne = {
+      url: prefixOne + "/list?deptId="+deptId,
+      modalName: "服务列表",
+      id: "bootstrapTableOne",
+      queryParams: queryParamsOne,
+      onClickCell: onClickCellOne,
+      showPageGo: true,
+      pagination: true,
+      rememberSelected: true,
+      striped: true,
+      pageList: [10, 20, 50],
+      pageNumber: 1,
+      pageSize: 10,
+      columns: [
+        {
+          title: "序号",
+          formatter: function (value, row, index) {
+            return $.table.serialNumber(index);
+          }
+        },
+        {
+          field: 'serveId',
+          title: 'ID',
+          visible: false
+        },
+        {
+          field: 'deptName',
+          title: '部门名称',
+          align: 'center',
+          sortable: false,
+          formatter: function (value, row, index) {
+            return $.table.tooltip(value);
+          }
+        },
+        {
+          field: 'serveClassName',
+          title: '服务分类',
+          align: 'center',
+          sortable: false,
+          formatter: function (value, row, index) {
+            return $.table.tooltip(value);
+          }
+        },
+        {
+          field: 'coverImage',
+          title: '封面图片',
+          align: 'center',
+          sortable: false,
+          formatter: function (value, row, index) {
+            return $.table.imageView(value);
+          }
+        },
+        {
+          field: 'name',
+          title: '服务名字',
+          align: 'center',
+          sortable: false,
+          formatter: function (value, row, index) {
+            return $.table.tooltip(value);
+          }
+        }
+      ]
+    };
+
+    $.table.init(optionsOne);
+
+    function queryParamsOne(params) {
+      var searchOne = $.table.queryParams(params);
+      return searchOne;
+    }
+
+
+
+    //单击某行返回父页面
+    function onClickCellOne(field, value, row, $element) {
+      var id = row.serveId;
+      parent.$("#jumpUrl").attr("value",id);
+      var index = parent.layer.getFrameIndex(window.name);
+      parent.layer.close(index);
+      parent.layer.closeAll();
+    }
+  });
+
+  // 放大和隐藏图片
+  function clouds(that) {
+    $('.enlarge_box').show();
+    let img_src = $(that).attr('src');
+    let $preview = $('#enlarge_box_img').attr('src')
+    if ($preview != img_src) {
+      $('#enlarge_box_img').attr('src', img_src)
+    }
+    //获取图片大小
+    let widthHtml = $('#enlarge_box_img').width();
+    let heightHtml = $('#enlarge_box_img').height();
+    let a_widthHtml = '-' + widthHtml / 2;
+    let a_heightHtml = '-' + heightHtml / 2;
+    //图片宽高比例
+    let proportion = widthHtml / heightHtml;
+
+    //获取浏览器可视区域大小
+    let windowsWidth = $(window).width();
+    let windowsHeight = $(window).height();
+    let a_windowsWidth = windowsWidth * 0.8;
+    let a_windowsHeight = windowsHeight * 0.8;
+    let b_windowsWidth = '-' + a_windowsWidth / 2;
+    let b_windowsHeight = "-" + a_windowsHeight / 2
+    let a = "-" + proportion * a_windowsHeight / 2;
+
+    if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+      $('#enlarge_box_img').css({
+        'height': a_windowsHeight + 'px',
+        'position': 'fixed',
+        'display': 'block',
+        'left': 50 + '%',
+        'margin-left': a + 'px',
+        'top': 50 + '%',
+        'margin-top': b_windowsHeight + 'px',
+        'z-index': 9999,
+      })
+    } else {
+      $('#enlarge_box_img').css({
+        'position': 'fixed',
+        'display': 'block',
+        'left': 50 + '%',
+        'margin-left': a_widthHtml + 'px',
+        'top': 50 + '%',
+        'margin-top': a_heightHtml + 'px',
+        'z-index': 9999,
+      })
+    }
+  }
+
+  //点击放大后的图片隐藏
+  $('.enlarge_box').click(function () {
+    $('.enlarge_box').hide();
+    $('#enlarge_box_img').attr('src', '')
+    $('#enlarge_box_img').removeAttr("style")
+  });
+
+  function replaceSpace(value) {
+    return value.replace(/ /g, '%20');
+  }
+</script>
+</body>
+</html>

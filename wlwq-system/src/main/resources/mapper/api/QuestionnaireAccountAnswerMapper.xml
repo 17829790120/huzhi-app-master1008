@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.QuestionnaireAccountAnswerMapper">
+
+    <resultMap type="QuestionnaireAccountAnswer" id="QuestionnaireAccountAnswerResult">
+        <result property="questionnaireAccountAnswerId" column="questionnaire_account_answer_id"/>
+        <result property="questionnaireAccountId" column="questionnaire_account_id"/>
+        <result property="title" column="title"/>
+        <result property="score" column="score"/>
+        <result property="myScore" column="my_score"/>
+        <result property="createTime" column="create_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="accountId" column="account_id"/>
+        <result property="answerStatus" column="answer_status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+    </resultMap>
+
+    <sql id="selectQuestionnaireAccountAnswerVo">
+        select questionnaire_account_answer_id, questionnaire_account_id, title, score, my_score, create_time, del_status,
+            account_id, answer_status, dept_id, company_id from questionnaire_account_answer
+    </sql>
+
+    <select id="selectQuestionnaireAccountAnswerList" parameterType="QuestionnaireAccountAnswer"
+            resultMap="QuestionnaireAccountAnswerResult">
+        <include refid="selectQuestionnaireAccountAnswerVo"/>
+        <where>
+            <if test="questionnaireAccountId != null  and questionnaireAccountId != ''">and questionnaire_account_id =
+                #{questionnaireAccountId}
+            </if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="myScore != null ">and my_score = #{myScore}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="answerStatus != null ">and answer_status = #{answerStatus}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+        </where>
+    </select>
+
+    <select id="selectQuestionnaireAccountAnswerById" parameterType="String"
+            resultMap="QuestionnaireAccountAnswerResult">
+        <include refid="selectQuestionnaireAccountAnswerVo"/>
+        where questionnaire_account_answer_id = #{questionnaireAccountAnswerId}
+    </select>
+
+    <insert id="insertQuestionnaireAccountAnswer" parameterType="QuestionnaireAccountAnswer">
+        insert into questionnaire_account_answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionnaireAccountAnswerId != null">questionnaire_account_answer_id,</if>
+            <if test="questionnaireAccountId != null and questionnaireAccountId != ''">questionnaire_account_id,</if>
+            <if test="title != null">title,</if>
+            <if test="score != null">score,</if>
+            <if test="myScore != null">my_score,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="answerStatus != null">answer_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionnaireAccountAnswerId != null">#{questionnaireAccountAnswerId},</if>
+            <if test="questionnaireAccountId != null and questionnaireAccountId != ''">#{questionnaireAccountId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="score != null">#{score},</if>
+            <if test="myScore != null">#{myScore},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="answerStatus != null">#{answerStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateQuestionnaireAccountAnswer" parameterType="QuestionnaireAccountAnswer">
+        update questionnaire_account_answer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionnaireAccountId != null and questionnaireAccountId != ''">questionnaire_account_id =
+                #{questionnaireAccountId},
+            </if>
+            <if test="title != null">title = #{title},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="myScore != null">my_score = #{myScore},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="answerStatus != null">answer_status = #{answerStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+        </trim>
+        where questionnaire_account_answer_id = #{questionnaireAccountAnswerId}
+    </update>
+
+    <delete id="deleteQuestionnaireAccountAnswerById" parameterType="String">
+        delete from questionnaire_account_answer where questionnaire_account_answer_id = #{questionnaireAccountAnswerId}
+    </delete>
+
+    <delete id="deleteQuestionnaireAccountAnswerByIds" parameterType="String">
+        delete from questionnaire_account_answer where questionnaire_account_answer_id in
+        <foreach item="questionnaireAccountAnswerId" collection="array" open="(" separator="," close=")">
+            #{questionnaireAccountAnswerId}
+        </foreach>
+    </delete>
+
+</mapper>

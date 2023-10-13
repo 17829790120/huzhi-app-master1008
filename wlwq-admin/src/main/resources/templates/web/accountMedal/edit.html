@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改用户勋章')"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <!--导入下面这三个-->
+    <script th:src="@{/editor/jq.js}"></script>
+    <script th:src="@{/editor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/editor/editor.js}"></script>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-accountMedal-edit" th:object="${accountMedal}">
+        <input name="accountMedalId" th:field="*{accountMedalId}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">父类ID：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input id="treeId" name="parentId" type="hidden" th:field="*{parentId}"/>
+                    <input class="form-control" type="text" onclick="selectAccountMedalTree()" id="treeName"
+                           readonly="true" th:field="*{parentName}">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">勋章名称：</label>
+            <div class="col-sm-8">
+                <input name="medalName" th:field="*{medalName}" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">简介：</label>
+            <div class="col-sm-8">
+                <input class="form-control" id="content" name="content" type="text" th:field="*{content}" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">获得图标：</label>
+            <input class="form-control" id="alreadyIcon" th:field="*{alreadyIcon}" name="alreadyIcon" required type="hidden">
+            <div class="col-sm-8">
+                <div class="file-loading">
+                    <input id="fileInputIcon" multiple name="file" type="file">
+                </div>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 建议尺寸：1:1</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">积分（二级需要填写大于0的整数）：</label>
+            <div class="col-sm-8">
+                <input name="score" th:field="*{score}" class="form-control" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" type="number">
+            </div>
+        </div>
+
+<!--        <div class="form-group">-->
+<!--            <label class="col-sm-3 control-label">详情：</label>-->
+<!--            <div class="col-sm-8">-->
+<!--                <input class="form-control" id="content" name="content" th:field="*{content}" type="hidden">-->
+<!--                <textarea id="mytextareaone" style="visibility: inherit;"></textarea>-->
+<!--            </div>-->
+<!--        </div>-->
+        <div class="form-group">
+            <label class="col-sm-3 control-label">排序(排序越小，越靠前)：</label>
+            <div class="col-sm-8">
+                <input name="sortNum" th:field="*{sortNum}" class="form-control"
+                       onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" type="number" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">显示状态：</label>
+            <div class="col-sm-8">
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" value="0" name="showStatus" th:field="*{showStatus}"> <i></i> 否</label>
+                </div>
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" checked value="1" name="showStatus" th:field="*{showStatus}"> <i></i> 显示</label>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/accountMedal";
+    $("#form-accountMedal-edit").validate({
+        focusCleanup: true
+    });
+    // window.onload = function () {
+    //     // 内容
+    //     setMytextareaIdName('mytextareaone');
+    // }
+    //
+    // function GetTinyMceContent() {
+    //     $("#content").val(tinyMCE.editors[0].getContent());
+    // }
+    //
+    // var content = $("#content").val();
+    // $("#mytextareaone").val(content);
+
+    function submitHandler() {
+        var alreadyIcon = $("#alreadyIcon").val();
+        if (alreadyIcon == "" || alreadyIcon == null) {
+            $.modal.msgError("请上传已获得图标！");
+            return;
+        }
+        // GetTinyMceContent();
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-accountMedal-edit').serialize());
+        }
+    }
+
+    /*用户勋章-新增-选择父部门树*/
+    function selectAccountMedalTree() {
+        var options = {
+            title: '用户勋章选择',
+            width: "380",
+            url: prefix + "/selectAccountMedalTree/" + $("#treeId").val(),
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero) {
+        var body = layer.getChildFrame('body', index);
+        $("#treeId").val(body.find('#treeId').val());
+        $("#treeName").val(body.find('#treeName').val());
+        layer.close(index);
+    }
+    ///////////////单图片上传开始/////////////////////
+    // 取传过来的图片值
+    // 单图片上传成功后回调值存储到这个变量中
+    var imageIconUploadResult = $("#alreadyIcon").val();
+    // 单图片上传组件
+    $(document).ready(function () {
+        $("#fileInputIcon").fileinput({
+            theme: 'explorer-fas',
+            uploadUrl: ctx + 'app/upload',
+            deleteUrl: ctx + 'app/upload',
+            overwriteInitial: true,
+            initialPreviewAsData: true,
+            uploadAsync: true, // 异步上传
+            maxFileCount: 1, //上传最大数量
+            autoReplace: true, // 自动替换当前图片
+            // allowedFileTypes: ['jpg','png'], // 图片上传格式限制
+            maxFileSize: 20480, // 文件大小限制 最大20M
+            initialPreview: [
+                imageIconUploadResult
+            ]
+        });
+    });
+    $("#fileInputIcon").on('filebeforedelete', function (event, key) {
+        $("#alreadyIcon").val("");
+    });
+    // 单图片上传成功后回调
+    $("#fileInputIcon").on("fileuploaded", function (event, data, previewId, index) {
+        if (data.response.status === 'success') {
+            $("#alreadyIcon").val("");
+            imageIconUploadResult = data.response.message;
+            $("#alreadyIcon").val(imageIconUploadResult);
+            $.modal.msgSuccess("上传成功！");
+        } else {
+            $.modal.msgError("上传错误！");
+        }
+    });
+
+</script>
+</body>
+</html>

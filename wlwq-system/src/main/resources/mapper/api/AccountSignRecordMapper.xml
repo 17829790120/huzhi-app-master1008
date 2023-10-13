@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountSignRecordMapper">
+
+    <resultMap type="AccountSignRecord" id="AccountSignRecordResult">
+        <result property="accountSignRecordId" column="account_sign_record_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="signAddress" column="sign_address"/>
+        <result property="signPics" column="sign_pics"/>
+        <result property="signRemark" column="sign_remark"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectAccountSignRecordVo">
+        select r.account_sign_record_id,
+               r.account_id,
+               r.account_name,
+               r.account_phone,
+               r.account_head,
+               r.sign_address,
+               r.sign_pics,
+               r.sign_remark,
+               r.dept_id,
+               r.company_id,
+               r.post_ids,
+               r.create_time,
+               r.update_time
+        from account_sign_record r
+                 left join sys_dept d on r.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectAccountSignRecordList" parameterType="AccountSignRecord" resultMap="AccountSignRecordResult">
+        <include refid="selectAccountSignRecordVo"/>
+        <where>
+            r.del_status = 0
+            <if test="accountId != null  and accountId != ''">and r.account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and r.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and r.account_phone like concat('%', #{accountPhone},
+                '%')</if>
+            <if test="accountHead != null  and accountHead != ''">and r.account_head = #{accountHead}</if>
+            <if test="signAddress != null  and signAddress != ''">and r.sign_address = #{signAddress}</if>
+            <if test="signPics != null  and signPics != ''">and r.sign_pics = #{signPics}</if>
+            <if test="signRemark != null  and signRemark != ''">and r.sign_remark = #{signRemark}</if>
+            <if test="deptId != null ">and r.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and r.company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and r.post_ids = #{postIds}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(r.create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(r.create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by r.create_time desc
+    </select>
+
+    <select id="selectAccountSignRecordById" parameterType="String" resultMap="AccountSignRecordResult">
+        <include refid="selectAccountSignRecordVo"/>
+        where r.del_status = 0 and r.account_sign_record_id = #{accountSignRecordId}
+    </select>
+
+    <insert id="insertAccountSignRecord" parameterType="AccountSignRecord" >
+        insert into account_sign_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountSignRecordId != null">account_sign_record_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="signAddress != null">sign_address,</if>
+            <if test="signPics != null">sign_pics,</if>
+            <if test="signRemark != null">sign_remark,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountSignRecordId != null">#{accountSignRecordId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="signAddress != null">#{signAddress},</if>
+            <if test="signPics != null">#{signPics},</if>
+            <if test="signRemark != null">#{signRemark},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountSignRecord" parameterType="AccountSignRecord">
+        update account_sign_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="signAddress != null">sign_address = #{signAddress},</if>
+            <if test="signPics != null">sign_pics = #{signPics},</if>
+            <if test="signRemark != null">sign_remark = #{signRemark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where account_sign_record_id = #{accountSignRecordId}
+    </update>
+
+    <update id="deleteAccountSignRecordById" parameterType="String">
+        update account_sign_record set del_status = 1
+        where account_sign_record_id = #{accountSignRecordId}
+    </update>
+
+    <update id="deleteAccountSignRecordByIds" parameterType="String">
+        update account_sign_record set del_status = 1 where account_sign_record_id in
+        <foreach item="accountSignRecordId" collection="array" open="(" separator="," close=")">
+            #{accountSignRecordId}
+        </foreach>
+    </update>
+
+
+<!--    Api查询用户的签到记录-->
+    <select id="selectApiAccountSignRecordList" parameterType="AccountSignRecord" resultMap="AccountSignRecordResult">
+        <include refid="selectAccountSignRecordVo"/>
+        <where>
+            r.del_status = 0
+            <if test="accountId != null  and accountId != ''">and r.account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and r.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and r.account_phonelike concat('%', #{accountPhone},
+                '%')</if>
+            <if test="accountHead != null  and accountHead != ''">and r.account_head = #{accountHead}</if>
+            <if test="signAddress != null  and signAddress != ''">and r.sign_address = #{signAddress}</if>
+            <if test="signPics != null  and signPics != ''">and r.sign_pics = #{signPics}</if>
+            <if test="signRemark != null  and signRemark != ''">and r.sign_remark = #{signRemark}</if>
+            <if test="deptId != null ">and r.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and r.company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and r.post_ids = #{postIds}</if>
+            <if test="month != null  and month != ''">and date_format(r.create_time,'%Y-%m')
+                = #{month}
+            </if>
+        </where>
+        order by r.create_time desc
+    </select>
+
+
+    <!--    Api查询用户的签到数量-->
+    <select id="selectApiAccountSignRecordCount" parameterType="AccountSignRecord" resultType="Integer">
+        select count(*) from account_sign_record r
+        <where>
+            r.del_status = 0
+            <if test="accountId != null  and accountId != ''">and r.account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and r.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and r.account_phonelike concat('%', #{accountPhone},
+                '%')</if>
+            <if test="accountHead != null  and accountHead != ''">and r.account_head = #{accountHead}</if>
+            <if test="signAddress != null  and signAddress != ''">and r.sign_address = #{signAddress}</if>
+            <if test="signPics != null  and signPics != ''">and r.sign_pics = #{signPics}</if>
+            <if test="signRemark != null  and signRemark != ''">and r.sign_remark = #{signRemark}</if>
+            <if test="deptId != null ">and r.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and r.company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and r.post_ids = #{postIds}</if>
+            <if test="month != null  and month != ''">and date_format(r.create_time,'%Y-%m')
+                = #{month}
+            </if>
+        </where>
+        order by r.create_time desc
+    </select>
+</mapper>

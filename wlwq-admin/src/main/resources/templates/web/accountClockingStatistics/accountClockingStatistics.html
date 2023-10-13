@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <th:block th:include="include :: header('考勤统计列表')"/>
+  <th:block th:include="include :: datetimepicker-css"/>
+  <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+  <div class="row">
+    <div class="col-sm-12 search-collapse">
+      <form id="formId">
+        <div class="select-list">
+          <ul>
+            <li>
+              <label>公司：</label>
+              <select name="companyId" id="companyId" class="form-control">
+                <option value="">所有</option>
+                <option th:each="company : ${companyList}" th:text="${company.deptName}"
+                        th:value="${company.deptId}"></option>
+              </select>
+            </li>
+
+            <li>
+              <label>姓名/手机号：</label>
+              <input type="text" name="nickName"/>
+            </li>
+            <li class="select-time"
+                style="display: flex;justify-content: space-between;align-items: center;">
+              月份：
+              <input type="text" class="input-sm form-control" name="month"
+                     id="datetimepicker-startTime" style=" width: 174px;"
+                     placeholder="yyyy-MM"/>
+            </li>
+            <li>
+              <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                      class="fa fa-search"></i>&nbsp;搜索</a>
+              <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                      class="fa fa-refresh"></i>&nbsp;重置</a>
+            </li>
+          </ul>
+        </div>
+      </form>
+    </div>
+
+    <div class="btn-group-sm" id="toolbar" role="group">
+      <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:accountClockingStatistics:export">
+        <i class="fa fa-download"></i> 导出
+      </a>
+    </div>
+    <div class="col-sm-12 select-table table-striped">
+      <table id="bootstrap-table"></table>
+    </div>
+  </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+
+    $("#datetimepicker-startTime").datetimepicker({
+      format: 'yyyy-mm',
+      autoclose:true,
+      startView:3,
+      minView:3,
+      maxView:3
+    });
+
+    var prefix = ctx + "web/accountClockingStatistics";
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            exportUrl: prefix + "/export",
+            modalName: "考勤统计",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'accountId',
+                    title: '用户id',
+                    visible: false
+                },
+                 {
+                    field: 'accountHead',
+                    align: 'center',
+                    title: '头像',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                 {
+                    field: 'accountName',
+                    align: 'center',
+                    title: '姓名'
+                },
+                {
+                    field: 'accountPhone',
+                    align: 'center',
+                    title: '手机号'
+                },
+
+
+                {
+                    field: 'companyName',
+                    title: '公司',
+                    align: 'center'
+                },
+                {
+                    field: 'deptName',
+                    title: '部门',
+                    align: 'center'
+                },
+                {
+                    field: 'postNames',
+                    title: '岗位',
+                    align: 'center'
+                },
+
+                {
+                    field: 'sex',
+                    align: 'center',
+                    title: '性别',
+                    formatter: function (value, row, index) {
+                        if (value == 1) {
+                            return "<span class=\"label label-primary\">男</span>";
+                        } else if (value == 2) {
+                            return "<span class=\"label label-info\">女</span>";
+                        } else if (value == 0) {
+                            return "<span class=\"label label-success\">未知</span>";
+                        }
+                    }
+                },
+                 {
+                    field: 'month',
+                    align: 'center',
+                    title: '考勤月份'
+                },
+
+                {
+                    field: 'normalDay',
+                    align: 'center',
+                    title: '正常天数'
+                },
+                 {
+                    field: 'clockingCount',
+                    align: 'center',
+                    title: '出勤天数'
+                },
+                  {
+                    field: 'leaveCount',
+                    align: 'center',
+                    title: '请假次数'
+                },
+
+                {
+                    field: 'absenteeismDay',
+                    align: 'center',
+                    title: '旷工次数'
+                },
+
+                {
+                    field: 'beLateCount',
+                    align: 'center',
+                    title: '迟到次数'
+                },
+                {
+                    field: 'leaveEarlyCount',
+                    align: 'center',
+                    title: '早退次数'
+                },
+                {
+                    field: 'lackCount',
+                    align: 'center',
+                    title: '缺卡次数'
+                },
+
+                {
+                    field: 'abnormalDay',
+                    align: 'center',
+                    title: '异常天数'
+                },
+                {
+                    field: 'restDay',
+                    align: 'center',
+                    title: '休息天数'
+                },
+
+                {
+                    field: 'signCount',
+                    align: 'center',
+                    title: '外勤次数'
+                },
+                {
+                    field: 'reissueCount',
+                    align: 'center',
+                    title: '补卡申请次数'
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //显示不显示
+    function statusTools(row,categorys) {
+        // 显示
+        if (row.forbiddenStatus == 1) {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.accountId + '\',0,\''+categorys+'\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.accountId + '\',1,\''+categorys+'\')"></i> ';
+        }
+    }
+    function disable(accountId,num,categorys) {
+        if("forbiddenStatus"===categorys){
+            $.modal.confirm("确认要禁用吗？", function () {
+                $.operate.post(prefix + "/edit", {"accountId": accountId, "forbiddenStatus": 0});
+            })
+        }
+    }
+
+    function enable(accountId,num,categorys) {
+        if("forbiddenStatus"===categorys){
+            $.modal.confirm("确认取消禁用吗？", function () {
+                $.operate.post(prefix + "/edit", {"accountId": accountId, "forbiddenStatus": 1});
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+    function replaceSpace(value) {
+        return value.replace(/ /g, '%20');
+    }
+</script>
+</body>
+</html>

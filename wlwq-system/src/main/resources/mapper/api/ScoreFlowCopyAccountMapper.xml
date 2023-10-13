@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ScoreFlowCopyAccountMapper">
+
+    <resultMap type="ScoreFlowCopyAccount" id="ScoreFlowCopyAccountResult">
+        <result property="scoreFlowCopyAccountId" column="score_flow_copy_account_id"/>
+        <result property="copyAccountId" column="copy_account_id"/>
+        <result property="accountScoreId" column="account_score_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="examineType" column="examine_type"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="copyAccountName" column="copy_account_name"/>
+        <result property="copyAccountPhone" column="copy_account_phone"/>
+        <result property="copyAccountHead" column="copy_account_head"/>
+        <result property="disposeStatus" column="dispose_status"/>
+        <result property="disposeRemark" column="dispose_remark"/>
+        <result property="disposePics" column="dispose_pics"/>
+        <result property="examineTag" column="examine_tag"/>
+    </resultMap>
+
+    <sql id="selectScoreFlowCopyAccountVo">
+        select score_flow_copy_account_id,
+               copy_account_id,
+               account_score_id,
+               create_time,
+               update_time,
+               examine_status,
+               examine_type,
+               read_status,
+               del_status,
+               copy_account_name,
+               copy_account_phone,
+               copy_account_head,
+               dispose_status,
+               dispose_remark,
+               dispose_pics,
+               examine_tag
+        from score_flow_copy_account
+    </sql>
+
+    <select id="selectScoreFlowCopyAccountList" parameterType="ScoreFlowCopyAccount"
+            resultMap="ScoreFlowCopyAccountResult">
+        <include refid="selectScoreFlowCopyAccountVo"/>
+        <where>
+            <if test="copyAccountId != null  and copyAccountId != ''">and copy_account_id = #{copyAccountId}</if>
+            <if test="accountScoreId != null  and accountScoreId != ''">and account_score_id =
+                #{accountScoreId}
+            </if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="examineType != null ">and examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="copyAccountName != null  and copyAccountName != ''">and copy_account_name like concat('%',
+                #{copyAccountName}, '%')
+            </if>
+            <if test="copyAccountPhone != null  and copyAccountPhone != ''">and copy_account_phone =
+                #{copyAccountPhone}
+            </if>
+            <if test="copyAccountHead != null  and copyAccountHead != ''">and copy_account_head = #{copyAccountHead}
+            </if>
+            <if test="disposeStatus != null ">and dispose_status = #{disposeStatus}</if>
+            <if test="disposeRemark != null  and disposeRemark != ''">and dispose_remark = #{disposeRemark}</if>
+            <if test="disposePics != null  and disposePics != ''">and dispose_pics = #{disposePics}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+        </where>
+    </select>
+
+    <select id="selectScoreFlowCopyAccountById" parameterType="String" resultMap="ScoreFlowCopyAccountResult">
+        <include refid="selectScoreFlowCopyAccountVo"/>
+        where score_flow_copy_account_id = #{scoreFlowCopyAccountId}
+    </select>
+
+    <insert id="insertScoreFlowCopyAccount" parameterType="ScoreFlowCopyAccount">
+        insert into score_flow_copy_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="scoreFlowCopyAccountId != null">score_flow_copy_account_id,</if>
+            <if test="copyAccountId != null">copy_account_id,</if>
+            <if test="accountScoreId != null">account_score_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="examineType != null">examine_type,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="copyAccountName != null">copy_account_name,</if>
+            <if test="copyAccountPhone != null">copy_account_phone,</if>
+            <if test="copyAccountHead != null">copy_account_head,</if>
+            <if test="disposeStatus != null">dispose_status,</if>
+            <if test="disposeRemark != null">dispose_remark,</if>
+            <if test="disposePics != null">dispose_pics,</if>
+            <if test="examineTag != null">examine_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="scoreFlowCopyAccountId != null">#{scoreFlowCopyAccountId},</if>
+            <if test="copyAccountId != null">#{copyAccountId},</if>
+            <if test="accountScoreId != null">#{accountScoreId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="examineType != null">#{examineType},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="copyAccountName != null">#{copyAccountName},</if>
+            <if test="copyAccountPhone != null">#{copyAccountPhone},</if>
+            <if test="copyAccountHead != null">#{copyAccountHead},</if>
+            <if test="disposeStatus != null">#{disposeStatus},</if>
+            <if test="disposeRemark != null">#{disposeRemark},</if>
+            <if test="disposePics != null">#{disposePics},</if>
+            <if test="examineTag != null">#{examineTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateScoreFlowCopyAccount" parameterType="ScoreFlowCopyAccount">
+        update score_flow_copy_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="copyAccountId != null">copy_account_id = #{copyAccountId},</if>
+            <if test="accountScoreId != null">account_score_id = #{accountScoreId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="examineType != null">examine_type = #{examineType},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="copyAccountName != null">copy_account_name = #{copyAccountName},</if>
+            <if test="copyAccountPhone != null">copy_account_phone = #{copyAccountPhone},</if>
+            <if test="copyAccountHead != null">copy_account_head = #{copyAccountHead},</if>
+            <if test="disposeStatus != null">dispose_status = #{disposeStatus},</if>
+            <if test="disposeRemark != null">dispose_remark = #{disposeRemark},</if>
+            <if test="disposePics != null">dispose_pics = #{disposePics},</if>
+            <if test="examineTag != null">examine_tag = #{examineTag},</if>
+        </trim>
+        where score_flow_copy_account_id = #{scoreFlowCopyAccountId}
+    </update>
+
+    <delete id="deleteScoreFlowCopyAccountById" parameterType="String">
+        delete
+        from score_flow_copy_account
+        where score_flow_copy_account_id = #{scoreFlowCopyAccountId}
+    </delete>
+
+    <delete id="deleteScoreFlowCopyAccountByIds" parameterType="String">
+        delete from score_flow_copy_account where score_flow_copy_account_id in
+        <foreach item="scoreFlowCopyAccountId" collection="array" open="(" separator="," close=")">
+            #{scoreFlowCopyAccountId}
+        </foreach>
+    </delete>
+
+    <!--    抄送我的列表-->
+    <select id="selectCopyMyScoreFlowAccountList" parameterType="ScoreFlowCopyAccount"
+            resultType="Map">
+        select
+        a.score_flow_copy_account_id as flowCopyAccountId,
+        a.account_score_id as accountScoreId,
+        s.account_name as accountName,
+        s.account_head as accountHead,
+        s.score,
+        s.create_time as subCreateTime,
+        a.examine_status as examineStatus,
+        a.dispose_status as disposeStatus,
+        a.dispose_remark as disposeRemark,
+        a.dispose_pics as disposePics,
+        a.examine_tag as examineTag
+        from score_flow_copy_account a left join account_score s on a.account_score_id = s.account_score_id
+        <where>
+            <if test="accountScoreId != null  and accountScoreId != ''">and a.account_score_id = #{accountScoreId}</if>
+            <if test="copyAccountId != null  and copyAccountId != ''">and a.copy_account_id = #{copyAccountId}</if>
+            <if test="examineStatus != null and examineStatus == 1">and a.examine_status = 1</if>
+            <if test="examineStatus != null and examineStatus == 2">and a.examine_status in(3,4)</if>
+            <if test="examineType != null  and examineType != ''">and a.examine_type = #{examineType}</if>
+            <if test="readStatus != null ">and a.read_status = #{readStatus}</if>
+            <if test="copyAccountName != null  and copyAccountName != ''">and s.copy_account_name like concat('%',
+                #{copyAccountName},
+                '%')
+            </if>
+            <if test="examineTag != null  and examineTag != ''"> and a.examine_tag = #{examineTag}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+</mapper>

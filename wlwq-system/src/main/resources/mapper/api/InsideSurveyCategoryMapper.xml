@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.InsideSurveyCategoryMapper">
+
+    <resultMap type="InsideSurveyCategory" id="InsideSurveyCategoryResult">
+        <result property="insideSurveyCategoryId" column="inside_survey_category_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="categoryTitle" column="category_title"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="imgUrl" column="img_url"/>
+    </resultMap>
+
+    <sql id="selectInsideSurveyCategoryVo">
+        select inside_survey_category_id, dept_id, user_id, parent_id, category_title, sort_num, del_status, create_time, update_time , img_url
+        from inside_survey_category
+    </sql>
+    <sql id="selectInsideSurveyCategory">
+        select
+            isc.inside_survey_category_id,
+            isc.dept_id,
+            isc.user_id,
+            isc.parent_id,
+            isc.category_title,
+            isc.sort_num,
+            isc.del_status,
+            isc.create_time,
+            isc.update_time ,
+            isc.img_url
+        from inside_survey_category isc left join sys_dept d on isc.dept_id = d.dept_id
+        left join sys_user u on isc.user_id = u.user_id
+    </sql>
+    <select id="selectInsideSurveyCategoryListRole" parameterType="InsideSurveyCategory"
+            resultMap="InsideSurveyCategoryResult">
+        <include refid="selectInsideSurveyCategory"/>
+        <where>
+            isc.del_status = 0
+            <if test="deptId != null ">and isc.dept_id = #{deptId}</if>
+            <if test="userId != null ">and isc.user_id = #{userId}</if>
+            <if test="parentId != null ">and isc.parent_id = #{parentId}</if>
+            <if test="categoryTitle != null  and categoryTitle != ''">and isc.category_title = #{categoryTitle}</if>
+            <if test="sortNum != null ">and isc.sort_num = #{sortNum}</if>
+            <if test="delStatus != null ">and isc.del_status = #{delStatus}</if>
+            <if test="imgUrl != null  and imgUrl != ''">and isc.img_url = #{imgUrl}</if>
+        </where>
+        ${params.dataScope}
+    </select>
+    <select id="selectInsideSurveyCategoryList" parameterType="InsideSurveyCategory"
+            resultMap="InsideSurveyCategoryResult">
+        <include refid="selectInsideSurveyCategoryVo"/>
+        <where>
+            del_status = 0
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="categoryTitle != null  and categoryTitle != ''">and category_title = #{categoryTitle}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="imgUrl != null  and imgUrl != ''">and img_url = #{imgUrl}</if>
+        </where>
+        order by sort_num
+    </select>
+    <select id="selectInsideSurveyCategoryById" parameterType="String" resultMap="InsideSurveyCategoryResult">
+        <include refid="selectInsideSurveyCategoryVo"/>
+        where inside_survey_category_id = #{insideSurveyCategoryId}
+    </select>
+
+    <insert id="insertInsideSurveyCategory" parameterType="InsideSurveyCategory">
+        insert into inside_survey_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="insideSurveyCategoryId != null">inside_survey_category_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="categoryTitle != null">category_title,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="imgUrl != null">img_url,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="insideSurveyCategoryId != null">#{insideSurveyCategoryId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="categoryTitle != null">#{categoryTitle},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="imgUrl != null">#{imgUrl},</if>
+        </trim>
+    </insert>
+
+    <update id="updateInsideSurveyCategory" parameterType="InsideSurveyCategory">
+        update inside_survey_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="categoryTitle != null">category_title = #{categoryTitle},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="imgUrl != null">img_url = #{imgUrl},</if>
+        </trim>
+        where inside_survey_category_id = #{insideSurveyCategoryId}
+    </update>
+
+    <delete id="deleteInsideSurveyCategoryById" parameterType="String">
+        delete from inside_survey_category where inside_survey_category_id = #{insideSurveyCategoryId}
+    </delete>
+
+    <delete id="deleteInsideSurveyCategoryByIds" parameterType="String">
+        delete from inside_survey_category where inside_survey_category_id in
+        <foreach item="insideSurveyCategoryId" collection="array" open="(" separator="," close=")">
+            #{insideSurveyCategoryId}
+        </foreach>
+    </delete>
+
+</mapper>

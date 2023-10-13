@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('点赞记录列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <input type="hidden" name="primaryId" th:value="${primaryId}"/>
+                <input type="hidden" name="likeType" th:value="${likeType}"/>
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>用户昵称：</label>
+                            <input type="text" name="accountName"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="$.table.exportExcel()"
+               shiro:hasPermission="information:informationLikeRecord:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+        <div class="enlarge_box" style="cursor:pointer;">
+            <img id="enlarge_box_img" alt="" name="pic" src="" style="z-index: 99;">
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('information:informationLikeRecord:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('information:informationLikeRecord:remove')}]];
+    var prefix = ctx + "information/informationLikeRecord";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "点赞记录",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    title: "序号",
+                    formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+                {
+                    field: 'informationLikeRecordId',
+                    title: '点赞记录ID',
+                    visible: false
+                },
+                {
+                    field: 'primaryTitle',
+                    title: '资讯标题/资讯评论'
+                },
+                {
+                    field: 'accountHead',
+                    title: '用户头像',
+                    formatter: function (value, row, index) {
+                        return "<img class=\"img-clouds\" onclick=\"clouds(this)\" src=" + replaceSpace(value) + "  style=\" width:50px; height:50px;\">";
+                    }
+                },
+                {
+                    field: 'accountName',
+                    title: '用户昵称'
+                },
+                {
+                    field: 'likeType',
+                    title: '点赞类型',
+                    formatter: function (value, row, index) {
+                        if (value === 1) {
+                            return "<span class=\"badge badge-success\">资讯</span>";
+                        }
+                        if (value === 2) {
+                            return "<span class=\"badge badge-primary\">资讯评论</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '点赞时间'
+                }]
+        };
+        $.table.init(options);
+    });
+
+
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+    function replaceSpace(value) {
+        if (value != null && value !== '') {
+            return value.replace(/ /g, '%20');
+        }
+        return "";
+    }
+</script>
+</body>
+</html>

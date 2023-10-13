@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CourseMapper">
+    <resultMap type="Course" id="CourseResult">
+        <result property="courseId" column="course_id"/>
+        <result property="courseTitle" column="course_title"/>
+        <result property="coursePrice" column="course_price"/>
+        <result property="coverImage" column="cover_image"/>
+        <result property="videoImage" column="video_image"/>
+        <result property="briefTitle" column="brief_title"/>
+        <result property="oneCategoryId" column="one_category_id"/>
+        <result property="twoCategoryId" column="two_category_id"/>
+        <result property="threeCategoryId" column="three_category_id"/>
+        <result property="courseDetail" column="course_detail"/>
+        <result property="teacherWechatNumber" column="teacher_wechat_number"/>
+        <result property="teacherWechatImage" column="teacher_wechat_image"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="applePrice" column="apple_price"/>
+        <result property="useDay" column="use_day"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="oneCategoryName" column="oneCategoryName"/>
+        <result property="twoCategoryName" column="twoCategoryName"/>
+        <result property="threeCategoryName" column="threeCategoryName"/>
+        <result property="applePriceMoney" column="applePriceMoney"/>
+        <result property="appleBundleId" column="appleBundleId"/>
+        <result property="recommendStatus" column="recommend_status"/>
+        <result property="teacherName" column="teacher_name"/>
+        <result property="teacherProfile" column="teacher_profile"/>
+        <result property="teacherImage" column="teacher_image"/>
+        <result property="teacherJob" column="teacher_job"/>
+    </resultMap>
+
+    <sql id="selectCourseVo">
+        select course_id,
+               course_title,
+               course_price,
+               apple_price,
+               (select price from apple_price where id = course.apple_price) as applePriceMoney,
+               (select coding from apple_price where id = course.apple_price) as appleBundleId,
+               cover_image,
+               video_image,
+               brief_title,
+               one_category_id,
+               (select category_name
+                from categorys
+                where del_status = 0
+                  and category_id = course.one_category_id)                  as oneCategoryName,
+               two_category_id,
+               (select category_name
+                from categorys
+                where del_status = 0
+                  and category_id = course.two_category_id)                  as twoCategoryName,
+               course_detail,
+               teacher_wechat_number,
+               teacher_wechat_image,
+                use_day,
+               sort_num,
+               del_status,
+               create_time,
+               recommend_status,
+               three_category_id, teacher_name, teacher_profile, teacher_image, teacher_job,
+               (select category_name
+                from categorys
+                where del_status = 0
+                  and category_id = course.three_category_id)                  as threeCategoryName
+        from course
+    </sql>
+
+    <select id="selectCourseList" parameterType="Course" resultMap="CourseResult">
+        <include refid="selectCourseVo"/>
+        <where>
+            del_status = 0
+            <if test="courseTitle != null  and courseTitle != ''">
+                and course_title like concat('%', #{courseTitle}, '%')
+            </if>
+            <if test="coursePrice != null">
+                and course_price = #{coursePrice}
+            </if>
+            <if test="coverImage != null  and coverImage != ''">
+                and cover_image = #{coverImage}
+            </if>
+            <if test="videoImage != null  and videoImage != ''">
+                and video_image = #{videoImage}
+            </if>
+            <if test="briefTitle != null  and briefTitle != ''">
+                and brief_title like concat('%', #{briefTitle}, '%')
+            </if>
+            <if test="oneCategoryId != null">
+                and one_category_id = #{oneCategoryId}
+            </if>
+            <if test="twoCategoryId != null">
+                and two_category_id = #{twoCategoryId}
+            </if>
+            <if test="categoryId != null">
+                and (one_category_id = #{categoryId} or two_category_id = #{categoryId} or three_category_id =
+                #{categoryId})
+            </if>
+            <if test="courseDetail != null  and courseDetail != ''">
+                and course_detail = #{courseDetail}
+            </if>
+            <if test="teacherWechatNumber != null  and teacherWechatNumber != ''">
+                and teacher_wechat_number like concat('%', #{teacherWechatNumber}, '%')
+            </if>
+            <if test="teacherWechatImage != null  and teacherWechatImage != ''">
+                and teacher_wechat_image = #{teacherWechatImage}
+            </if>
+
+            <if test="recommendStatus != null">
+                and recommend_status = #{recommendStatus}
+            </if>
+            <if test="threeCategoryId != null ">and three_category_id = #{threeCategoryId}</if>
+            <if test="teacherName != null  and teacherName != ''"> and teacher_name like concat('%', #{teacherName}, '%')</if>
+            <if test="teacherProfile != null  and teacherProfile != ''"> and teacher_profile = #{teacherProfile}</if>
+            <if test="teacherImage != null  and teacherImage != ''"> and teacher_image = #{teacherImage}</if>
+            <if test="teacherJob != null  and teacherJob != ''"> and teacher_job = #{teacherJob}</if>
+        </where>
+        order by sort_num
+    </select>
+
+    <select id="selectCourseById" parameterType="Long" resultMap="CourseResult">
+        <include refid="selectCourseVo"/>
+        where course_id = #{courseId}
+    </select>
+
+    <insert id="insertCourse" parameterType="Course" useGeneratedKeys="true" keyProperty="courseId">
+        insert into course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseTitle != null and courseTitle != ''">
+                course_title,
+            </if>
+            <if test="coursePrice != null">
+                course_price,
+            </if>
+            <if test="applePrice != null">
+                apple_price,
+            </if>
+            <if test="coverImage != null and coverImage != ''">
+                cover_image,
+            </if>
+            <if test="videoImage != null and videoImage != ''">
+                video_image,
+            </if>
+            <if test="briefTitle != null and briefTitle != ''">
+                brief_title,
+            </if>
+            <if test="oneCategoryId != null">
+                one_category_id,
+            </if>
+            <if test="twoCategoryId != null">
+                two_category_id,
+            </if>
+            <if test="courseDetail != null and courseDetail != ''">
+                course_detail,
+            </if>
+            <if test="teacherWechatNumber != null and teacherWechatNumber != ''">
+                teacher_wechat_number,
+            </if>
+            <if test="teacherWechatImage != null and teacherWechatImage != ''">
+                teacher_wechat_image,
+            </if>
+            <if test="delStatus != null">
+                del_status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="sortNum != null">
+                sort_num,
+            </if>
+            <if test="useDay != null">use_day,</if>
+            <if test="recommendStatus != null">recommend_status,</if>
+            <if test="threeCategoryId != null">three_category_id,</if>
+            <if test="teacherName != null">teacher_name,</if>
+            <if test="teacherProfile != null">teacher_profile,</if>
+            <if test="teacherImage != null">teacher_image,</if>
+            <if test="teacherJob != null">teacher_job,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseTitle != null and courseTitle != ''">
+                #{courseTitle},
+            </if>
+            <if test="coursePrice != null">
+                #{coursePrice},
+            </if>
+            <if test="applePrice != null">
+                apple_price = #{applePrice},
+            </if>
+            <if test="coverImage != null and coverImage != ''">
+                #{coverImage},
+            </if>
+            <if test="videoImage != null and videoImage != ''">
+                #{videoImage},
+            </if>
+            <if test="briefTitle != null and briefTitle != ''">
+                #{briefTitle},
+            </if>
+            <if test="oneCategoryId != null">
+                #{oneCategoryId},
+            </if>
+            <if test="twoCategoryId != null">
+                #{twoCategoryId},
+            </if>
+            <if test="courseDetail != null and courseDetail != ''">
+                #{courseDetail},
+            </if>
+            <if test="teacherWechatNumber != null and teacherWechatNumber != ''">
+                #{teacherWechatNumber},
+            </if>
+            <if test="teacherWechatImage != null and teacherWechatImage != ''">
+                #{teacherWechatImage},
+            </if>
+            <if test="delStatus != null">
+                #{delStatus},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="sortNum != null">
+                #{sortNum},
+            </if>
+            <if test="useDay != null">#{useDay},</if>
+            <if test="recommendStatus != null">#{recommendStatus},</if>
+            <if test="threeCategoryId != null">#{threeCategoryId},</if>
+            <if test="teacherName != null">#{teacherName},</if>
+            <if test="teacherProfile != null">#{teacherProfile},</if>
+            <if test="teacherImage != null">#{teacherImage},</if>
+            <if test="teacherJob != null">#{teacherJob},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCourse" parameterType="Course">
+        update course
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseTitle != null and courseTitle != ''">
+                course_title = #{courseTitle},
+            </if>
+            <if test="coursePrice != null">
+                course_price = #{coursePrice},
+            </if>
+            <if test="applePrice != null">
+                apple_price = #{applePrice},
+            </if>
+            <if test="coverImage != null and coverImage != ''">
+                cover_image = #{coverImage},
+            </if>
+            <if test="videoImage != null and videoImage != ''">
+                video_image = #{videoImage},
+            </if>
+            <if test="briefTitle != null and briefTitle != ''">
+                brief_title = #{briefTitle},
+            </if>
+            <if test="oneCategoryId != null">
+                one_category_id = #{oneCategoryId},
+            </if>
+            <if test="twoCategoryId != null">
+                two_category_id = #{twoCategoryId},
+            </if>
+            <if test="courseDetail != null and courseDetail != ''">
+                course_detail = #{courseDetail},
+            </if>
+            <if test="teacherWechatNumber != null and teacherWechatNumber != ''">
+                teacher_wechat_number = #{teacherWechatNumber},
+            </if>
+            <if test="teacherWechatImage != null and teacherWechatImage != ''">
+                teacher_wechat_image = #{teacherWechatImage},
+            </if>
+            <if test="delStatus != null">
+                del_status = #{delStatus},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="sortNum != null">
+                sort_num = #{sortNum},
+            </if>
+            <if test="useDay != null">use_day = #{useDay},</if>
+            <if test="recommendStatus != null">recommend_status = #{recommendStatus},</if>
+            <if test="threeCategoryId != null">three_category_id = #{threeCategoryId},</if>
+            <if test="teacherName != null">teacher_name = #{teacherName},</if>
+            <if test="teacherProfile != null">teacher_profile = #{teacherProfile},</if>
+            <if test="teacherImage != null">teacher_image = #{teacherImage},</if>
+            <if test="teacherJob != null">teacher_job = #{teacherJob},</if>
+        </trim>
+        where course_id = #{courseId}
+    </update>
+
+    <update id="deleteCourseById" parameterType="Long">
+        update course set del_status = 1
+        where course_id = #{courseId}
+    </update>
+
+    <update id="deleteCourseByIds" parameterType="String">
+        update course set del_status = 1 where course_id in
+        <foreach item="courseId" collection="array" open="(" separator="," close=")">
+            #{courseId}
+        </foreach>
+    </update>
+
+    <!--    查询首页课程列表-->
+    <select id="selectCourseIndexList" resultType="java.util.Map">
+        select course_id as courseId,
+        course_title as courseTitle,
+        cover_image as coverImage,
+        brief_title as briefTitle,
+        course_price as coursePrice,
+        (select price from apple_price where id = course.apple_price) as applePrice
+        from course
+        <where>
+            del_status = 0
+            <if test="oneCategoryId != null">
+                and one_category_id = #{oneCategoryId}
+            </if>
+            <if test="twoCategoryId != null">
+                and two_category_id = #{twoCategoryId}
+            </if>
+            <if test="threeCategoryId != null">
+                and three_category_id = #{threeCategoryId}
+            </if>
+            <if test="courseTitle != null and courseTitle != ''">
+                and course_title like concat('%', #{courseTitle}, '%')
+            </if>
+            <if test="recommendStatus != null">
+                and recommend_status = #{recommendStatus}
+            </if>
+        </where>
+        order by sort_num,create_time desc
+    </select>
+
+    <!--    答完题随机推荐一个课程-->
+    <select id="recommendCourse" resultType="java.util.Map">
+        SELECT
+            t1.course_id AS courseId,
+            t1.course_title AS courseTitle,
+            t1.cover_image AS coverImage,
+            t1.brief_title AS briefTitle,
+            t1.course_price AS coursePrice,
+            ( SELECT price FROM apple_price WHERE id = t1.apple_price ) AS applePrice
+        FROM
+            course AS t1
+            JOIN (
+        SELECT
+            ROUND(
+            RAND( ) * (
+            ( SELECT MAX( course_id ) FROM course WHERE del_status = 0 and one_category_id = #{oneCategoryId} and two_category_id = #{twoCategoryId} and three_category_id = #{threeCategoryId})  - ( SELECT MIN( course_id ) FROM course WHERE del_status = 0 and one_category_id = #{oneCategoryId} and two_category_id = #{twoCategoryId} and three_category_id = #{threeCategoryId})
+            ) + ( SELECT MIN( course_id ) FROM course WHERE del_status = 0 and one_category_id = #{oneCategoryId} and two_category_id = #{twoCategoryId} and three_category_id = #{threeCategoryId})
+            ) AS id
+            ) AS t2
+        WHERE
+            t1.course_id >= t2.id
+        ORDER BY
+            t1.course_id
+            LIMIT 1;
+    </select>
+    <!--查询未观看课程-->
+    <select id="selectNoWatchStateList" resultType="java.util.Map">
+        SELECT
+               course_id as courseId,
+               course_title as courseTitle,
+               cover_image as coverImage,
+               video_image as videoImage,
+               brief_title as briefTitle,
+               course_detail as courseDetail
+        FROM course WHERE
+        (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND account_id = #{accountId}) = 0
+        AND two_category_id = #{categoryId}
+    </select>
+    <!--查询观看中的课程-->
+    <select id="selectWatchIngStateList" resultType="java.util.Map">
+        SELECT
+               course_id as courseId,
+               course_title as courseTitle,
+               cover_image as coverImage,
+               video_image as videoImage,
+               brief_title as briefTitle,
+               course_detail as courseDetail
+        FROM course
+        WHERE
+            (SELECT COUNT(0) FROM course_chapter WHERE parent_id != 0 AND course_id = course.course_id) >
+            (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND watch_status = 1 AND account_id = #{accountId})
+            AND (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND account_id = #{accountId}) > 0
+            AND two_category_id = #{categoryId}
+    </select>
+    <!--查询已看完的课程-->
+    <select id="selectWatchFinishStateList" resultType="java.util.Map">
+        SELECT
+               course_id as courseId,
+               course_title as courseTitle,
+               cover_image as coverImage,
+               video_image as videoImage,
+               brief_title as briefTitle,
+               course_detail as courseDetail
+        FROM course
+        WHERE
+            (SELECT COUNT(0) FROM course_chapter WHERE parent_id != 0 AND course_id = course.course_id) =
+            (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND watch_status = 1 AND account_id = #{accountId})
+            AND (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND account_id = #{accountId}) > 0
+            AND two_category_id = #{categoryId}
+    </select>
+
+    <!--查询课程对应的章，节，学习人数-->
+    <select id="selectCount" resultType="java.util.HashMap">
+        SELECT
+            (SELECT COUNT(0) FROM course_chapter WHERE course_id = #{courseId} AND parent_id = 0 ) zhangCount,
+            (SELECT COUNT(0) FROM course_chapter WHERE course_id = #{courseId} AND parent_id != 0 ) jieCount,
+            (SELECT COUNT(0) FROM (SELECT account_id FROM course_view_record WHERE course_id = #{courseId} GROUP BY account_id)b) learnersCount
+    </select>
+
+
+    <!--我的学习列表，查询观看中的课程-->
+    <select id="selectMyWatchIngStateList" resultType="java.util.Map">
+        SELECT
+            course_id as courseId,
+            course_title as courseTitle,
+            cover_image as coverImage,
+            video_image as videoImage,
+            brief_title as briefTitle,
+            course_detail as courseDetail
+        FROM course
+        WHERE
+                (SELECT COUNT(0) FROM course_chapter WHERE parent_id != 0 AND course_id = course.course_id) >
+            (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND watch_status = 1 AND account_id = #{accountId})
+                                                       AND (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND account_id = #{accountId}) > 0
+        <if test="keyword != null and keyword != ''">
+            and course_title like concat('%', #{keyword}, '%')
+        </if>
+    </select>
+
+    <!--我的学习列表，查询观看中的课程数量-->
+    <select id="selectMyWatchIngStateCount" resultType="Integer">
+        SELECT
+        count(*)
+        FROM course
+        WHERE
+        (SELECT COUNT(0) FROM course_chapter WHERE parent_id != 0 AND course_id = course.course_id) >
+        (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND watch_status = 1 AND account_id = #{accountId})
+        AND (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND account_id = #{accountId}) > 0
+        <if test="keyword != null and keyword != ''">
+            and course_title like concat('%', #{keyword}, '%')
+        </if>
+    </select>
+
+    <!--查询总可数与已看完的课程，统计数-->
+    <select id="selectWatchFinishCount" resultType="java.util.Map">
+       SELECT * FROM (
+            (SELECT COUNT(1) AS allCount FROM course WHERE two_category_id = #{categoryId}) AS allCount,
+            (SELECT COUNT(1) AS finishLern FROM course
+                WHERE
+                    (SELECT COUNT(0) FROM course_chapter WHERE parent_id != 0 AND course_id = course.course_id) =
+                    (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND watch_status = 1 AND account_id = #{accountId})
+                    AND (SELECT COUNT(0) FROM course_view_record WHERE course_id = course.course_id AND account_id = #{accountId}) > 0
+                    AND two_category_id = #{categoryId}) AS finishLern
+        )
+    </select>
+</mapper>

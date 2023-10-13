@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.MeetingExamineFlowMapper">
+
+    <resultMap type="MeetingExamineFlow" id="MeetingExamineFlowResult">
+        <result property="meetingExamineFlowId" column="meeting_examine_flow_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="examineSequence" column="examine_sequence"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="examineModuleId" column="examine_module_id"/>
+        <result property="twoExamineModuleId" column="two_examine_module_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="postName" column="post_name"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="companyName" column="company_name"/>
+        <result property="minValue" column="min_value"/>
+        <result property="maxValue" column="max_value"/>
+    </resultMap>
+
+    <sql id="selectMeetingExamineFlowVo">
+        select f.meeting_examine_flow_id,
+               f.post_id,
+               f.examine_sequence,
+               f.create_time,
+               f.update_time,
+               f.examine_status,
+               f.dept_id,
+               f.examine_module_id,
+               f.two_examine_module_id,
+               f.company_id,
+               f.min_value,
+               f.max_value,
+               sd.dept_name as company_name,
+               p.post_name,
+               d.dept_name
+        from meeting_examine_flow f
+                 left join sys_dept d on f.dept_id = d.dept_id
+                 left join sys_dept sd on sd.dept_id = f.company_id
+                 left join sys_post p on f.post_id = p.post_id
+    </sql>
+    <sql id="selectMeetingExamineFlow">
+        select meeting_examine_flow_id,
+               post_id,
+               examine_sequence,
+               create_time,
+               update_time,
+               examine_status,
+               dept_id,
+               examine_module_id,
+               two_examine_module_id,
+               company_id,
+               min_value,
+               max_value
+        from meeting_examine_flow
+    </sql>
+
+    <select id="selectMeetingExamineFlowList" parameterType="MeetingExamineFlow" resultMap="MeetingExamineFlowResult">
+        <include refid="selectMeetingExamineFlowVo"/>
+        <where>
+            1 = 1
+            <if test="postId != null ">and f.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and f.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and f.examine_status = #{examineStatus}</if>
+            <if test="deptId != null ">and f.dept_id = #{deptId}</if>
+            <if test="examineModuleId != null ">and f.examine_module_id = #{examineModuleId}</if>
+            <if test="twoExamineModuleId != null ">and f.two_examine_module_id = #{twoExamineModuleId}</if>
+            <if test="companyId != null ">and f.company_id = #{companyId}</if>
+            <if test="minValue != null "> and f.min_value = #{minValue}</if>
+            <if test="maxValue != null "> and f.max_value = #{maxValue}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by f.dept_id,f.examine_module_id,f.two_examine_module_id,f.examine_sequence
+    </select>
+
+    <select id="selectMeetingExamineFlowById" parameterType="String" resultMap="MeetingExamineFlowResult">
+        <include refid="selectMeetingExamineFlowVo"/>
+        where f.meeting_examine_flow_id = #{meetingExamineFlowId}
+    </select>
+
+    <insert id="insertMeetingExamineFlow" parameterType="MeetingExamineFlow">
+        insert into meeting_examine_flow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="meetingExamineFlowId != null">meeting_examine_flow_id,</if>
+            <if test="postId != null">post_id,</if>
+            <if test="examineSequence != null">examine_sequence,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="examineModuleId != null">examine_module_id,</if>
+            <if test="twoExamineModuleId != null">two_examine_module_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="minValue != null">min_value,</if>
+            <if test="maxValue != null">max_value,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="meetingExamineFlowId != null">#{meetingExamineFlowId},</if>
+            <if test="postId != null">#{postId},</if>
+            <if test="examineSequence != null">#{examineSequence},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="examineModuleId != null">#{examineModuleId},</if>
+            <if test="twoExamineModuleId != null">#{twoExamineModuleId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="minValue != null">#{minValue},</if>
+            <if test="maxValue != null">#{maxValue},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMeetingExamineFlow" parameterType="MeetingExamineFlow">
+        update meeting_examine_flow
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="examineSequence != null">examine_sequence = #{examineSequence},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="examineModuleId != null">examine_module_id = #{examineModuleId},</if>
+            <if test="twoExamineModuleId != null">two_examine_module_id = #{twoExamineModuleId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="minValue != null">min_value = #{minValue},</if>
+            <if test="maxValue != null">max_value = #{maxValue},</if>
+        </trim>
+        where meeting_examine_flow_id = #{meetingExamineFlowId}
+    </update>
+
+    <delete id="deleteMeetingExamineFlowById" parameterType="String">
+        delete
+        from meeting_examine_flow
+        where meeting_examine_flow_id = #{meetingExamineFlowId}
+    </delete>
+
+    <delete id="deleteMeetingExamineFlowByIds" parameterType="String">
+        delete from meeting_examine_flow where meeting_examine_flow_id in
+        <foreach item="meetingExamineFlowId" collection="array" open="(" separator="," close=")">
+            #{meetingExamineFlowId}
+        </foreach>
+    </delete>
+    <!--    查询某一条数据是否存在-->
+    <select id="selectMeetingExamineFlow" resultMap="MeetingExamineFlowResult">
+        select meeting_examine_flow_id from meeting_examine_flow f
+        <where>
+            <if test="postId != null ">and f.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and f.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and f.examine_status = #{examineStatus}</if>
+            <if test="deptId != null ">and f.dept_id = #{deptId}</if>
+            <if test="examineModuleId != null ">and f.examine_module_id = #{examineModuleId}</if>
+            <if test="twoExamineModuleId != null ">and f.two_examine_module_id = #{twoExamineModuleId}</if>
+            <if test="companyId != null ">and f.company_id = #{companyId}</if>
+            <if test="minValue != null"> and ((#{minValue} <![CDATA[ >= ]]> f.min_value and #{minValue} <![CDATA[ <= ]]> f.max_value) or (0 = f.min_value and 0 = f.max_value) or (#{minValue} <![CDATA[ >= ]]> f.max_value and #{minValue} <![CDATA[ >= ]]> f.min_value))</if>
+        </where>
+        limit 1
+    </select>
+
+
+    <!--    根据模块和类型查询统一审批等级查看审批顺序最小值-->
+    <select id="selectMinExamineGroupBySequence" parameterType="MeetingExamineFlow"
+            resultType="com.wlwq.api.resultVO.examine.ExamineFlowResultVO">
+        select examine_sequence as examineSequence,count(*) as examinePeopleCount from meeting_examine_flow
+        <where>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="examineModuleId != null ">and examine_module_id = #{examineModuleId}</if>
+            <if test="twoExamineModuleId != null ">and two_examine_module_id = #{twoExamineModuleId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="minValue != null"> and ((#{minValue} <![CDATA[ >= ]]> min_value and #{minValue} <![CDATA[ <= ]]> max_value) or (0 = min_value and 0 = max_value) or (#{minValue} <![CDATA[ >= ]]> max_value and #{minValue} <![CDATA[ >= ]]> min_value))</if>
+        </where>
+        limit 1
+    </select>
+
+    <!--    app查询发起的审批列表-->
+    <select id="selectAppExamineFlowList" parameterType="MeetingExamineFlow"
+            resultType="com.wlwq.api.resultVO.examine.ExamineFlowAccountResultVO">
+        SELECT distinct a.account_id as accountId,
+        a.nick_name as accountName,
+        a.head_portrait as accountHead,
+        a.phone,
+        a.post_ids as postIds,
+        f.dept_id as deptId,
+        f.post_id as postId,
+        p.post_name as postName,
+        f.examine_sequence as examineSequence
+        FROM meeting_examine_flow f
+        left join api_account a on FIND_IN_SET(f.post_id, a.post_ids)
+        left join sys_post p on p.post_id = f.post_id
+        <where>
+            a.del_status = 0 and a.forbidden_status = 0 and a.account_id is not null
+            <if test="postId != null ">and f.post_id = #{postId}</if>
+            <if test="examineSequence != null ">and f.examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and f.examine_status = #{examineStatus}</if>
+            <if test="deptId != null ">and f.dept_id = #{deptId} and a.dept_id = #{deptId}</if>
+            <if test="examineModuleId != null ">and f.examine_module_id = #{examineModuleId}</if>
+            <if test="twoExamineModuleId != null ">and f.two_examine_module_id = #{twoExamineModuleId}</if>
+            <if test="companyId != null ">and f.company_id = #{companyId} AND a.company_id = #{companyId}</if>
+            <if test="minValue != null"> and ((#{minValue} <![CDATA[ >= ]]> f.min_value and #{minValue} <![CDATA[ <= ]]> f.max_value) or (0 = f.min_value and 0 = f.max_value) or (#{minValue} <![CDATA[ >= ]]> f.max_value and #{minValue} <![CDATA[ >= ]]> f.min_value))</if>
+        </where>
+        order by f.examine_sequence
+    </select>
+
+
+    <!--    根据模块和类型和等级查询下一个等级-->
+    <select id="selectNextExamineSequence" parameterType="MeetingExamineFlow"
+            resultType="com.wlwq.api.resultVO.examine.ExamineFlowResultVO">
+        select examine_sequence as examineSequence from meeting_examine_flow
+        <where>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence > #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="examineModuleId != null  and examineModuleId != ''">and examine_module_id = #{examineModuleId}
+            </if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="minValue != null"> and ((#{minValue} <![CDATA[ >= ]]> min_value and #{minValue} <![CDATA[ <= ]]> max_value) or (0 = min_value and 0 = max_value) or (#{minValue} <![CDATA[ >= ]]> max_value and #{minValue} <![CDATA[ >= ]]> min_value))</if>
+        </where>
+        order by examine_sequence limit 1
+    </select>
+
+
+    <!--    根据模块和类型查询同一审批等级查看的人数及审批顺序-->
+    <select id="selectExamineListGroupBySequence" parameterType="MeetingExamineFlow"
+            resultType="com.wlwq.api.resultVO.examine.ExamineFlowResultVO">
+        select examine_sequence as examineSequence,count(*) as examinePeopleCount from meeting_examine_flow
+        <where>
+            <if test="postId != null ">and post_id = #{postId}</if>
+            <if test="examineSequence != null ">and examine_sequence = #{examineSequence}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="examineModuleId != null  and examineModuleId != ''">and examine_module_id = #{examineModuleId}
+            </if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="minValue != null"> and ((#{minValue} <![CDATA[ >= ]]> min_value and #{minValue} <![CDATA[ <= ]]> max_value) or (0 = min_value and 0 = max_value) or (#{minValue} <![CDATA[ >= ]]> max_value and #{minValue} <![CDATA[ >= ]]> min_value))</if>
+        </where>
+        group by examine_sequence
+        order by examine_sequence
+    </select>
+</mapper>

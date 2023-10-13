@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.SixStructuresClassMapper">
+
+    <resultMap type="SixStructuresClass" id="SixStructuresClassResult">
+        <result property="sixStructuresClassId" column="six_structures_class_id"/>
+        <result property="className" column="class_name"/>
+        <result property="icon" column="icon"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="level" column="level"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="classTitle" column="class_title"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+
+    <sql id="selectSixStructuresClassVo">
+        select
+        c.six_structures_class_id,
+        c.class_name,
+        c.icon,
+        c.parent_id,
+        c.order_num,
+        c.level,
+        c.show_status,
+        c.del_status,
+        c.create_time,
+        c.update_time,
+        c.dept_id,
+        c.user_id,
+        c.class_title from six_structures_class c left join sys_dept d on c.dept_id = d.dept_id
+        left join sys_user u on c.user_id = u.user_id
+    </sql>
+    <sql id="selectSixStructuresClass">
+        select
+        six_structures_class_id,
+        class_name,
+        icon,
+        parent_id,
+        order_num,
+        level,
+        show_status,
+        del_status,
+        create_time,
+        update_time,
+        dept_id,
+        user_id,
+        class_title from six_structures_class
+    </sql>
+
+    <select id="selectSixStructuresClassVoList" parameterType="SixStructuresClass" resultMap="SixStructuresClassResult">
+        <include refid="selectSixStructuresClass"/>
+        <where>
+            del_status = 0
+            <if test="className != null  and className != ''">and class_name like concat('%', #{className}, '%')</if>
+            <if test="icon != null  and icon != ''">and icon = #{icon}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="orderNum != null ">and order_num = #{orderNum}</if>
+            <if test="level != null ">and level = #{level}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="classTitle != null  and classTitle != ''">and class_title = #{classTitle}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+        </where>
+        order by order_num desc
+    </select>
+
+    <select id="selectSixStructuresClassList" parameterType="SixStructuresClass" resultMap="SixStructuresClassResult">
+        <include refid="selectSixStructuresClassVo"/>
+        <where>
+            c.del_status = 0
+            <if test="className != null  and className != ''">and c.class_name like concat('%', #{className}, '%')</if>
+            <if test="icon != null  and icon != ''">and c.icon = #{icon}</if>
+            <if test="parentId != null ">and c.parent_id = #{parentId}</if>
+            <if test="orderNum != null ">and c.order_num = #{orderNum}</if>
+            <if test="level != null ">and c.level = #{level}</if>
+            <if test="showStatus != null ">and c.show_status = #{showStatus}</if>
+            <if test="delStatus != null ">and c.del_status = #{delStatus}</if>
+            <if test="classTitle != null  and classTitle != ''">and c.class_title = #{classTitle}</if>
+            <if test="deptId != null ">and c.dept_id = #{deptId}</if>
+            <if test="userId != null ">and c.user_id = #{userId}</if>
+        </where>
+        ${params.dataScope}
+        order by order_num desc
+    </select>
+
+    <select id="selectSixStructuresClassById" parameterType="Long" resultMap="SixStructuresClassResult">
+        <include refid="selectSixStructuresClassVo"/>
+        where del_status = 0 and six_structures_class_id = #{sixStructuresClassId}
+    </select>
+    <!--    App六大架构列表查询parentId-->
+    <select id="selectApiSixStructuresClassList" parameterType="SixStructuresClass"
+            resultMap="SixStructuresClassResult">
+        <include refid="selectSixStructuresClass"/>
+        <where>
+            del_status = 0
+            <if test="className != null  and className != ''">and class_name like concat('%', #{className}, '%')</if>
+            <if test="icon != null  and icon != ''">and icon = #{icon}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="orderNum != null ">and order_num = #{orderNum}</if>
+            <if test="level != null ">and level = #{level}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="classTitle != null  and classTitle != ''">and class_title = #{classTitle}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+        </where>
+        limit 1
+    </select>
+
+    <insert id="insertSixStructuresClass" parameterType="SixStructuresClass">
+        insert into six_structures_class
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="className != null">class_name,</if>
+            <if test="icon != null">icon,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="level != null">level,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="classTitle != null">class_title,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="className != null">#{className},</if>
+            <if test="icon != null">#{icon},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="level != null">#{level},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="classTitle != null">#{classTitle},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSixStructuresClass" parameterType="SixStructuresClass">
+        update six_structures_class
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="className != null">class_name = #{className},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="classTitle != null">class_title = #{classTitle},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where six_structures_class_id = #{sixStructuresClassId}
+    </update>
+
+    <update id="deleteSixStructuresClassById" parameterType="Long">
+        update six_structures_class set del_status=1 where six_structures_class_id = #{sixStructuresClassId}
+    </update>
+
+    <update id="deleteSixStructuresClassByIds" parameterType="String">
+        update six_structures_class set del_status=1 where six_structures_class_id in
+        <foreach item="sixStructuresClassId" collection="array" open="(" separator="," close=")">
+            #{sixStructuresClassId}
+        </foreach>
+    </update>
+
+</mapper>

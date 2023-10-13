@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改辅导实施资讯')"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <th:block th:include="include :: summernote-css"/>
+    <th:block th:include="include :: select2-css"/>
+    <!--导入下面这三玩意-->
+    <script th:src="@{/editor/jq.js}"></script>
+    <script th:src="@{/editor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/editor/editor.js}"></script>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-counsellingExecutionPost-edit" th:object="${counsellingExecutionPost}">
+        <input name="counsellingExecutionPostId" th:field="*{counsellingExecutionPostId}" type="hidden">
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">分类：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input id="counsellingExecutionCategoryId" name="counsellingExecutionCategoryId" type="hidden" th:value="${counsellingExecutionCategory?.counsellingExecutionCategoryId}"/>
+                    <input class="form-control" type="text" readonly="true" th:value="${counsellingExecutionCategory?.categoryName}">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">资讯标题：</label>
+            <div class="col-sm-8">
+                <input name="informationPostTitle" th:field="*{informationPostTitle}" class="form-control" type="text"
+                       required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">简介：</label>
+            <div class="col-sm-8">
+                <textarea name="synopsis" class="form-control">[[*{synopsis}]]</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">排序：</label>
+            <div class="col-sm-8">
+                <input name="sortNum" th:field="*{sortNum}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">基础浏览数量：</label>
+            <div class="col-sm-8">
+                <input name="basicsBrowseNumber" th:field="*{basicsBrowseNumber}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">热门状态：</label>
+            <div class="col-sm-8">
+                <div class="radio check-box">
+                    <label><input type="radio" checked value="1" name="hostStatus" th:field="*{hostStatus}">热门</label>
+                </div>
+                <div class="radio check-box">
+                    <label><input type="radio" value="0" name="hostStatus" th:field="*{hostStatus}">普通</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">置顶状态：</label>
+            <div class="col-sm-8">
+                <div class="radio check-box">
+                    <label><input type="radio" checked value="1" name="topStatus" th:field="*{topStatus}">置顶</label>
+                </div>
+                <div class="radio check-box">
+                    <label><input type="radio" value="0" name="topStatus" th:field="*{topStatus}">普通</label>
+                </div>
+            </div>
+        </div>
+<!--        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">封面图片：</label>
+            <div class="col-sm-8">
+                <input type="hidden" name="informationPostImages" th:field="*{informationPostImages}">
+                <div class="file-loading">
+                    <input class="form-control file-upload" id="informationPostImages" name="file" type="file">
+                </div>
+            </div>
+        </div>-->
+        <div class="form-group">
+            <label class="col-sm-3 control-label">资讯内容：</label>
+            <div class="col-sm-8">
+                <input id="informationPostContent" type="hidden" class="form-control" th:field="*{informationPostContent}">
+                <form method="post">
+                    <textarea id="one" style="visibility: inherit;"></textarea>
+                </form>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<th:block th:include="include :: summernote-js"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/counsellingExecutionPost";
+    $("#form-counsellingExecutionPost-edit").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        GetTinyMceContentOne();
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-counsellingExecutionPost-edit').serialize());
+        }
+    }
+    window.onload = function () {
+        //资讯内容
+        setMytextareaIdName('one');
+    }
+
+    //资讯内容
+    var informationPostContent = $("#informationPostContent").val();
+    $("#one").val(informationPostContent);
+
+    //资讯内容
+    function GetTinyMceContentOne() {
+        $("#informationPostContent").val(tinyMCE.activeEditor.getContent());
+    }
+    $(".file-upload").each(function () {
+        var val = $("input[name='" + this.id + "']").val()
+        $(this).fileinput({
+            uploadUrl: ctx + 'app/upload',
+            initialPreviewAsData: true,
+            initialPreview: [val],
+            allowedFileTypes: ['image'], // 图片上传格式限制
+            //allowedFileExtensions: ['jpg', 'png', 'gif'], // 图片上传格式限制
+            maxFileCount: 1,
+            autoReplace: true
+        }).on('fileuploaded', function (event, data) {
+            $("input[name='" + event.currentTarget.id + "']").val(data.response.message)
+        }).on('fileremoved', function (event) {
+            $("input[name='" + event.currentTarget.id + "']").val('')
+        })
+        $(this).fileinput('_initFileActions');
+    });
+</script>
+</body>
+</html>

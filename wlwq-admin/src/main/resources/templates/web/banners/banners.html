@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('banner列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>部门：</label>
+                            <select class="form-control m-b" id="deptId" name="deptId">
+                                <option value="">请选择</option>
+                                <option th:each="dept : ${deptList}" th:text="${dept.deptName}"
+                                        th:value="${dept.deptId}">
+                            </select>
+                        </li>
+                        <li>
+                            <label>banner位置：</label>
+                            <select class="form-control m-b"
+                                    name="bannerLocation"
+                                    required th:with="type=${@dict.getType('banner_location')}">
+                                <option value="">请选择</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}">
+                                </option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>跳转类型：</label>
+                            <select class="form-control m-b"
+                                    name="jumpType"
+                                    required th:with="type=${@dict.getType('jump_type')}">
+                                <option value="">请选择</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}">
+                                </option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>是否显示：</label>
+                            <select name="showStatus" class="form-control m-b">
+                                <option value="">所有</option>
+                                <option value="0">不显示</option>
+                                <option value="1">显示</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:banners:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="web:banners:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:banners:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:banners:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+
+        <div class="enlarge_box" style="cursor:pointer;">
+            <img alt="" id="enlarge_box_img" name="pic" src="" style="z-index: 99;">
+        </div>
+
+    </div>
+</div>
+
+<!--动态窗口-->
+<div aria-hidden="true" class="modal inmodal" id="myModal2" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content animated flipInY">
+            <div class="modal-header">
+                <button class="close closeVideo" data-dismiss="modal" type="button"><span
+                        aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">视频</h4>
+                <small class="font-bold">
+            </div>
+            <div class="modal-body">
+                <video id="play" th:src="${videoUrl}"></video>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-white closeVideo" data-dismiss="modal" type="button">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:banners:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:banners:remove')}]];
+
+    var bannerLocation = [[${@dict.getType('banner_location')}]];
+    //文件类型
+    var jumpType = [[${@dict.getType('jump_type')}]];
+
+    var prefix = ctx + "web/banners";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "banner",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'bannerId',
+                    title: '主键ID',
+                    visible: false
+                },
+                {
+                    field: 'deptName',
+                    title: '部门',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'bannerLocation',
+                    align: 'center',
+                    title: 'banner位置',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(bannerLocation, value);
+                    }
+                },
+                {
+                    field: 'jumpType',
+                    align: 'center',
+                    title: '跳转类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(jumpType, value);
+                    }
+                },
+                {
+                    field: 'imageUrl',
+                    title: 'banner图',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        if (row.fileType == "image") {
+                            if (value != null && value != "") {
+                                var valueArray = value.split(",");
+                                var html = "";
+                                for (var i = 0; i < valueArray.length; i++) {
+                                    var one = '<img class="img-clouds" onclick="clouds(this)" src=' + replaceSpace(valueArray[i]) + ' style=" height:80px;"> ';
+                                    html += one;
+                                }
+                                return html;
+                            } else {
+                                return "";
+                            }
+                        } else if (row.fileType == "video") {
+                            if (value != null && value != "") {
+                                return '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openVideo(\'' + value + '\')" data-target="#myModal2">点击查看</button> '
+                            }
+                        }
+                    }
+                },
+                {
+                    field: 'sortNum',
+                    title: '排序(正序)',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'showStatus',
+                    title: '显示状态',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.bannerId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.bannerId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+
+    function openVideo(video) {
+        var videoElem = document.getElementById("play");
+        videoElem.src = video;
+        // //视频自动播放
+        videoElem.play();
+    }
+
+    // 点击关闭视频按钮
+    $(function () {
+        $(".closeVideo").click(function () {
+            var videoElem = document.getElementById("play");
+            videoElem.src = '';
+        })
+    })
+
+    //显示不显示
+    function statusTools(row) {
+        // 显示
+        if (row.showStatus == 1) {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.bannerId + '\',0)"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.bannerId + '\',1)"></i> ';
+        }
+    }
+
+    function disable(bannerId) {
+        $.modal.confirm("确认要隐藏吗？", function () {
+            $.operate.post(prefix + "/edit", {"bannerId": bannerId, "showStatus": 0});
+        })
+    }
+
+    function enable(bannerId) {
+        $.modal.confirm("确认要显示吗？", function () {
+            $.operate.post(prefix + "/edit", {"bannerId": bannerId, "showStatus": 1});
+        })
+    }
+
+    function openVideo(video) {
+        var videoElem = document.getElementById("play");
+        videoElem.src = video;
+        // //视频自动播放
+        videoElem.play();
+    }
+
+    // 点击关闭视频按钮
+    $(function () {
+        $(".closeVideo").click(function () {
+            var videoElem = document.getElementById("play");
+            videoElem.src = '';
+        })
+    })
+
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+    function replaceSpace(value) {
+        return value.replace(/ /g, '%20');
+    }
+
+</script>
+</body>
+</html>

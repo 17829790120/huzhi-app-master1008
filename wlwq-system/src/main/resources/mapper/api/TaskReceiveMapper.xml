@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TaskReceiveMapper">
+
+    <resultMap type="TaskReceive" id="TaskReceiveResult">
+        <result property="taskReceiveId" column="task_receive_id"/>
+        <result property="taskInitiateId" column="task_initiate_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="taskStartTime" column="task_start_time"/>
+        <result property="taskEndTime" column="task_end_time"/>
+        <result property="remark" column="remark"/>
+        <result property="taskOverdueTime" column="task_overdue_time"/>
+        <result property="pics" column="pics"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="rejectContent" column="reject_content"/>
+        <result property="examineTag" column="examine_tag"/>
+    </resultMap>
+
+    <sql id="selectTaskReceiveVo">
+        select task_receive_id,
+               task_initiate_id,
+               account_id,
+               account_name,
+               account_phone,
+               account_head,
+               dept_id,
+               company_id,
+               examine_status,
+               read_status,
+               task_start_time,
+               task_end_time,
+               remark,
+               task_overdue_time,
+               pics,
+               create_time,
+               update_time,
+               reject_content,
+               examine_tag
+        from task_receive
+    </sql>
+
+    <select id="selectTaskReceiveList" parameterType="TaskReceive" resultMap="TaskReceiveResult">
+        <include refid="selectTaskReceiveVo"/>
+        <where>
+            del_status = 0
+            <if test="taskInitiateId != null  and taskInitiateId != ''">and task_initiate_id = #{taskInitiateId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="examineStatus != null ">and examine_status = #{examineStatus}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="taskStartTime != null ">and task_start_time = #{taskStartTime}</if>
+            <if test="taskEndTime != null ">and task_end_time = #{taskEndTime}</if>
+            <if test="pics != null  and pics != ''">and pics = #{pics}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="rejectContent != null  and rejectContent != ''">and reject_content = #{rejectContent}</if>
+            <if test="taskOverdueTime != null ">and task_overdue_time = #{taskOverdueTime}</if>
+            <if test="examineTag != null  and examineTag != ''">and examine_tag = #{examineTag}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectTaskReceiveById" parameterType="String" resultMap="TaskReceiveResult">
+        <include refid="selectTaskReceiveVo"/>
+        where del_status = 0 and task_receive_id = #{taskReceiveId}
+    </select>
+
+    <insert id="insertTaskReceive" parameterType="TaskReceive">
+        insert into task_receive
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskReceiveId != null">task_receive_id,</if>
+            <if test="taskInitiateId != null">task_initiate_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="examineStatus != null">examine_status,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="taskStartTime != null">task_start_time,</if>
+            <if test="taskEndTime != null">task_end_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="pics != null">pics,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="rejectContent != null">reject_content,</if>
+            <if test="taskOverdueTime != null">task_overdue_time,</if>
+            <if test="examineTag != null">examine_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskReceiveId != null">#{taskReceiveId},</if>
+            <if test="taskInitiateId != null">#{taskInitiateId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="examineStatus != null">#{examineStatus},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="taskStartTime != null">#{taskStartTime},</if>
+            <if test="taskEndTime != null">#{taskEndTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="rejectContent != null">#{rejectContent},</if>
+            <if test="taskOverdueTime != null">#{taskOverdueTime},</if>
+            <if test="examineTag != null">#{examineTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTaskReceive" parameterType="TaskReceive">
+        update task_receive
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskInitiateId != null">task_initiate_id = #{taskInitiateId},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="examineStatus != null">examine_status = #{examineStatus},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="taskStartTime != null">task_start_time = #{taskStartTime},</if>
+            <if test="taskEndTime != null">task_end_time = #{taskEndTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="rejectContent != null">reject_content = #{rejectContent},</if>
+            <if test="taskOverdueTime != null">task_overdue_time = #{taskOverdueTime},</if>
+            <if test="examineTag != null">examine_tag = #{examineTag},</if>
+        </trim>
+        where task_receive_id = #{taskReceiveId}
+    </update>
+
+    <update id="deleteTaskReceiveById" parameterType="String">
+        update task_receive
+        set del_status = 1
+        where task_receive_id = #{taskReceiveId}
+    </update>
+
+    <update id="deleteTaskReceiveByIds" parameterType="String">
+        update task_receive set del_status = 1 where task_receive_id in
+        <foreach item="taskReceiveId" collection="array" open="(" separator="," close=")">
+            #{taskReceiveId}
+        </foreach>
+    </update>
+
+</mapper>

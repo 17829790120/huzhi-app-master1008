@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.note.mapper.NoteValidConfigMapper">
+    
+    <resultMap type="NoteValidConfig" id="NoteValidConfigResult">
+        <result property="noteValidConfigId"    column="note_valid_config_id"    />
+        <result property="noteConfigId"    column="note_config_id"    />
+        <result property="appKey"    column="app_key"    />
+        <result property="scene"    column="scene"    />
+        <result property="validType"    column="valid_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="noteConfigName"    column="noteConfigName"    />
+    </resultMap>
+
+    <sql id="selectNoteValidConfigVo">
+        select note_valid_config_id, note_config_id, (select note_config_name from note_config where note_config_id = note_valid_config.note_config_id) as noteConfigName,app_key, scene, valid_type, create_time, update_time from note_valid_config
+    </sql>
+
+    <select id="selectNoteValidConfigList" parameterType="NoteValidConfig" resultMap="NoteValidConfigResult">
+        <include refid="selectNoteValidConfigVo"/>
+        <where>  
+            <if test="noteConfigId != null  and noteConfigId != ''"> and note_config_id = #{noteConfigId}</if>
+            <if test="appKey != null  and appKey != ''"> and app_key = #{appKey}</if>
+            <if test="scene != null  and scene != ''"> and scene = #{scene}</if>
+            <if test="validType != null  and validType != ''"> and valid_type = #{validType}</if>
+        </where>
+    </select>
+    
+    <select id="selectNoteValidConfigById" parameterType="String" resultMap="NoteValidConfigResult">
+        <include refid="selectNoteValidConfigVo"/>
+        where note_valid_config_id = #{noteValidConfigId}
+    </select>
+        
+    <insert id="insertNoteValidConfig" parameterType="NoteValidConfig">
+        insert into note_valid_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noteValidConfigId != null">note_valid_config_id,</if>
+            <if test="noteConfigId != null and noteConfigId != ''">note_config_id,</if>
+            <if test="appKey != null and appKey != ''">app_key,</if>
+            <if test="scene != null and scene != ''">scene,</if>
+            <if test="validType != null and validType != ''">valid_type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="noteValidConfigId != null">#{noteValidConfigId},</if>
+            <if test="noteConfigId != null and noteConfigId != ''">#{noteConfigId},</if>
+            <if test="appKey != null and appKey != ''">#{appKey},</if>
+            <if test="scene != null and scene != ''">#{scene},</if>
+            <if test="validType != null and validType != ''">#{validType},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateNoteValidConfig" parameterType="NoteValidConfig">
+        update note_valid_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="noteConfigId != null and noteConfigId != ''">note_config_id = #{noteConfigId},</if>
+            <if test="appKey != null and appKey != ''">app_key = #{appKey},</if>
+            <if test="scene != null and scene != ''">scene = #{scene},</if>
+            <if test="validType != null and validType != ''">valid_type = #{validType},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where note_valid_config_id = #{noteValidConfigId}
+    </update>
+
+    <delete id="deleteNoteValidConfigById" parameterType="String">
+        delete from note_valid_config where note_valid_config_id = #{noteValidConfigId}
+    </delete>
+
+    <delete id="deleteNoteValidConfigByIds" parameterType="String">
+        delete from note_valid_config where note_valid_config_id in 
+        <foreach item="noteValidConfigId" collection="array" open="(" separator="," close=")">
+            #{noteValidConfigId}
+        </foreach>
+    </delete>
+
+</mapper>

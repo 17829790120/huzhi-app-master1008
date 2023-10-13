@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.OptionsMapper">
+    <resultMap type="Options" id="OptionsResult">
+        <result property="id" column="id"/>
+        <result property="optionKey" column="option_key"/>
+        <result property="optionValue" column="option_value"/>
+        <result property="type" column="type"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="createDate" column="create_date"/>
+    </resultMap>
+
+    <sql id="selectOptionsVo">
+        select id, option_key, option_value, type, update_date, create_date
+        from options
+    </sql>
+
+    <select id="selectOptionsList" parameterType="Options" resultMap="OptionsResult">
+        <include refid="selectOptionsVo"/>
+        <where>
+            <if test="optionKey != null  and optionKey != ''">
+                and option_key = #{optionKey}
+            </if>
+            <if test="optionValue != null  and optionValue != ''">
+                and option_value = #{optionValue}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectOptionsById" parameterType="Long" resultMap="OptionsResult">
+        <include refid="selectOptionsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOptions" parameterType="Options" useGeneratedKeys="true" keyProperty="id">
+        insert into options
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="optionKey != null and optionKey != ''">
+                option_key,
+            </if>
+            <if test="optionValue != null and optionValue != ''">
+                option_value,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="optionKey != null and optionKey != ''">
+                #{optionKey},
+            </if>
+            <if test="optionValue != null and optionValue != ''">
+                #{optionValue},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate},
+            </if>
+            <if test="createDate != null">
+                #{createDate},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateOptions" parameterType="Options">
+        update options
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="optionKey != null and optionKey != ''">
+                option_key = #{optionKey},
+            </if>
+            <if test="optionValue != null and optionValue != ''">
+                option_value = #{optionValue},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOptionsById" parameterType="Long">
+        delete
+        from options
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteOptionsByIds" parameterType="String">
+        delete
+        from options where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <!--根据键查询值-->
+    <select id="selectValueByKey" resultType="java.lang.String">
+        select option_value
+        from options
+        where option_key = #{key}
+        limit 1
+    </select>
+    <!--根据key修改value-->
+    <update id="updateOptionsByKey">
+        update options set option_value = #{value},update_date = now() where option_key = #{key}
+    </update>
+</mapper>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExamPaperRecordMapper">
+
+    <resultMap type="ExamPaperRecord" id="ExamPaperRecordResult">
+        <result property="examPaperRecordId" column="exam_paper_record_id"/>
+        <result property="examPaperTitle" column="exam_paper_title"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="score" column="score"/>
+        <result property="examDuration" column="exam_duration"/>
+        <result property="examTypes" column="exam_types"/>
+        <result property="examExplain" column="exam_explain"/>
+        <result property="fullScore" column="full_score"/>
+        <result property="excellentScore" column="excellent_score"/>
+        <result property="goodScore" column="good_score"/>
+        <result property="passingScore" column="passing_score"/>
+        <result property="grantStatus" column="grant_status"/>
+        <result property="companyId" column="company_id"/>
+        <result property="testTrainingCategoryId" column="test_training_category_id"/>
+        <result property="testTrainingCategoryTitle" column="test_training_category_title"/>
+        <result property="questionType" column="question_type"/>
+
+        <result property="fullIntegralScore" column="full_integral_score"/>
+        <result property="excellentIntegralScore" column="excellent_integral_score"/>
+        <result property="goodIntegralScore" column="good_integral_score"/>
+        <result property="passingIntegralScore" column="passing_integral_score"/>
+    </resultMap>
+
+    <sql id="selectExamPaperRecordVo">
+        select
+            exam_paper_record_id, exam_paper_title, begin_time, end_time, del_status, create_time, update_time, score, exam_duration,
+            exam_types, exam_explain, full_score, excellent_score, good_score, passing_score, grant_status, company_id, test_training_category_id,
+            test_training_category_title, question_type, full_integral_score, excellent_integral_score, good_integral_score, passing_integral_score
+        from exam_paper_record
+    </sql>
+
+    <select id="selectExamPaperRecordList" parameterType="ExamPaperRecord" resultMap="ExamPaperRecordResult">
+        <include refid="selectExamPaperRecordVo"/>
+        <where>
+            <if test="examPaperTitle != null  and examPaperTitle != ''">and exam_paper_title like concat('%',
+                #{examPaperTitle}, '%')
+            </if>
+            <if test="beginTime != null ">and begin_time = #{beginTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="examDuration != null ">and exam_duration = #{examDuration}</if>
+            <if test="examTypes != null  and examTypes != ''">and exam_types = #{examTypes}</if>
+            <if test="examExplain != null  and examExplain != ''">and exam_explain like concat('%', #{examExplain},
+                '%')
+            </if>
+            <if test="fullScore != null ">and full_score = #{fullScore}</if>
+            <if test="excellentScore != null ">and excellent_score = #{excellentScore}</if>
+            <if test="goodScore != null ">and good_score = #{goodScore}</if>
+            <if test="passingScore != null ">and passing_score = #{passingScore}</if>
+            <if test="grantStatus != null ">and grant_status = #{grantStatus}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="testTrainingCategoryId != null  and testTrainingCategoryId != ''">and test_training_category_id =
+                #{testTrainingCategoryId}
+            </if>
+            <if test="testTrainingCategoryTitle != null  and testTrainingCategoryTitle != ''">and
+                test_training_category_title = #{testTrainingCategoryTitle}
+            </if>
+            <if test="questionType != null ">and question_type = #{questionType}</if>
+            <if test="fullIntegralScore != null ">and full_integral_score = #{fullIntegralScore}</if>
+            <if test="excellentIntegralScore != null ">and excellent_integral_score = #{excellentIntegralScore}</if>
+            <if test="goodIntegralScore != null ">and good_integral_score = #{goodIntegralScore}</if>
+            <if test="passingIntegralScore != null ">and passing_integral_score = #{passingIntegralScore}</if>
+        </where>
+    </select>
+
+    <select id="selectExamPaperRecordById" parameterType="String" resultMap="ExamPaperRecordResult">
+        <include refid="selectExamPaperRecordVo"/>
+        where exam_paper_record_id = #{examPaperRecordId}
+    </select>
+
+    <insert id="insertExamPaperRecord" parameterType="ExamPaperRecord">
+        insert into exam_paper_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examPaperRecordId != null">exam_paper_record_id,</if>
+            <if test="examPaperTitle != null and examPaperTitle != ''">exam_paper_title,</if>
+            <if test="beginTime != null">begin_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="score != null">score,</if>
+            <if test="examDuration != null">exam_duration,</if>
+            <if test="examTypes != null">exam_types,</if>
+            <if test="examExplain != null">exam_explain,</if>
+            <if test="fullScore != null">full_score,</if>
+            <if test="excellentScore != null">excellent_score,</if>
+            <if test="goodScore != null">good_score,</if>
+            <if test="passingScore != null">passing_score,</if>
+            <if test="grantStatus != null">grant_status,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="testTrainingCategoryId != null">test_training_category_id,</if>
+            <if test="testTrainingCategoryTitle != null">test_training_category_title,</if>
+            <if test="questionType != null">question_type,</if>
+
+            <if test="fullIntegralScore != null">full_integral_score,</if>
+            <if test="excellentIntegralScore != null">excellent_integral_score,</if>
+            <if test="goodIntegralScore != null">good_integral_score,</if>
+            <if test="passingIntegralScore != null">passing_integral_score,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examPaperRecordId != null">#{examPaperRecordId},</if>
+            <if test="examPaperTitle != null and examPaperTitle != ''">#{examPaperTitle},</if>
+            <if test="beginTime != null">#{beginTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="score != null">#{score},</if>
+            <if test="examDuration != null">#{examDuration},</if>
+            <if test="examTypes != null">#{examTypes},</if>
+            <if test="examExplain != null">#{examExplain},</if>
+            <if test="fullScore != null">#{fullScore},</if>
+            <if test="excellentScore != null">#{excellentScore},</if>
+            <if test="goodScore != null">#{goodScore},</if>
+            <if test="passingScore != null">#{passingScore},</if>
+            <if test="grantStatus != null">#{grantStatus},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="testTrainingCategoryId != null">#{testTrainingCategoryId},</if>
+            <if test="testTrainingCategoryTitle != null">#{testTrainingCategoryTitle},</if>
+            <if test="questionType != null">#{questionType},</if>
+
+            <if test="fullIntegralScore != null">#{fullIntegralScore},</if>
+            <if test="excellentIntegralScore != null">#{excellentIntegralScore},</if>
+            <if test="goodIntegralScore != null">#{goodIntegralScore},</if>
+            <if test="passingIntegralScore != null">#{passingIntegralScore},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamPaperRecord" parameterType="ExamPaperRecord">
+        update exam_paper_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examPaperTitle != null and examPaperTitle != ''">exam_paper_title = #{examPaperTitle},</if>
+            <if test="beginTime != null">begin_time = #{beginTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="examDuration != null">exam_duration = #{examDuration},</if>
+            <if test="examTypes != null">exam_types = #{examTypes},</if>
+            <if test="examExplain != null">exam_explain = #{examExplain},</if>
+            <if test="fullScore != null">full_score = #{fullScore},</if>
+            <if test="excellentScore != null">excellent_score = #{excellentScore},</if>
+            <if test="goodScore != null">good_score = #{goodScore},</if>
+            <if test="passingScore != null">passing_score = #{passingScore},</if>
+            <if test="grantStatus != null">grant_status = #{grantStatus},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="testTrainingCategoryId != null">test_training_category_id = #{testTrainingCategoryId},</if>
+            <if test="testTrainingCategoryTitle != null">test_training_category_title = #{testTrainingCategoryTitle},
+            </if>
+            <if test="questionType != null">question_type = #{questionType},</if>
+
+            <if test="fullIntegralScore != null">full_integral_score = #{fullIntegralScore},</if>
+            <if test="excellentIntegralScore != null">excellent_integral_score = #{excellentIntegralScore},</if>
+            <if test="goodIntegralScore != null">good_integral_score = #{goodIntegralScore},</if>
+            <if test="passingIntegralScore != null">passing_integral_score = #{passingIntegralScore},</if>
+        </trim>
+        where exam_paper_record_id = #{examPaperRecordId}
+    </update>
+
+    <update id="deleteExamPaperRecordById" parameterType="String">
+        update exam_paper_record set del_status = 1 where exam_paper_record_id = #{examPaperRecordId}
+    </update>
+
+    <update id="deleteExamPaperRecordByIds" parameterType="String">
+        update exam_paper_record set del_status = 1 where exam_paper_record_id in
+        <foreach item="examPaperRecordId" collection="array" open="(" separator="," close=")">
+            #{examPaperRecordId}
+        </foreach>
+    </update>
+    <!--    <delete id="deleteExamPaperRecordById" parameterType="String">
+            delete from exam_paper_record where exam_paper_record_id = #{examPaperRecordId}
+        </delete>
+
+        <delete id="deleteExamPaperRecordByIds" parameterType="String">
+            delete from exam_paper_record where exam_paper_record_id in
+            <foreach item="examPaperRecordId" collection="array" open="(" separator="," close=")">
+                #{examPaperRecordId}
+            </foreach>
+        </delete>-->
+
+</mapper>

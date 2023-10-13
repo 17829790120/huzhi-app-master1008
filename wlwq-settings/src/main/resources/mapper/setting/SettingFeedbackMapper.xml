@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.setting.mapper.SettingFeedbackMapper">
+
+    <resultMap type="SettingFeedback" id="SettingFeedbackResult">
+        <result property="feedbackId" column="feedback_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="feedbackType" column="feedback_type"/>
+        <result property="feedbackContent" column="feedback_content"/>
+        <result property="feedbackImages" column="feedback_images"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="contactWay" column="contact_way"/>
+    </resultMap>
+
+    <sql id="selectSettingFeedbackVo">
+        select feedback_id,
+               account_id,
+               account_head,
+               account_name,
+               account_phone,
+               feedback_type,
+               contact_way,
+               feedback_content,
+               feedback_images,
+               read_status,
+               create_time,
+               update_time
+        from setting_feedback
+    </sql>
+
+    <select id="selectSettingFeedbackList" parameterType="SettingFeedback" resultMap="SettingFeedbackResult">
+        <include refid="selectSettingFeedbackVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone like concat('%', #{accountPhone},
+                '%')
+            </if>
+            <if test="feedbackType != null  and feedbackType != ''">and feedback_type like concat('%', #{feedbackType},
+                '%')
+            </if>
+            <if test="feedbackContent != null  and feedbackContent != ''">and feedback_content = #{feedbackContent}</if>
+            <if test="feedbackImages != null  and feedbackImages != ''">and feedback_images = #{feedbackImages}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="contactWay != null  and contactWay != ''">and contact_way = #{contactWay}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectSettingFeedbackById" parameterType="Long" resultMap="SettingFeedbackResult">
+        <include refid="selectSettingFeedbackVo"/>
+        where feedback_id = #{feedbackId}
+    </select>
+
+    <insert id="insertSettingFeedback" parameterType="SettingFeedback" useGeneratedKeys="true" keyProperty="feedbackId">
+        insert into setting_feedback
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountId != null and accountId != ''">account_id,</if>
+            <if test="accountHead != null and accountHead != ''">account_head,</if>
+            <if test="accountName != null and accountName != ''">account_name,</if>
+            <if test="accountPhone != null and accountPhone != ''">account_phone,</if>
+            <if test="feedbackType != null and feedbackType != ''">feedback_type,</if>
+            <if test="feedbackContent != null and feedbackContent != ''">feedback_content,</if>
+            <if test="feedbackImages != null">feedback_images,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="contactWay != null">contact_way,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountId != null and accountId != ''">#{accountId},</if>
+            <if test="accountHead != null and accountHead != ''">#{accountHead},</if>
+            <if test="accountName != null and accountName != ''">#{accountName},</if>
+            <if test="accountPhone != null and accountPhone != ''">#{accountPhone},</if>
+            <if test="feedbackType != null and feedbackType != ''">#{feedbackType},</if>
+            <if test="feedbackContent != null and feedbackContent != ''">#{feedbackContent},</if>
+            <if test="feedbackImages != null">#{feedbackImages},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="contactWay != null">#{contactWay},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSettingFeedback" parameterType="SettingFeedback">
+        update setting_feedback
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null and accountId != ''">account_id = #{accountId},</if>
+            <if test="accountHead != null and accountHead != ''">account_head = #{accountHead},</if>
+            <if test="accountName != null and accountName != ''">account_name = #{accountName},</if>
+            <if test="accountPhone != null and accountPhone != ''">account_phone = #{accountPhone},</if>
+            <if test="feedbackType != null and feedbackType != ''">feedback_type = #{feedbackType},</if>
+            <if test="feedbackContent != null and feedbackContent != ''">feedback_content = #{feedbackContent},</if>
+            <if test="feedbackImages != null">feedback_images = #{feedbackImages},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="contactWay != null">contact_way = #{contactWay},</if>
+        </trim>
+        where feedback_id = #{feedbackId}
+    </update>
+
+    <delete id="deleteSettingFeedbackById" parameterType="Long">
+        delete
+        from setting_feedback
+        where feedback_id = #{feedbackId}
+    </delete>
+
+    <delete id="deleteSettingFeedbackByIds" parameterType="String">
+        delete from setting_feedback where feedback_id in
+        <foreach item="feedbackId" collection="array" open="(" separator="," close=")">
+            #{feedbackId}
+        </foreach>
+    </delete>
+
+</mapper>

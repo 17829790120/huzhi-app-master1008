@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改内部调研问卷记录')" />
+    <th:block th:include="include :: select2-css"/>
+    <script th:src="@{/editor/jq.js}"></script>
+    <script th:src="@{/editor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/editor/editor.js}"></script>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-questionnaireRecord-edit" th:object="${questionnaireRecord}">
+            <input name="questionnaireRecordId" th:field="*{questionnaireRecordId}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">问卷表：</label>
+                <div class="col-sm-8">
+                    <!--<input name="questionnaireId" class="form-control" type="hidden" th:value="${questionnaire.questionnaireId}">-->
+                    <select class="form-control m-b" required disabled>
+                        <option  th:text="${questionnaire.title}"  th:value="${questionnaire.questionnaireId}">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">问卷内容：</label>
+                <div class="col-sm-8">
+                    <textarea id="mytextareaone" style="visibility: inherit;"></textarea>
+                    <input id="content" name="content" class="form-control" type="hidden" th:field="*{content}">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">问卷得分：</label>
+                <div class="col-sm-8">
+                    <input name="score" th:field="*{score}" class="form-control" type="text" disabled>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">创建者名称：</label>
+                <div class="col-sm-8">
+                    <input name="creatorName" th:field="*{creatorName}" class="form-control" type="text" disabled>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: select2-js"/>
+    <script th:inline="javascript">
+        var prefix = ctx + "web/questionnaireRecord";
+        $("#form-questionnaireRecord-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            GetTinyMceContent();
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-questionnaireRecord-edit').serialize());
+            }
+        }
+
+        window.onload = function () {
+            //传入自己定义的id然后
+            setMytextareaIdName('mytextareaone');
+        }
+        // 编辑器
+        function GetTinyMceContent() {
+            $("#content").val(tinyMCE.editors[0].getContent());
+        }
+        var content = $("#content").val();
+        $("#mytextareaone").val(content);
+    </script>
+</body>
+</html>

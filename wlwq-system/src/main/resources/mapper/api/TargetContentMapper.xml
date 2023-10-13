@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TargetContentMapper">
+
+    <resultMap type="TargetContent" id="TargetContentResult">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="title" column="title"/>
+        <result property="sort" column="sort"/>
+        <result property="coverImage" column="cover_image"/>
+        <result property="createTime" column="create_time"/>
+        <result property="subsetState" column="subset_state"/>
+        <result property="targetTrainingId" column="target_training_id"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorNickName" column="creator_nick_name"/>
+        <result property="content" column="content"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="dreamState" column="dream_state"/>
+        <result property="requiredStatus" column="required_status"/>
+    </resultMap>
+
+    <sql id="selectTargetContentVo">
+        select id,
+               parent_id,
+               title,
+               sort,
+               cover_image,
+               create_time,
+               subset_state,
+               target_training_id,
+               creator_id,
+               creator_nick_name,
+               content,
+               dream_state,
+               required_status
+        from target_content
+    </sql>
+
+    <select id="selectTargetContentList" parameterType="TargetContent" resultMap="TargetContentResult">
+        <include refid="selectTargetContentVo"/>
+        <where>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="sort != null ">and sort = #{sort}</if>
+            <if test="coverImage != null  and coverImage != ''">and cover_image = #{coverImage}</if>
+            <if test="subsetState != null ">and subset_state = #{subsetState}</if>
+            <if test="targetTrainingId != null  and targetTrainingId != ''">and target_training_id =
+                #{targetTrainingId}
+            </if>
+            <if test="creatorId != null ">and creator_id = #{creatorId}</if>
+            <if test="creatorNickName != null  and creatorNickName != ''">and creator_nick_name like concat('%',
+                #{creatorNickName}, '%')
+            </if>
+            <if test="content != null  and content != ''">and content like concat('%', #{content}, '%')</if>
+            <if test="dreamState != null ">and dream_state = #{dreamState}</if>
+            <if test="requiredStatus != null "> and required_status = #{requiredStatus}</if>
+        </where>
+        order by parent_id
+    </select>
+
+    <select id="selectTargetContentById" parameterType="Long" resultMap="TargetContentResult">
+        select t.id,
+               t.parent_id,
+               t.title,
+               t.sort,
+               t.cover_image,
+               t.create_time,
+               t.subset_state,
+               t.target_training_id,
+               t.creator_id,
+               t.creator_nick_name,
+               t.content,
+               p.title as parent_name,
+               t.dream_state,
+               t.required_status
+        from target_content t
+                 left join target_content p on p.id = t.parent_id
+        where t.id = #{id}
+    </select>
+
+    <insert id="insertTargetContent" parameterType="TargetContent" useGeneratedKeys="true" keyProperty="id">
+        insert into target_content
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="title != null">title,</if>
+            <if test="sort != null">sort,</if>
+            <if test="coverImage != null">cover_image,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="subsetState != null">subset_state,</if>
+            <if test="targetTrainingId != null">target_training_id,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="creatorNickName != null">creator_nick_name,</if>
+            <if test="content != null">content,</if>
+            <if test="dreamState != null">dream_state,</if>
+            <if test="requiredStatus != null">required_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="coverImage != null">#{coverImage},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="subsetState != null">#{subsetState},</if>
+            <if test="targetTrainingId != null">#{targetTrainingId},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="creatorNickName != null">#{creatorNickName},</if>
+            <if test="content != null">#{content},</if>
+            <if test="dreamState != null">#{dreamState},</if>
+            <if test="requiredStatus != null">#{requiredStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTargetContent" parameterType="TargetContent">
+        update target_content
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="subsetState != null">subset_state = #{subsetState},</if>
+            <if test="targetTrainingId != null">target_training_id = #{targetTrainingId},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="creatorNickName != null">creator_nick_name = #{creatorNickName},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="dreamState != null">dream_state = #{dreamState},</if>
+            <if test="requiredStatus != null">required_status = #{requiredStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTargetContentById" parameterType="Long">
+        delete
+        from target_content
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteTargetContentByIds" parameterType="String">
+        delete from target_content where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

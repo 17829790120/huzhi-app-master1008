@@ -1,0 +1,943 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ApiAccountMapper">
+    <resultMap type="ApiAccount" id="ApiAccountResult">
+        <result property="accountId" column="account_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="phone" column="phone"/>
+        <result property="wxOpenid" column="wx_openid"/>
+        <result property="sessionKey" column="session_key"/>
+        <result property="headPortrait" column="head_portrait"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="sex" column="sex"/>
+        <result property="birthday" column="birthday"/>
+        <result property="type" column="type"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="lastTime" column="last_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="address" column="address"/>
+        <result property="briefIntroduction" column="brief_introduction"/>
+        <result property="uuid" column="uuid"/>
+        <result property="invitationCode" column="invitation_code"/>
+        <result property="myInvitationCode" column="my_invitation_code"/>
+        <result property="rongToken" column="rong_token"/>
+        <result property="password" column="password"/>
+        <result property="wxAppletOpenid" column="wx_applet_openid"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="postNames" column="post_names"/>
+        <result property="forbiddenStatus" column="forbidden_status"/>
+        <result property="companyId" column="company_id"/>
+        <result property="jobNumber" column="job_number"/>
+        <result property="companyName" column="company_name"/>
+        <result property="totalFlowerNum" column="total_flower_num"/>
+        <result property="surplusFlowerNum" column="surplus_flower_num"/>
+        <result property="accountName" column="account_name"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="surplusScore" column="surplus_score"/>
+        <result property="appPower" column="app_power"/>
+        <result property="positionType" column="position_type"/>
+        <result property="groupInforIds" column="group_infor_ids"/>
+        <result property="groupInforName" column="group_infor_name"/>
+        <result property="age" column="age"/>
+        <result property="isExperience" column="is_experience"/>
+        <result property="experienceTime" column="experience_time"/>
+        <result property="bindingTag" column="binding_tag"/>
+    </resultMap>
+
+    <sql id="selectApiAccountVo">
+        select account_id,
+               parent_id,
+               phone,
+               wx_openid,
+               session_key,
+               head_portrait,
+               nick_name,
+               concat(nick_name, '-', phone)                                                    as account_name,
+               sex,
+               birthday,
+               type,
+               del_status,
+               last_time,
+               create_time,
+               address,
+               brief_introduction,
+               invitation_code,
+               my_invitation_code,
+               rong_token,
+               password,
+               wx_applet_openid,
+               dept_id,
+               post_ids,
+               forbidden_status,
+               uuid,
+               total_flower_num,
+               surplus_flower_num,
+               total_score,
+               surplus_score,
+               app_power,
+               position_type,
+               ifnull(year(from_days(datediff(now(), birthday))),0)                             as age,
+               (select dept_name from sys_dept where sys_dept.dept_id = api_account.dept_id)    as dept_name,
+               (select dept_name from sys_dept where sys_dept.dept_id = api_account.company_id) as company_name,
+               (SELECT GROUP_CONCAT(post_name)
+                FROM sys_post
+                WHERE FIND_IN_SET(sys_post.post_id, api_account.post_ids))                      as post_names,
+               company_id,
+               group_infor_ids,
+               (SELECT GROUP_CONCAT(group_infor_name)
+                FROM group_infor
+                WHERE FIND_IN_SET(group_infor.group_infor_id, api_account.group_infor_ids))     as group_infor_name,
+               job_number,
+               is_experience,
+               experience_time,
+               binding_tag
+        from api_account
+    </sql>
+    <sql id="selectApiAccount">
+        select a.account_id,
+               a.parent_id,
+               a.phone,
+               a.wx_openid,
+               a.session_key,
+               a.head_portrait,
+               a.nick_name,
+               concat(a.nick_name, '-', a.phone)                                      as account_name,
+               a.sex,
+               a.birthday,
+               a.type,
+               a.del_status,
+               a.last_time,
+               a.create_time,
+               a.address,
+               a.brief_introduction,
+               a.invitation_code,
+               a.my_invitation_code,
+               a.rong_token,
+               a.password,
+               a.wx_applet_openid,
+               a.dept_id,
+               a.post_ids,
+               a.forbidden_status,
+               d.dept_name,
+               (select dept_name from sys_dept where sys_dept.dept_id = a.company_id) as company_name,
+               (SELECT GROUP_CONCAT(post_name)
+                FROM sys_post
+                WHERE FIND_IN_SET(sys_post.post_id, a.post_ids))                      as post_names,
+               a.company_id,
+               a.total_flower_num,
+               a.surplus_flower_num,
+               a.total_score,
+               a.surplus_score,
+               a.job_number,
+               a.group_infor_ids,
+               a.binding_tag,
+               (SELECT GROUP_CONCAT(group_infor_name)
+                FROM group_infor
+                WHERE FIND_IN_SET(group_infor.group_infor_id, a.group_infor_ids))     as group_infor_name
+        from api_account a
+                 left join sys_dept d on a.dept_id = d.dept_id
+    </sql>
+    <select id="selectApiAccountList" parameterType="ApiAccount" resultMap="ApiAccountResult">
+        <include refid="selectApiAccount"/>
+        <where>
+            a.del_status = 0
+            <if test="parentId != null">
+                and a.parent_id = #{parentId}
+            </if>
+            <if test="phone != null  and phone != ''">
+                and a.phone like concat('%', #{phone}, '%')
+            </if>
+            <if test="wxOpenid != null  and wxOpenid != ''">
+                and a.wx_openid = #{wxOpenid}
+            </if>
+            <if test="sessionKey != null  and sessionKey != ''">
+                and a.session_key = #{sessionKey}
+            </if>
+            <if test="headPortrait != null  and headPortrait != ''">
+                and a.head_portrait = #{headPortrait}
+            </if>
+            <if test="nickName != null  and nickName != ''">
+                and (a.nick_name like concat('%', #{nickName}, '%') or a.phone like concat('%', #{nickName}, '%'))
+            </if>
+            <if test="sex != null">
+                and a.sex = #{sex}
+            </if>
+            <if test="birthday != null  and birthday != ''">
+                and a.birthday = #{birthday}
+            </if>
+            <if test="type != null">
+                and a.type = #{type}
+            </if>
+            <if test="lastTime != null">
+                and a.last_time = #{lastTime}
+            </if>
+            <if test="createTime != null">
+                and a.create_time = #{createTime}
+            </if>
+            <if test="address != null  and address != ''">and a.address = #{address}</if>
+            <if test="uuid != null  and uuid != ''">and a.uuid = #{uuid}</if>
+            <if test="invitationCode != null  and invitationCode != ''">and a.invitation_code = #{invitationCode}</if>
+            <if test="myInvitationCode != null  and myInvitationCode != ''">and a.my_invitation_code =
+                #{myInvitationCode}
+            </if>
+            <if test="rongToken != null  and rongToken != ''">and a.rong_token = #{rongToken}</if>
+            <if test="password != null  and password != ''">and a.password = #{password}</if>
+            <if test="wxAppletOpenid != null  and wxAppletOpenid != ''">and a.wx_applet_openid = #{wxAppletOpenid}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(a.last_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(a.last_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="postIds != null  and postIds != ''">and a.post_ids = #{postIds}</if>
+            <if test="forbiddenStatus != null ">and a.forbidden_status = #{forbiddenStatus}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="jobNumber != null  and jobNumber != ''">and a.job_number like concat('%', #{jobNumber}, '%')</if>
+            <if test="totalFlowerNum != null and totalFlowerNum != ''">and a.total_flower_num = #{totalFlowerNum}</if>
+            <if test="surplusFlowerNum != null and surplusFlowerNum != ''">and a.surplus_flower_num =
+                #{surplusFlowerNum}
+            </if>
+            <if test="bindingTag != null  and bindingTag != ''"> and a.binding_tag = #{bindingTag}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by a.create_time desc
+    </select>
+    <select id="selectApiAccountById" parameterType="String" resultMap="ApiAccountResult">
+        <include refid="selectApiAccountVo"/>
+        where del_status = 0 and account_id = #{accountId}
+    </select>
+
+    <insert id="insertApiAccount" parameterType="ApiAccount">
+        insert into api_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountId != null">
+                account_id,
+            </if>
+            <if test="parentId != null and parentId != ''">
+                parent_id,
+            </if>
+            <if test="phone != null and phone != ''">
+                phone,
+            </if>
+            <if test="wxOpenid != null and wxOpenid != ''">
+                wx_openid,
+            </if>
+            <if test="sessionKey != null">
+                session_key,
+            </if>
+            <if test="headPortrait != null">
+                head_portrait,
+            </if>
+            <if test="nickName != null">
+                nick_name,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="birthday != null">
+                birthday,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="lastTime != null">
+                last_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="address != null">address,</if>
+            <if test="briefIntroduction != null">brief_introduction,</if>
+            <if test="uuid != null">uuid,</if>
+            <if test="invitationCode != null">invitation_code,</if>
+            <if test="myInvitationCode != null">my_invitation_code,</if>
+            <if test="rongToken != null">rong_token,</if>
+            <if test="password != null">password,</if>
+            <if test="wxAppletOpenid != null">wx_applet_openid,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="forbiddenStatus != null">forbidden_status,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="jobNumber != null">job_number,</if>
+            <if test="totalFlowerNum != null">total_flower_num,</if>
+            <if test="surplusFlowerNum != null">surplus_flower_num,</if>
+            <if test="totalScore != null">total_score,</if>
+            <if test="surplusScore != null">surplus_score,</if>
+            <if test="appPower != null">app_power,</if>
+            <if test="positionType != null">position_type,</if>
+            <if test="groupInforIds != null">group_infor_ids,</if>
+            <if test="isExperience != null">is_experience,</if>
+            <if test="experienceTime != null">experience_time,</if>
+            <if test="bindingTag != null">binding_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountId != null">
+                #{accountId},
+            </if>
+            <if test="parentId != null and parentId != ''">
+                #{parentId},
+            </if>
+            <if test="phone != null and phone != ''">
+                #{phone},
+            </if>
+            <if test="wxOpenid != null and wxOpenid != ''">
+                #{wxOpenid},
+            </if>
+            <if test="sessionKey != null">
+                #{sessionKey},
+            </if>
+            <if test="headPortrait != null">
+                #{headPortrait},
+            </if>
+            <if test="nickName != null">
+                #{nickName},
+            </if>
+            <if test="sex != null">
+                #{sex},
+            </if>
+            <if test="birthday != null">
+                #{birthday},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="lastTime != null">
+                #{lastTime},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="address != null">#{address},</if>
+            <if test="briefIntroduction != null">#{briefIntroduction},</if>
+            <if test="uuid != null">#{uuid},</if>
+            <if test="invitationCode != null">#{invitationCode},</if>
+            <if test="myInvitationCode != null">#{myInvitationCode},</if>
+            <if test="rongToken != null">#{rongToken},</if>
+            <if test="password != null">#{password},</if>
+            <if test="wxAppletOpenid != null">#{wxAppletOpenid},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="forbiddenStatus != null">#{forbiddenStatus},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="jobNumber != null">#{jobNumber},</if>
+            <if test="totalFlowerNum != null">#{totalFlowerNum},</if>
+            <if test="surplusFlowerNum != null">#{surplusFlowerNum},</if>
+            <if test="totalScore != null">#{totalScore},</if>
+            <if test="surplusScore != null">#{surplusScore},</if>
+            <if test="appPower != null">#{appPower},</if>
+            <if test="positionType != null">#{positionType},</if>
+            <if test="groupInforIds != null">#{groupInforIds},</if>
+            <if test="isExperience != null">#{isExperience},</if>
+            <if test="experienceTime != null">#{experienceTime},</if>
+            <if test="bindingTag != null">#{bindingTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateApiAccount" parameterType="ApiAccount">
+        update api_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="parentId != null and parentId != ''">
+                parent_id = #{parentId},
+            </if>
+            <if test="wxOpenid != null and wxOpenid != ''">
+                wx_openid = #{wxOpenid},
+            </if>
+            <if test="sessionKey != null">
+                session_key = #{sessionKey},
+            </if>
+            <if test="headPortrait != null">
+                head_portrait = #{headPortrait},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="delStatus != null">
+                del_status = #{delStatus},
+            </if>
+            <if test="lastTime != null">
+                last_time = #{lastTime},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="address != null">address = #{address},</if>
+            <if test="briefIntroduction != null">brief_introduction = #{briefIntroduction},</if>
+            <if test="uuid != null">uuid = #{uuid},</if>
+            <if test="invitationCode != null">invitation_code = #{invitationCode},</if>
+            <if test="myInvitationCode != null">my_invitation_code = #{myInvitationCode},</if>
+            <if test="rongToken != null and rongToken != ''">rong_token = #{rongToken},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="wxAppletOpenid != null">wx_applet_openid = #{wxAppletOpenid},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="forbiddenStatus != null">forbidden_status = #{forbiddenStatus},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="jobNumber != null">job_number = #{jobNumber},</if>
+            <if test="totalFlowerNum != null ">total_flower_num = #{totalFlowerNum},</if>
+            <if test="surplusFlowerNum != null">surplus_flower_num = #{surplusFlowerNum},</if>
+            <if test="totalScore != null">total_score = #{totalScore},</if>
+            <if test="surplusScore != null">surplus_score = #{surplusScore},</if>
+            <if test="appPower != null">app_power = #{appPower},</if>
+            <if test="positionType != null">position_type = #{positionType},</if>
+            <if test="groupInforIds != null">group_infor_ids = #{groupInforIds},</if>
+            <if test="isExperience != null">is_experience = #{isExperience},</if>
+            <if test="experienceTime != null">experience_time = #{experienceTime},</if>
+            <if test="bindingTag != null">binding_tag = #{bindingTag},</if>
+        </trim>
+        where account_id = #{accountId}
+    </update>
+
+    <update id="deleteApiAccountById" parameterType="String">
+        update api_account
+        set del_status = 1
+        where account_id = #{accountId}
+    </update>
+
+    <update id="deleteApiAccountByIds" parameterType="String">
+        update api_account set del_status = 1
+        where account_id in
+        <foreach item="accountId" collection="array" open="(" separator="," close=")">
+            #{accountId}
+        </foreach>
+    </update>
+    <!--根据openId获取用户信息-->
+    <select id="selectApiAccountByWxOpenId" resultMap="ApiAccountResult">
+        select account_id,
+               parent_id,
+               phone,
+               wx_openid,
+               session_key,
+               head_portrait,
+               nick_name,
+               sex,
+               birthday,
+               type,
+               del_status,
+               last_time,
+               create_time,
+               dept_id,
+               post_ids,
+               forbidden_status,
+               company_id,
+               job_number,
+               group_infor_ids,
+               binding_tag
+        from api_account
+        where wx_openid = #{openid}
+          and del_status = 0
+    </select>
+    <!--    我邀请的一级人数-->
+    <select id="countMyInventNum" resultType="java.lang.Integer">
+        select count(account_id)
+        from api_account
+        where parent_id = #{accountId}
+        and del_status = 0
+        <if test="conditionDate != null and conditionDate != ''">
+            and DATE_FORMAT(create_time, '%Y-%m') = #{conditionDate}
+        </if>
+    </select>
+    <!--    我邀请的二级人数-->
+    <select id="countMyTwoInventNum" resultType="java.lang.Integer">
+        select count(account_id)
+        from api_account
+        where parent_id in (select account_id from api_account where parent_id = #{accountId})
+        and del_status = 0
+        <if test="conditionDate != null and conditionDate != ''">
+            and DATE_FORMAT(create_time, '%Y-%m') = #{conditionDate}
+        </if>
+    </select>
+    <!--我的一级邀请好友列表-->
+    <select id="selectApiAccountOneList" resultMap="ApiAccountResult">
+        select account_id,
+        parent_id,
+        phone,
+        wx_openid,
+        session_key,
+        head_portrait,
+        nick_name,
+        sex,
+        birthday,
+        type,
+        del_status,
+        last_time,
+        create_time,
+        dept_id,
+        post_ids,
+        forbidden_status,
+        company_id,
+        job_number,
+        group_infor_ids
+        from api_account
+        where parent_id = #{accountId}
+        and del_status = 0
+        <if test="conditionDate != null and conditionDate != ''">
+            and DATE_FORMAT(create_time, '%Y-%m') = #{conditionDate}
+        </if>
+        order by create_time desc
+    </select>
+
+    <select id="selectApiAccountTwoList" resultMap="ApiAccountResult">
+        select account_id,
+        parent_id,
+        phone,
+        wx_openid,
+        session_key,
+        head_portrait,
+        nick_name,
+        sex,
+        birthday,
+        type,
+        del_status,
+        last_time,
+        create_time,
+        dept_id,
+        post_ids,
+        forbidden_status,
+        company_id,
+        job_number,
+        group_infor_ids
+        from api_account
+        where parent_id in (select account_id from api_account where parent_id = #{accountId})
+        and del_status = 0
+        <if test="conditionDate != null and conditionDate != ''">
+            and DATE_FORMAT(create_time, '%Y-%m') = #{conditionDate}
+        </if>
+    </select>
+
+
+    <!--    根据手机号码查询用户-->
+    <select id="selectApiAccountByPhone" resultMap="ApiAccountResult">
+        select *
+        from api_account
+        where del_status = 0
+          and phone = #{phone} limit 1
+    </select>
+
+    <select id="selectApiAccount" parameterType="ApiAccount" resultMap="ApiAccountResult">
+        <include refid="selectApiAccountVo"/>
+        <where>
+            del_status = 0
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="phone != null  and phone != ''">
+                and phone = #{phone}
+            </if>
+            <if test="wxOpenid != null  and wxOpenid != ''">
+                and wx_openid = #{wxOpenid}
+            </if>
+            <if test="sessionKey != null  and sessionKey != ''">
+                and session_key = #{sessionKey}
+            </if>
+            <if test="headPortrait != null  and headPortrait != ''">
+                and head_portrait = #{headPortrait}
+            </if>
+            <if test="nickName != null  and nickName != ''">
+                and (nick_name like concat('%', #{nickName}, '%') or phone like concat('%', #{nickName}, '%'))
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="birthday != null  and birthday != ''">
+                and birthday = #{birthday}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="lastTime != null">
+                and last_time = #{lastTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="address != null  and address != ''">and address = #{address}</if>
+            <if test="invitationCode != null  and invitationCode != ''">and invitation_code = #{invitationCode}</if>
+            <if test="myInvitationCode != null  and myInvitationCode != ''">and my_invitation_code =
+                #{myInvitationCode}
+            </if>
+            <if test="password != null  and password != ''">and password = #{password}</if>
+            <if test="wxAppletOpenid != null  and wxAppletOpenid != ''">and wx_applet_openid = #{wxAppletOpenid}</if>
+            <if test="positionType != null  and positionType != ''">and find_in_set(position_type,#{positionType})</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="jobNumber != null  and jobNumber != ''">and job_number = #{jobNumber}</if>
+            <if test="bindingTag != null  and bindingTag != ''"> and binding_tag = #{bindingTag}</if>
+        </where>
+        limit 1
+    </select>
+
+    <!--    微信解绑-->
+    <update id="wxUntie" parameterType="String">
+        update api_account
+        set wx_openid = ''
+        where account_id = #{accountId}
+    </update>
+
+    <!--根据openId获取用户信息-->
+    <select id="selectApiAccountByWxAppletOpenId" resultMap="ApiAccountResult">
+        select account_id,
+               parent_id,
+               phone,
+               wx_openid,
+               wx_applet_openid,
+               session_key,
+               head_portrait,
+               nick_name,
+               sex,
+               birthday,
+               type,
+               del_status,
+               last_time,
+               create_time,
+               dept_id,
+               post_ids,
+               forbidden_status,
+               company_id,
+               job_number,
+               group_infor_ids
+        from api_account
+        where wx_applet_openid = #{openid}
+          and del_status = 0
+    </select>
+
+    <!--    根据部门和岗位获取某一个用户信息/-->
+    <select id="selectApiAccountLimitByPostIdAndDeptId" resultMap="ApiAccountResult">
+        select account_id, CONCAT(nick_name, '-', phone) as nick_name
+        from api_account
+        where del_status = 0 and forbidden_status = 0
+        <if test="deptId != null">
+            and dept_id = #{deptId}
+        </if>
+        and find_in_set(#{postId}, post_ids)
+        limit 1
+    </select>
+    <!--按照公司与部门查询人员信息-->
+    <select id="selectAccountMap" resultType="java.util.HashMap">
+        select account_id as accountId,
+        nick_name as nickName,
+        head_portrait as headPortrait,
+        phone,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, api_account.post_ids)) as postNames
+        from api_account
+        where company_id = #{companyId}
+        and dept_id = #{deptId}
+        <if test="keyword != null  and keyword != ''">
+            and (nick_name like concat('%', #{keyword}, '%') or phone like concat('%', #{keyword}, '%'))
+        </if>
+        and del_status = 0
+    </select>
+    <!--按照公司与小组查询人员信息-->
+    <select id="selectAccountMapByGroup" resultType="java.util.HashMap">
+        select account_id                                                  as accountId,
+               nick_name                                                   as nickName,
+               head_portrait                                               as headPortrait,
+               phone,
+               (SELECT GROUP_CONCAT(post_name)
+                FROM sys_post
+                WHERE FIND_IN_SET(sys_post.post_id, api_account.post_ids)) as postNames
+        from api_account
+        where company_id = #{companyId}
+          and find_in_set(#{groupInforId}, group_infor_ids)
+          and del_status = 0
+    </select>
+    <!--    根据部门和岗位获取用户列表信息列表-->
+    <select id="selectApiAccountListByPostIdAndDeptId" resultMap="ApiAccountResult">
+        select account_id, nick_name,phone,head_portrait
+        from api_account
+        where del_status = 0 and forbidden_status = 0
+        <if test="deptId != null">
+            and dept_id = #{deptId}
+        </if>
+        and find_in_set(#{postId}, post_ids)
+    </select>
+
+    <select id="selectListByDept" parameterType="ApiAccount" resultMap="ApiAccountResult">
+        <include refid="selectApiAccount"/>
+        <where>
+            a.del_status = 0
+            <if test="deptId != null and deptId != 100">and (a.dept_id = #{deptId} or d.parent_id = #{deptId})</if>
+            <!--            <if test="parentId != null">
+                            and a.parent_id = #{parentId}
+                        </if>-->
+            <if test="phone != null  and phone != ''">
+                and a.phone = #{phone}
+            </if>
+            <if test="nickName != null  and nickName != ''">
+                and (a.nick_name like concat('%', #{nickName}, '%') or a.phone like concat('%', #{nickName}, '%'))
+            </if>
+            <if test="sex != null">
+                and a.sex = #{sex}
+            </if>
+            <if test="postIds != null  and postIds != ''">and a.post_ids = #{postIds}</if>
+            <if test="forbiddenStatus != null ">and a.forbidden_status = #{forbiddenStatus}</if>
+            <!--<if test="companyId != null ">and a.company_id = #{companyId}</if>-->
+            <if test="companyId != null and companyId != 100">and a.company_id = #{companyId}</if>
+            <if test="jobNumber != null  and jobNumber != ''">and a.job_number = #{jobNumber}</if>
+            <if test="bindingTag != null  and bindingTag != ''"> and a.binding_tag = #{bindingTag}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+
+    <select id="selectApiAccountCount" parameterType="ApiAccount" resultType="Integer">
+        select count(*) from api_account a
+        <where>
+            a.del_status = 0
+            <if test="accountId != null and accountId != ''">
+                and a.account_id != #{accountId}
+            </if>
+            <if test="parentId != null">
+                and a.parent_id = #{parentId}
+            </if>
+            <if test="phone != null  and phone != ''">
+                and a.phone = #{phone}
+            </if>
+            <if test="wxOpenid != null  and wxOpenid != ''">
+                and a.wx_openid = #{wxOpenid}
+            </if>
+            <if test="sessionKey != null  and sessionKey != ''">
+                and a.session_key = #{sessionKey}
+            </if>
+            <if test="headPortrait != null  and headPortrait != ''">
+                and a.head_portrait = #{headPortrait}
+            </if>
+            <if test="nickName != null  and nickName != ''">
+                and (a.nick_name like concat('%', #{nickName}, '%') or a.phone like concat('%', #{nickName}, '%'))
+            </if>
+            <if test="sex != null">
+                and a.sex = #{sex}
+            </if>
+            <if test="birthday != null  and birthday != ''">
+                and a.birthday = #{birthday}
+            </if>
+            <if test="type != null">
+                and a.type = #{type}
+            </if>
+            <if test="lastTime != null">
+                and a.last_time = #{lastTime}
+            </if>
+            <if test="createTime != null">
+                and a.create_time = #{createTime}
+            </if>
+            <if test="address != null  and address != ''">and a.address = #{address}</if>
+            <if test="uuid != null  and uuid != ''">and a.uuid = #{uuid}</if>
+            <if test="invitationCode != null  and invitationCode != ''">and a.invitation_code = #{invitationCode}</if>
+            <if test="myInvitationCode != null  and myInvitationCode != ''">and a.my_invitation_code =
+                #{myInvitationCode}
+            </if>
+            <if test="rongToken != null  and rongToken != ''">and a.rong_token = #{rongToken}</if>
+            <if test="password != null  and password != ''">and a.password = #{password}</if>
+            <if test="wxAppletOpenid != null  and wxAppletOpenid != ''">and a.wx_applet_openid = #{wxAppletOpenid}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(a.last_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(a.last_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="postIds != null  and postIds != ''">and a.post_ids = #{postIds}</if>
+            <if test="postId != null">and find_in_set(#{postId},a.post_ids)</if>
+            <if test="forbiddenStatus != null ">and a.forbidden_status = #{forbiddenStatus}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="jobNumber != null  and jobNumber != ''">and a.job_number = #{jobNumber}</if>
+            <if test="totalFlowerNum != null ">and a.total_flower_num = #{totalFlowerNum}</if>
+            <if test="surplusFlowerNum != null ">and a.surplus_flower_num = #{surplusFlowerNum}</if>
+            <if test="bindingTag != null  and bindingTag != ''"> and a.binding_tag = #{bindingTag}</if>
+
+        </where>
+    </select>
+
+    <!--   查询积分排行榜-->
+    <select id="selectApiScoreAccountList" parameterType="ApiAccount"
+            resultType="com.wlwq.api.resultVO.score.AccountScoreResultVO">
+        SELECT
+        a.account_id AS accountId,
+        a.head_portrait AS accountHead,
+        a.nick_name AS accountName,
+        a.phone AS accountPhone,
+        d.dept_name AS deptName,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, a.post_ids)) AS postNames,
+        CASE
+        WHEN IFNULL(
+        (
+        IFNULL(
+        (
+        SELECT SUM(score) FROM account_score
+        WHERE score_status = 1 AND a.account_id = account_id
+        <if test="startTime != null and startTime != ''">AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startTime}</if>
+        <if test="endTime != null and endTime != ''">AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endTime}</if>
+        ), 0
+        ) - IFNULL(
+        (
+        SELECT SUM(score) FROM account_score
+        WHERE score_status = 2 AND a.account_id = account_id
+        <if test="startTime != null and startTime != ''">AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startTime}</if>
+        <if test="endTime != null and endTime != ''">AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endTime}</if>
+        ), 0
+        )
+        ), 0
+        ) &lt; 0 THEN 0
+        ELSE IFNULL(
+        (
+        IFNULL(
+        (
+        SELECT SUM(score) FROM account_score
+        WHERE score_status = 1 AND a.account_id = account_id
+        <if test="startTime != null and startTime != ''">AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startTime}</if>
+        <if test="endTime != null and endTime != ''">AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endTime}</if>
+        ), 0
+        ) - IFNULL(
+        (
+        SELECT SUM(score) FROM account_score
+        WHERE score_status = 2 AND a.account_id = account_id
+        <if test="startTime != null and startTime != ''">AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startTime}</if>
+        <if test="endTime != null and endTime != ''">AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endTime}</if>
+        ), 0
+        )
+        ), 0
+        )
+        END AS totalScore
+        FROM api_account a
+        LEFT JOIN sys_dept d ON d.dept_id = a.dept_id
+        <where>
+            a.del_status = 0
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+        </where>
+        order by totalScore desc
+    </select>
+
+    <!--   查询某个用户某个时间段的积分-->
+    <select id="selectApiScoreAccount" parameterType="ApiAccount"
+            resultType="com.wlwq.api.resultVO.score.AccountScoreResultVO">
+        select
+        a.account_id as accountId,
+        a.head_portrait as accountHead,
+        a.nick_name as accountName,
+        a.phone as accountPhone,
+        d.dept_name as deptName,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, a.post_ids)) as postNames,
+        ifnull((select sum(score) from account_score
+        where
+        score_status = 1
+        and a.account_id = account_id
+        <if test="startTime != null  and startTime != ''">and date_format(create_time,'%Y-%m-%d')
+            <![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime != null  and endTime != ''">and date_format(create_time,'%Y-%m-%d')
+            <![CDATA[ <= ]]> #{endTime}
+        </if>
+        ),0) dayScore,
+        ifnull((select sum(score) from account_score
+        where
+        score_status = 1
+        and a.account_id = account_id
+        ),0) totalScore
+        from api_account a
+        left join sys_dept d on d.dept_id = a.dept_id
+        <where>
+            a.del_status = 0
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="accountId != null and accountId != ''">and a.account_id = #{accountId}</if>
+        </where>
+    </select>
+
+    <select id="getUserIsLeader" resultType="java.lang.String">
+        select post_type from sys_post where
+        post_id in
+        <foreach collection="postIds.split(',')" close=")" open="(" item="item" separator=",">
+            #{item}
+        </foreach>
+        and post_type=#{type} GROUP BY post_type
+    </select>
+
+    <select id="findExpireAccount" resultType="java.lang.String">
+        select experience_time
+        from api_account
+        where is_experience = 1
+          and phone = #{phone}
+    </select>
+
+
+    <!--   查询绑定的人员列表-->
+    <select id="selectApiBindingAccountList" parameterType="ApiAccount"
+            resultType="com.wlwq.api.resultVO.score.AccountScoreResultVO">
+        select
+        distinct a.account_id as accountId,
+        a.head_portrait as accountHead,
+        a.nick_name as accountName,
+        a.phone as accountPhone,
+        d.dept_name as deptName,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, a.post_ids)) as postNames
+        from account_binding b
+        left join  api_account a on b.account_ids = a.account_id
+        left join sys_dept d on a.dept_id = d.dept_id
+        <where>
+            a.del_status = 0
+            <if test="accountId != null and accountId != ''">and b.account_id = #{accountId}</if>
+        </where>
+        order by b.create_time desc
+    </select>
+
+
+<!--    根据公司查询用户信息-->
+    <select id="selectAccountListByCompanyId" parameterType="ApiAccount" resultMap="ApiAccountResult">
+        select account_id from api_account
+        <where>
+            del_status = 0
+            <if test="companyId != null and companyId != 100">and company_id = #{companyId}</if>
+        </where>
+    </select>
+
+<!--    根据条件查询考勤统计-->
+    <select id="selectApiClockingAccountList" parameterType="ApiAccount" resultType="com.wlwq.api.resultVO.clocking.AccountClockingResultVO">
+        select a.account_id as accountId,
+        a.phone as accountPhone,
+        a.head_portrait as accountHead,
+        a.nick_name as accountName,
+        a.sex,
+        d.dept_name as deptName,
+        (select dept_name from sys_dept where sys_dept.dept_id = a.company_id) as companyName,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, a.post_ids))                      as postNames
+        from api_account a
+        left join sys_dept d on a.dept_id = d.dept_id
+        <where>
+            a.del_status = 0
+            <if test="nickName != null  and nickName != ''">
+                and (a.nick_name like concat('%', #{nickName}, '%') or a.phone like concat('%', #{nickName}, '%'))
+            </if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+</mapper>

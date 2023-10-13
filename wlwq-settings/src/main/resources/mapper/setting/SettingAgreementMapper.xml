@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.setting.mapper.SettingAgreementMapper">
+    
+    <resultMap type="SettingAgreement" id="SettingAgreementResult">
+        <result property="agreementId"    column="agreement_id"    />
+        <result property="agreementTitle"    column="agreement_title"    />
+        <result property="agreementContent"    column="agreement_content"    />
+        <result property="delStatus"    column="del_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSettingAgreementVo">
+        select agreement_id, agreement_title, agreement_content, del_status, create_time, update_time from setting_agreement
+    </sql>
+
+    <select id="selectSettingAgreementList" parameterType="SettingAgreement" resultMap="SettingAgreementResult">
+        <include refid="selectSettingAgreementVo"/>
+        <where>  
+            <if test="agreementTitle != null  and agreementTitle != ''"> and agreement_title like concat('%',#{agreementTitle},'%')</if>
+            <if test="agreementContent != null  and agreementContent != ''"> and agreement_content = #{agreementContent}</if>
+            <if test="delStatus != null "> and del_status = #{delStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectSettingAgreementById" parameterType="String" resultMap="SettingAgreementResult">
+        <include refid="selectSettingAgreementVo"/>
+        where agreement_id = #{agreementId}
+    </select>
+        
+    <insert id="insertSettingAgreement" parameterType="SettingAgreement">
+        insert into setting_agreement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="agreementId != null">agreement_id,</if>
+            <if test="agreementTitle != null and agreementTitle != ''">agreement_title,</if>
+            <if test="agreementContent != null and agreementContent != ''">agreement_content,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="agreementId != null">#{agreementId},</if>
+            <if test="agreementTitle != null and agreementTitle != ''">#{agreementTitle},</if>
+            <if test="agreementContent != null and agreementContent != ''">#{agreementContent},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSettingAgreement" parameterType="SettingAgreement">
+        update setting_agreement
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="agreementTitle != null and agreementTitle != ''">agreement_title = #{agreementTitle},</if>
+            <if test="agreementContent != null and agreementContent != ''">agreement_content = #{agreementContent},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where agreement_id = #{agreementId}
+    </update>
+
+    <update id="deleteSettingAgreementById" parameterType="String">
+        update setting_agreement set del_status = 1 where agreement_id = #{agreementId}
+    </update>
+
+    <update id="deleteSettingAgreementByIds" parameterType="String">
+        update setting_agreement set del_status = 1 where agreement_id in
+        <foreach item="agreementId" collection="array" open="(" separator="," close=")">
+            #{agreementId}
+        </foreach>
+    </update>
+<!--    根据ID获取协议内容-->
+    <select id="selectAgreementContentById" resultType="java.lang.String">
+        select agreement_content from setting_agreement where agreement_id = #{agreementId}
+    </select>
+</mapper>

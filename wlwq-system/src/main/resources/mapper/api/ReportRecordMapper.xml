@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ReportRecordMapper">
+
+    <resultMap type="ReportRecord" id="ReportRecordResult">
+        <result property="reportRecordId" column="report_record_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="reportContent" column="report_content"/>
+        <result property="reportImages" column="report_images"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="processingStatus" column="processing_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="contactWay" column="contact_way"/>
+        <result property="targetId" column="target_id"/>
+    </resultMap>
+
+    <sql id="selectReportRecordVo">
+        select report_record_id,
+               account_id,
+               account_head,
+               account_name,
+               account_phone,
+               report_content,
+               report_images,
+               read_status,
+               processing_status,
+               create_time,
+               update_time,
+               contact_way,
+               target_id
+        from report_record
+    </sql>
+
+    <select id="selectReportRecordList" parameterType="ReportRecord" resultMap="ReportRecordResult">
+        <include refid="selectReportRecordVo"/>
+        <where>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+
+            <if test="reportContent != null  and reportContent != ''">and report_content like concat('%',
+                #{reportContent}, '%')
+            </if>
+            <if test="reportImages != null  and reportImages != ''">and report_images = #{reportImages}</if>
+            <if test="readStatus != null ">and read_status = #{readStatus}</if>
+            <if test="processingStatus != null ">and processing_status = #{processingStatus}</if>
+            <if test="contactWay != null  and contactWay != ''">and contact_way = #{contactWay}</if>
+            <if test="targetId != null  and targetId != ''">and target_id = #{targetId}</if>
+        </where>
+    </select>
+
+    <select id="selectReportRecordById" parameterType="String" resultMap="ReportRecordResult">
+        <include refid="selectReportRecordVo"/>
+        where report_record_id = #{reportRecordId}
+    </select>
+
+    <insert id="insertReportRecord" parameterType="ReportRecord">
+        insert into report_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportRecordId != null">report_record_id,</if>
+            <if test="accountId != null and accountId != ''">account_id,</if>
+            <if test="accountHead != null and accountHead != ''">account_head,</if>
+            <if test="accountName != null and accountName != ''">account_name,</if>
+            <if test="accountPhone != null and accountPhone != ''">account_phone,</if>
+
+            <if test="reportContent != null and reportContent != ''">report_content,</if>
+            <if test="reportImages != null">report_images,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="processingStatus != null">processing_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="contactWay != null">contact_way,</if>
+            <if test="targetId != null">target_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportRecordId != null">#{reportRecordId},</if>
+            <if test="accountId != null and accountId != ''">#{accountId},</if>
+            <if test="accountHead != null and accountHead != ''">#{accountHead},</if>
+            <if test="accountName != null and accountName != ''">#{accountName},</if>
+            <if test="accountPhone != null and accountPhone != ''">#{accountPhone},</if>
+            <if test="reportContent != null and reportContent != ''">#{reportContent},</if>
+            <if test="reportImages != null">#{reportImages},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="processingStatus != null">#{processingStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="contactWay != null">#{contactWay},</if>
+            <if test="targetId != null">#{targetId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateReportRecord" parameterType="ReportRecord">
+        update report_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null and accountId != ''">account_id = #{accountId},</if>
+            <if test="accountHead != null and accountHead != ''">account_head = #{accountHead},</if>
+            <if test="accountName != null and accountName != ''">account_name = #{accountName},</if>
+            <if test="accountPhone != null and accountPhone != ''">account_phone = #{accountPhone},</if>
+            <if test="reportContent != null and reportContent != ''">report_content = #{reportContent},</if>
+            <if test="reportImages != null">report_images = #{reportImages},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="processingStatus != null">processing_status = #{processingStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="contactWay != null">contact_way = #{contactWay},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+        </trim>
+        where report_record_id = #{reportRecordId}
+    </update>
+
+    <delete id="deleteReportRecordById" parameterType="String">
+        delete
+        from report_record
+        where report_record_id = #{reportRecordId}
+    </delete>
+
+    <delete id="deleteReportRecordByIds" parameterType="String">
+        delete from report_record where report_record_id in
+        <foreach item="reportRecordId" collection="array" open="(" separator="," close=")">
+            #{reportRecordId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountMedalMapper">
+
+    <resultMap type="AccountMedal" id="AccountMedalResult">
+        <result property="accountMedalId" column="account_medal_id"/>
+        <result property="medalName" column="medal_name"/>
+        <result property="icon" column="icon"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="alreadyIcon" column="already_icon"/>
+        <result property="content" column="content"/>
+    </resultMap>
+
+    <sql id="selectAccountMedalVo">
+        select account_medal_id,
+               medal_name,
+               sort_num,
+               show_status,
+               already_icon,
+               create_time,
+               update_time,
+               parent_id,
+               score,
+               content
+        from account_medal
+    </sql>
+
+    <select id="selectAccountMedalList" parameterType="AccountMedal" resultMap="AccountMedalResult">
+        <include refid="selectAccountMedalVo"/>
+        <where>
+            del_status = 0
+            <if test="medalName != null  and medalName != ''">and medal_name like concat('%', #{medalName}, '%')</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+        </where>
+        order by parent_id
+    </select>
+
+    <select id="selectAccountMedalById" parameterType="Long" resultMap="AccountMedalResult">
+        select t.account_medal_id,
+               t.medal_name,
+               t.sort_num,
+               t.show_status,
+               t.already_icon,
+               t.create_time,
+               t.update_time,
+               t.parent_id,
+               t.score,
+               t.content,
+               p.medal_name as parent_name
+        from account_medal t
+                 left join account_medal p on p.account_medal_id = t.parent_id
+        where t.account_medal_id = #{accountMedalId}
+    </select>
+
+    <insert id="insertAccountMedal" parameterType="AccountMedal">
+        insert into account_medal
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountMedalId != null">account_medal_id,</if>
+            <if test="medalName != null">medal_name,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="score != null">score,</if>
+            <if test="alreadyIcon != null">already_icon,</if>
+            <if test="content != null">content,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountMedalId != null">#{accountMedalId},</if>
+            <if test="medalName != null">#{medalName},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="score != null">#{score},</if>
+            <if test="alreadyIcon != null">#{alreadyIcon},</if>
+            <if test="content != null">#{content},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountMedal" parameterType="AccountMedal">
+        update account_medal
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="medalName != null">medal_name = #{medalName},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="alreadyIcon != null">already_icon = #{alreadyIcon},</if>
+            <if test="content != null">content = #{content},</if>
+        </trim>
+        where account_medal_id = #{accountMedalId}
+    </update>
+
+    <update id="deleteAccountMedalById" parameterType="Long">
+        update account_medal
+        set del_status = 1
+        where account_medal_id = #{accountMedalId}
+    </update>
+
+    <update id="deleteAccountMedalByIds" parameterType="String">
+        update account_medal set del_status = 1 where account_medal_id in
+        <foreach item="accountMedalId" collection="array" open="(" separator="," close=")">
+            #{accountMedalId}
+        </foreach>
+    </update>
+
+<!--    查询用户满足条件未领取的勋章列表-->
+    <select id="selectApiAccountNoMedalList" parameterType="AccountMedal" resultMap="AccountMedalResult">
+        select account_medal_id,
+        medal_name,
+        sort_num,
+        show_status,
+        already_icon,
+        create_time,
+        update_time,
+        parent_id,
+        score,
+        content
+        from account_medal
+        <where>
+            del_status = 0 and parent_id != 0
+            <if test="accountId != null and accountId != ''">and account_medal_id not in (select distinct account_medal_id from account_medal_record where del_status = 0 and account_id = #{accountId})</if>
+            <if test="medalName != null  and medalName != ''">and medal_name like concat('%', #{medalName}, '%')</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="score != null ">and #{score} >= score</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+        </where>
+        order by parent_id
+    </select>
+
+    <select id="selectAccountMedalCount" parameterType="AccountMedal" resultType="Integer">
+        select count(*) from account_medal
+        <where>
+            del_status = 0
+            <if test="medalName != null  and medalName != ''">and medal_name like concat('%', #{medalName}, '%')</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+        </where>
+    </select>
+
+
+    <!--    Api查询勋章列表-->
+    <select id="selectApiAccountMedalList" parameterType="AccountMedal" resultMap="AccountMedalResult">
+        select account_medal_id,
+        medal_name,
+        sort_num,
+        show_status,
+        already_icon,
+        create_time,
+        update_time,
+        parent_id,
+        score,
+        content
+        from account_medal
+        <where>
+            del_status = 0
+            <if test="accountId != null and accountId != ''">and account_medal_id not in (select distinct account_medal_id from account_medal_record where del_status = 0 and medal_parent_id = 0 and account_id = #{accountId})</if>
+            <if test="parentId != null">and parent_id = #{parentId}</if>
+            <if test="medalName != null  and medalName != ''">and medal_name like concat('%', #{medalName}, '%')</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="score != null ">and score >= #{score}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+        </where>
+        order by parent_id,sort_num
+    </select>
+</mapper>

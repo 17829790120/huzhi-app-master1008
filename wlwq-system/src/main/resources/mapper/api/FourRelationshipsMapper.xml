@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.FourRelationshipsMapper">
+
+    <resultMap type="FourRelationships" id="FourRelationshipsResult">
+        <result property="fourRelationshipsId" column="four_relationships_id"/>
+        <result property="templateType" column="template_type"/>
+        <result property="content" column="content"/>
+        <result property="accountId" column="account_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="companyId" column="company_id"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="picture" column="picture"/>
+        <result property="remark" column="remark"/>
+        <result property="file" column="file"/>
+        <result property="oneStoreClassId" column="one_store_class_id"/>
+        <result property="twoStoreClassId" column="two_store_class_id"/>
+        <result property="threeStoreClassId" column="three_store_class_id"/>
+        <result property="title" column="title"/>
+        <result property="fourRelationshipsList" column="four_relationships_list"/>
+        <result property="className" column="className"/>
+    </resultMap>
+
+    <sql id="selectFourRelationshipsVo">
+        select four_relationships_id,four_relationships_list, template_type,title, content, account_id, post_ids, dept_id, account_name, account_phone, account_head, company_id, del_status, create_time, update_time, picture, remark, file, one_store_class_id, two_store_class_id, three_store_class_id from four_relationships
+    </sql>
+
+    <select id="selectFourRelationshipsList" parameterType="FourRelationships" resultMap="FourRelationshipsResult">
+        <include refid="selectFourRelationshipsVo"/>
+        <where>
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="picture != null  and picture != ''">and picture = #{picture}</if>
+            <if test="file != null  and file != ''">and file = #{file}</if>
+            <if test="oneStoreClassId != null  and oneStoreClassId != ''">and one_store_class_id = #{oneStoreClassId}
+            </if>
+            <if test="twoStoreClassId != null  and twoStoreClassId != ''">and two_store_class_id = #{twoStoreClassId}
+            </if>
+            <if test="threeStoreClassId != null  and threeStoreClassId != ''">and three_store_class_id =
+                #{threeStoreClassId}
+            </if>
+            <if test="title != null  and title != ''">and title = #{title}</if>
+            <if test="fourRelationshipsList != null  and fourRelationshipsList != ''">and four_relationships_list =
+                #{fourRelationshipsList}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectFourRelationshipsById" parameterType="String" resultMap="FourRelationshipsResult">
+        select four_relationships_id,
+        template_type,
+        content,
+        account_id,
+        post_ids,
+        dept_id,
+        four_relationships_list,
+        picture,
+        file,
+        remark,
+        three_store_class_id,
+        account_name,
+        account_phone,
+        account_head,
+        company_id,
+        (select count(*) from account_like where like_type = 1 and account_id = #{accountId} and target_id =
+        four_relationships.four_relationships_id) as likeTag,
+        (select GROUP_CONCAT(account_name) from account_like where like_type = 1 and target_id =
+        four_relationships.four_relationships_id) as likePeople,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, four_relationships.post_ids)) as postNames,
+        create_time,
+        update_time
+        from four_relationships
+        where four_relationships_id = #{fourRelationshipsId}
+    </select>
+    <!--    查询某个分类下的所有发布的信息数量-->
+    <select id="selectFourRelationshipsCount" resultType="java.lang.Integer">
+        select count(*)
+        from four_relationships
+        <where>
+            del_status=0
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="picture != null  and picture != ''">and picture = #{picture}</if>
+            <if test="file != null  and file != ''">and file = #{file}</if>
+            <if test="oneStoreClassId != null  and oneStoreClassId != ''">and one_store_class_id = #{oneStoreClassId}
+            </if>
+            <if test="twoStoreClassId != null  and twoStoreClassId != ''">and two_store_class_id = #{twoStoreClassId}
+            </if>
+            <if test="threeStoreClassId != null  and threeStoreClassId != ''">and three_store_class_id =
+                #{threeStoreClassId}
+            </if>
+            <if test="title != null  and title != ''">and title = #{title}</if>
+            <if test="fourRelationshipsList != null  and fourRelationshipsList != ''">and four_relationships_list =
+                #{fourRelationshipsList}
+            </if>
+        </where>
+    </select>
+    <!--    api四类关系列表-->
+    <select id="selectApiFourRelationshipsList" parameterType="FourRelationships" resultMap="FourRelationshipsResult">
+        select four_relationships_id,
+        template_type,
+        content,
+        account_id,
+        post_ids,
+        dept_id,
+        four_relationships_list,
+        picture,
+        file,
+        remark,
+        three_store_class_id,
+        account_name,
+        account_phone,
+        account_head,
+        company_id,
+        (select count(*) from account_like where like_type = 1 and account_id = #{accountId} and target_id =
+        four_relationships.four_relationships_id) as likeTag,
+        (select GROUP_CONCAT(account_name) from account_like where like_type = 1 and target_id =
+        four_relationships.four_relationships_id) as likePeople,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, four_relationships.post_ids)) as postNames,
+        create_time,
+        update_time
+        from four_relationships
+        <where>
+            del_status=0
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="picture != null  and picture != ''">and picture = #{picture}</if>
+            <if test="file != null  and file != ''">and file = #{file}</if>
+            <if test="oneStoreClassId != null  and oneStoreClassId != ''">and one_store_class_id = #{oneStoreClassId}
+            </if>
+            <if test="twoStoreClassId != null  and twoStoreClassId != ''">and two_store_class_id = #{twoStoreClassId}
+            </if>
+            <if test="threeStoreClassId != null  and threeStoreClassId != ''">and three_store_class_id =
+                #{threeStoreClassId}
+            </if>
+            <if test="title != null  and title != ''">and title = #{title}</if>
+            <if test="fourRelationshipsList != null  and fourRelationshipsList != ''">and four_relationships_list =
+                #{fourRelationshipsList}
+            </if>
+            <if test="date != null and date != ''">and DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <!--    查询提交的人数-->
+    <select id="selectApiFourRelationshipsCount" resultType="java.lang.Integer">
+        select count(distinct account_id)
+        from four_relationships
+        <where>
+            del_status=0
+            <if test="templateType != null ">and template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="picture != null  and picture != ''">and picture = #{picture}</if>
+            <if test="file != null  and file != ''">and file = #{file}</if>
+            <if test="oneStoreClassId != null  and oneStoreClassId != ''">and one_store_class_id = #{oneStoreClassId}
+            </if>
+            <if test="twoStoreClassId != null  and twoStoreClassId != ''">and two_store_class_id = #{twoStoreClassId}
+            </if>
+            <if test="threeStoreClassId != null  and threeStoreClassId != ''">and three_store_class_id =
+                #{threeStoreClassId}
+            </if>
+            <if test="title != null  and title != ''">and title = #{title}</if>
+            <if test="fourRelationshipsList != null  and fourRelationshipsList != ''">and four_relationships_list =
+                #{fourRelationshipsList}
+            </if>
+        </where>
+    </select>
+    <!--    Web查询四类关系列表-->
+    <select id="selectWebFourRelationshipsList" parameterType="FourRelationships" resultMap="FourRelationshipsResult">
+        select r.four_relationships_id ,
+        r.template_type ,
+        r.content,
+        r.account_id ,
+        r.post_ids ,
+        r.dept_id ,
+        r.four_relationships_list,
+        r.picture,
+        r.file,
+        r.remark,
+        r.create_time,
+        r.account_name ,
+        r.account_phone ,
+        r.account_head ,
+        r.company_id ,
+        (SELECT class_name from four_relationships_class where r.two_store_class_id=four_relationships_class_id limit 1 ) as
+        className,
+        (SELECT GROUP_CONCAT(post_name)
+        FROM sys_post
+        WHERE FIND_IN_SET(sys_post.post_id, r.post_ids)) as postNames,
+        r.create_time as createTime,
+        r.update_time as updateTime
+        from four_relationships r left join sys_dept d on r.dept_id = d.dept_id
+        <where>
+            r.del_status = 0
+            <if test="templateType != null ">and r.template_type = #{templateType}</if>
+            <if test="content != null  and content != ''">and r.content = #{content}</if>
+            <if test="accountId != null  and accountId != ''">and r.account_id = #{accountId}</if>
+            <if test="postIds != null  and postIds != ''">and r.post_ids = #{postIds}</if>
+            <if test="deptId != null ">and r.dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''">and r.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and r.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and r.account_head = #{accountHead}</if>
+            <if test="companyId != null ">and r.company_id = #{companyId}</if>
+            <if test="delStatus != null ">and r.del_status = #{delStatus}</if>
+            <if test="picture != null  and picture != ''">and r.picture = #{picture}</if>
+            <if test="file != null  and file != ''">and r.file = #{file}</if>
+            <if test="oneStoreClassId != null  and oneStoreClassId != ''">and r.one_store_class_id = #{oneStoreClassId}
+            </if>
+            <if test="twoStoreClassId != null  and twoStoreClassId != ''">and r.two_store_class_id = #{twoStoreClassId}
+            </if>
+            <if test="threeStoreClassId != null  and threeStoreClassId != ''">and r.three_store_class_id =
+                #{threeStoreClassId}
+            </if>
+            <if test="title != null  and title != ''">and r.title = #{title}</if>
+            <if test="fourRelationshipsList != null  and fourRelationshipsList != ''">and r.four_relationships_list =
+                #{fourRelationshipsList}
+            </if>
+            <if test="startTime != null  and startTime != ''">and date_format(r.create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(r.create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by r.create_time desc
+    </select>
+    <!--    查询对应分类下的发布数量-->
+    <select id="selectFourRelationshipsCountByClassIds" resultType="java.util.Map">
+        SELECT three_store_class_id, COUNT(*) AS count
+        FROM four_relationships
+        WHERE company_id = #{companyId} AND three_store_class_id IN (#{classIds})
+        GROUP BY three_store_class_id
+    </select>
+
+    <insert id="insertFourRelationships" parameterType="FourRelationships">
+        insert into four_relationships
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fourRelationshipsId != null">four_relationships_id,</if>
+            <if test="templateType != null">template_type,</if>
+            <if test="content != null">content,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="picture != null">picture,</if>
+            <if test="remark != null">remark,</if>
+            <if test="file != null">file,</if>
+            <if test="oneStoreClassId != null">one_store_class_id,</if>
+            <if test="twoStoreClassId != null">two_store_class_id,</if>
+            <if test="threeStoreClassId != null">three_store_class_id,</if>
+            <if test="title != null">title,</if>
+            <if test="fourRelationshipsList != null">four_relationships_list,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fourRelationshipsId != null">#{fourRelationshipsId},</if>
+            <if test="templateType != null">#{templateType},</if>
+            <if test="content != null">#{content},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="picture != null">#{picture},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="file != null">#{file},</if>
+            <if test="oneStoreClassId != null">#{oneStoreClassId},</if>
+            <if test="twoStoreClassId != null">#{twoStoreClassId},</if>
+            <if test="threeStoreClassId != null">#{threeStoreClassId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="fourRelationshipsList != null">#{fourRelationshipsList},</if>
+        </trim>
+    </insert>
+
+    <update id="updateFourRelationships" parameterType="FourRelationships">
+        update four_relationships
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="templateType != null">template_type = #{templateType},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="picture != null">picture = #{picture},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="file != null">file = #{file},</if>
+            <if test="oneStoreClassId != null">one_store_class_id = #{oneStoreClassId},</if>
+            <if test="twoStoreClassId != null">two_store_class_id = #{twoStoreClassId},</if>
+            <if test="threeStoreClassId != null">three_store_class_id = #{threeStoreClassId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="fourRelationshipsList != null">four_relationships_list = #{fourRelationshipsList},</if>
+        </trim>
+        where four_relationships_id = #{fourRelationshipsId}
+    </update>
+
+    <update id="deleteFourRelationshipsById" parameterType="String">
+        update four_relationships set del_status=1 where four_relationships_id = #{fourRelationshipsId}
+    </update>
+
+    <update id="deleteFourRelationshipsByIds" parameterType="String">
+        update four_relationships set del_status=1 where four_relationships_id in
+        <foreach item="fourRelationshipsId" collection="array" open="(" separator="," close=")">
+            #{fourRelationshipsId}
+        </foreach>
+    </update>
+
+</mapper>

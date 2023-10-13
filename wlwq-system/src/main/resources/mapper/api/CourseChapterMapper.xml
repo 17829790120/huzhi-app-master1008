@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CourseChapterMapper">
+    <resultMap type="CourseChapter" id="CourseChapterResult">
+        <result property="chapterId" column="chapter_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="chapterName" column="chapter_name"/>
+        <result property="totalTime" column="total_time"/>
+        <result property="tryStatus" column="try_status"/>
+        <result property="videoUrl" column="video_url"/>
+        <result property="createTime" column="create_time"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="courseName" column="courseName"/>
+        <result property="examDuration" column="exam_duration"/>
+        <result property="examTypes" column="exam_types"/>
+        <result property="examDescription" column="exam_description"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="examContent" column="exam_content"/>
+
+        <result property="examExplain" column="exam_explain"/>
+        <result property="fullScore" column="full_score"/>
+        <result property="excellentScore" column="excellent_score"/>
+        <result property="goodScore" column="good_score"/>
+        <result property="passingScore" column="passing_score"/>
+        <result property="fullIntegralScore" column="full_integral_score"/>
+        <result property="excellentIntegralScore" column="excellent_integral_score"/>
+        <result property="goodIntegralScore" column="good_integral_score"/>
+        <result property="passingIntegralScore" column="passing_integral_score"/>
+        <result property="resourceType" column="resource_type"/>
+        <result property="fileDuration" column="file_duration"/>
+        <result property="fileSize" column="file_size"/>
+    </resultMap>
+
+    <sql id="selectCourseChapterVo">
+        select chapter_id,
+               parent_id,
+               course_id,
+               (select course_title from course where course_id = course_chapter.course_id) courseName,
+               chapter_name,
+               total_time,
+               try_status,
+               video_url,
+               sort_num,
+               create_time,
+               exam_duration,
+               exam_types,
+               exam_description,
+               del_status,
+               exam_content,
+               exam_explain, full_score, excellent_score, good_score, passing_score,
+               full_integral_score, excellent_integral_score,
+               good_integral_score, passing_integral_score, resource_type, file_duration, file_size
+        from course_chapter
+    </sql>
+
+    <select id="selectCourseChapterList" parameterType="CourseChapter" resultMap="CourseChapterResult">
+        <include refid="selectCourseChapterVo"/>
+        <where>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="courseId != null">
+                and course_id = #{courseId}
+            </if>
+            <if test="chapterName != null  and chapterName != ''">
+                and chapter_name like concat('%', #{chapterName}, '%')
+            </if>
+            <if test="totalTime != null">
+                and total_time = #{totalTime}
+            </if>
+            <if test="tryStatus != null">
+                and try_status = #{tryStatus}
+            </if>
+            <if test="videoUrl != null  and videoUrl != ''">
+                and video_url = #{videoUrl}
+            </if>
+            <if test="examDuration != null ">and exam_duration = #{examDuration}</if>
+            <if test="examTypes != null  and examTypes != ''">and exam_types = #{examTypes}</if>
+            <if test="examDescription != null  and examDescription != ''">and exam_description = #{examDescription}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examContent != null  and examContent != ''">and exam_content like concat('%', #{examContent},
+                '%')
+            </if>
+            <if test="resourceType != null ">and resource_type = #{resourceType}</if>
+            <if test="fileDuration != null ">and file_duration = #{fileDuration}</if>
+            <if test="fileSize != null ">and file_size = #{fileSize}</if>
+        </where>
+        /*order by sort_num desc*/
+    </select>
+
+    <select id="selectCourseChapterById" parameterType="Long" resultMap="CourseChapterResult">
+        select t.chapter_id,
+               t.parent_id,
+               t.course_id,
+               t.chapter_name,
+               t.total_time,
+               t.try_status,
+               t.video_url,
+               t.sort_num,
+               t.create_time,
+               p.chapter_name as parent_name,
+               t.exam_duration as exam_duration,
+               t.exam_types as exam_types,
+               t.exam_description as exam_description,
+               t.del_status as del_status,
+               t.exam_content as exam_content,
+
+               t.exam_explain,
+               t.full_score,
+               t.excellent_score,
+               t.good_score,
+               t.passing_score,
+               t.full_integral_score,
+               t.excellent_integral_score,
+               t.good_integral_score,
+               t.passing_integral_score,
+               t.resource_type,
+               t.file_duration,
+               t.file_size
+        from course_chapter t
+                     left join course_chapter p on p.chapter_id = t.parent_id
+        where t.chapter_id = #{chapterId}
+    </select>
+
+
+    <insert id="insertCourseChapter" parameterType="CourseChapter" useGeneratedKeys="true" keyProperty="chapterId">
+        insert into course_chapter
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="courseId != null">
+                course_id,
+            </if>
+            <if test="chapterName != null and chapterName != ''">
+                chapter_name,
+            </if>
+            <if test="totalTime != null">
+                total_time,
+            </if>
+            <if test="tryStatus != null">
+                try_status,
+            </if>
+            <if test="videoUrl != null and videoUrl != ''">
+                video_url,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="sortNum != null">
+                sort_num,
+            </if>
+            <if test="examDuration != null">exam_duration,</if>
+            <if test="examTypes != null">exam_types,</if>
+            <if test="examDescription != null">exam_description,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="examContent != null">exam_content,</if>
+
+            <if test="examExplain != null">exam_explain,</if>
+            <if test="fullScore != null">full_score,</if>
+            <if test="excellentScore != null">excellent_score,</if>
+            <if test="goodScore != null">good_score,</if>
+            <if test="passingScore != null">passing_score,</if>
+            <if test="fullIntegralScore != null">full_integral_score,</if>
+            <if test="excellentIntegralScore != null">excellent_integral_score,</if>
+            <if test="goodIntegralScore != null">good_integral_score,</if>
+            <if test="passingIntegralScore != null">passing_integral_score,</if>
+            <if test="resourceType != null">resource_type,</if>
+            <if test="fileDuration != null">file_duration,</if>
+            <if test="fileSize != null">file_size,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                #{parentId},
+            </if>
+            <if test="courseId != null">
+                #{courseId},
+            </if>
+            <if test="chapterName != null and chapterName != ''">
+                #{chapterName},
+            </if>
+            <if test="totalTime != null">
+                #{totalTime},
+            </if>
+            <if test="tryStatus != null">
+                #{tryStatus},
+            </if>
+            <if test="videoUrl != null and videoUrl != ''">
+                #{videoUrl},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="sortNum != null">
+                #{sortNum},
+            </if>
+            <if test="examDuration != null">#{examDuration},</if>
+            <if test="examTypes != null">#{examTypes},</if>
+            <if test="examDescription != null">#{examDescription},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="examContent != null">#{examContent},</if>
+
+            <if test="examExplain != null">#{examExplain},</if>
+            <if test="fullScore != null">#{fullScore},</if>
+            <if test="excellentScore != null">#{excellentScore},</if>
+            <if test="goodScore != null">#{goodScore},</if>
+            <if test="passingScore != null">#{passingScore},</if>
+            <if test="fullIntegralScore != null">#{fullIntegralScore},</if>
+            <if test="excellentIntegralScore != null">#{excellentIntegralScore},</if>
+            <if test="goodIntegralScore != null">#{goodIntegralScore},</if>
+            <if test="passingIntegralScore != null">#{passingIntegralScore},</if>
+            <if test="resourceType != null">#{resourceType},</if>
+            <if test="fileDuration != null">#{fileDuration},</if>
+            <if test="fileSize != null">#{fileSize},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCourseChapter" parameterType="CourseChapter">
+        update course_chapter
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="courseId != null">
+                course_id = #{courseId},
+            </if>
+            <if test="chapterName != null and chapterName != ''">
+                chapter_name = #{chapterName},
+            </if>
+            <if test="totalTime != null">
+                total_time = #{totalTime},
+            </if>
+            <if test="tryStatus != null">
+                try_status = #{tryStatus},
+            </if>
+            <if test="videoUrl != null and videoUrl != ''">
+                video_url = #{videoUrl},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="sortNum != null">
+                sort_num = #{sortNum},
+            </if>
+            <if test="examDuration != null">exam_duration = #{examDuration},</if>
+            <if test="examTypes != null">exam_types = #{examTypes},</if>
+            <if test="examDescription != null">exam_description = #{examDescription},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="examContent != null">exam_content = #{examContent},</if>
+
+            <if test="examExplain != null">exam_explain = #{examExplain},</if>
+            <if test="fullScore != null">full_score = #{fullScore},</if>
+            <if test="excellentScore != null">excellent_score = #{excellentScore},</if>
+            <if test="goodScore != null">good_score = #{goodScore},</if>
+            <if test="passingScore != null">passing_score = #{passingScore},</if>
+            <if test="fullIntegralScore != null">full_integral_score = #{fullIntegralScore},</if>
+            <if test="excellentIntegralScore != null">excellent_integral_score = #{excellentIntegralScore},</if>
+            <if test="goodIntegralScore != null">good_integral_score = #{goodIntegralScore},</if>
+            <if test="passingIntegralScore != null">passing_integral_score = #{passingIntegralScore},</if>
+            <if test="resourceType != null">resource_type = #{resourceType},</if>
+            <if test="fileDuration != null">file_duration = #{fileDuration},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+        </trim>
+        where chapter_id = #{chapterId}
+    </update>
+
+    <delete id="deleteCourseChapterById" parameterType="Long">
+        delete
+        from course_chapter
+        where chapter_id = #{chapterId}
+    </delete>
+
+    <delete id="deleteCourseChapterByIds" parameterType="String">
+        delete
+        from course_chapter where chapter_id in
+        <foreach item="chapterId" collection="array" open="(" separator="," close=")">
+            #{chapterId}
+        </foreach>
+    </delete>
+
+    <!--    查询该课程第一节信息-->
+    <select id="selectFirstChapterByCourseId" resultMap="CourseChapterResult">
+        select chapter_id, parent_id, course_id, chapter_name, total_time, try_status, video_url, sort_num, create_time
+        from course_chapter where course_id = #{courseId} and parent_id != 0 order by sort_num desc limit 1
+    </select>
+    <!--查询章节观看状态-->
+    <select id="selectCourseChapterWatch" resultType="java.util.HashMap">
+        SELECT allzj,alljie,IF(allzj = alljie AND allzj > 0,1,0) watchStatus FROM
+        (
+            SELECT
+                (SELECT COUNT(0) FROM course_chapter WHERE parent_id = c.chapter_id AND del_status = 0) allzj,
+                (SELECT COUNT(0) FROM course_view_record WHERE del_status = 0 AND parent_id = c.chapter_id AND watch_status = 1
+                AND account_id = #{accountId}) alljie
+            FROM course_chapter c
+            WHERE c.parent_id = 0 AND c.del_status = 0 AND c.course_id = #{courseId}
+        ) a
+    </select>
+    <!--查询章节观看状态,根据章id进行查询-->
+    <select id="selectCourseChapterWatchByChapterId" resultType="java.util.HashMap">
+        SELECT allzj,alljie,IF(allzj = alljie AND allzj > 0,1,0) watchStatus FROM
+        (
+            SELECT
+                (SELECT COUNT(0) FROM course_chapter WHERE parent_id = c.chapter_id AND del_status = 0) allzj,
+                (SELECT COUNT(0) FROM course_view_record WHERE del_status = 0 AND parent_id = c.chapter_id AND watch_status = 1
+                AND account_id = #{accountId}) alljie
+            FROM course_chapter c
+            WHERE c.parent_id = 0 AND c.del_status = 0 AND c.chapter_id = #{chapterId}
+        ) a
+    </select>
+</mapper>

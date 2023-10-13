@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增客户')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-customCustomInfo-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">客户来源：</label>
+                <div class="col-sm-8">
+                    <select name="customSource" class="form-control m-b" required aria-required="true" th:with="type=${@dict.getType('custom_source')}">
+                        <option value="">---请选择---</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">客户姓名：</label>
+                <div class="col-sm-8">
+                    <input name="customName" class="form-control" required aria-required="true" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">客户性别：</label>
+                <div class="col-sm-8">
+                    <select name="customSex" class="form-control m-b" required aria-required="true" th:with="type=${@dict.getType('sys_user_sex')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">客户生日：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <input name="customBirthday" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">客户标签：</label>
+                <div class="col-sm-8">
+                    <select name="customLabel" class="form-control select2-multiple" required aria-required="true" multiple>
+                        <option th:each="post : ${customTypes}" th:text="${post.customTypeName}"
+                                th:value="${post.customTypeId}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">客户手机号：</label>
+                <div class="col-sm-8">
+                    <input name="customPhone" class="form-control"  required aria-required="true" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">客户等级：</label>
+                <div class="col-sm-8">
+                    <select name="customGrade" class="form-control select2-multiple" required aria-required="true">
+                        <option th:each="post : ${customLevelDaysList}" th:text="${post.customLevel}"
+                                th:value="${post.id}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">客户公司名称：</label>
+                <div class="col-sm-8">
+                    <input name="customCompanyName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">客户住址：</label>
+                <div class="col-sm-8">
+                    <input name="customAddress" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">客户需求：</label>
+                <div class="col-sm-8">
+                    <input name="customDemand" class="form-control" required aria-required="true" type="text">
+                </div>
+            </div>
+<!--            <div class="form-group">    -->
+<!--                <label class="col-sm-3 control-label">客户负责人：</label>-->
+<!--                <div class="col-sm-8">-->
+<!--                    <div class="input-group">-->
+<!--                        <input name="customResponsibleName" id="customResponsibleName" class="form-control valid" type="text" readonly="readonly" onclick="findUser()">-->
+<!--                        <span class="input-group-addon"><i class="fa fa-search"></i></span>-->
+<!--                        <input name="customResponsible" id="customResponsible" type="hidden">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">排序：</label>
+                <div class="col-sm-8">
+                    <input name="sortNum" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">是否客户决策人：</label>
+                <div class="col-sm-8">
+                    <select name="customDecisions" class="form-control m-b" required aria-required="true" th:with="type=${@dict.getType('custom_decisions')}">
+                        <option value="">---请选择---</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input name="customRemark" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-offset-5 col-sm-10">
+            <button type="button" class="btn btn-sm btn-primary" onclick="submit()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/customCustomInfo"
+    $("#form-customCustomInfo-add").validate({
+        focusCleanup: true
+    });
+
+    function submit() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-customCustomInfo-add').serialize());
+        }
+    }
+
+    function findUser(){
+        var url = "/web/customCustomInfo/allAccount";
+        var options = {
+            title: '选择负责人',
+            width: "1500",
+            url: url
+        };
+        $.modal.openOptions(options);
+    }
+    $("input[name='customBirthday']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+</script>
+</body>
+</html>

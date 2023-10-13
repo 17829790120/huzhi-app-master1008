@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改用户签到记录')"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-accountSignRecord-edit" th:object="${accountSignRecord}">
+        <input name="accountSignRecordId" th:field="*{accountSignRecordId}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">签到地址：</label>
+            <div class="col-sm-8">
+                <textarea name="signAddress" class="form-control">[[*{signAddress}]]</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">签到图片：</label>
+            <div class="col-sm-8">
+                <input id="signPics" name="signPics" th:field="*{signPics}" class="form-control"
+                       type="hidden" required>
+                <div class="file-loading">
+                    <input id="filesInput" name="file" type="file" multiple>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">签到备注：</label>
+            <div class="col-sm-8">
+                <textarea name="signRemark" class="form-control">[[*{signRemark}]]</textarea>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<script th:inline="javascript">
+        var prefix = ctx + "web/accountSignRecord";
+        $("#form-accountSignRecord-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-accountSignRecord-edit').serialize());
+            }
+        }
+
+
+    ///////////////多图片上传开始/////////////////////
+    // 多图片上传成功后回调值存储到这个变量中
+    // 多图片上传组件
+    $(document).ready(function () {
+        var pics = $("#signPics").val();
+        var arr = pics.split(",");
+        var obj = arr.map(function (item, index) {
+                return {
+                    key: item
+                }
+            }
+        )
+        $("#filesInput").fileinput({
+            theme: 'explorer-fas',
+            uploadUrl: ctx + 'app/upload',
+            deleteUrl: ctx + 'app/upload',
+            initialPreviewAsData: true,
+            uploadAsync: true, // 异步上传
+            minFileCount: 1, // 上传最小数量
+            // maxFileCount: 20, //上传最大数量
+            autoReplace: true, // 自动替换当前图片
+            overwriteInitial: false, // 覆盖初始预览内容和标题设置
+            maxFileSize: 20480, // 文件大小限制 最大20M
+            // layoutTemplates: {
+            //     actionUpload: '', //去除上传预览缩略图中的上传图片；
+            //     actionZoom: '' //去除上传预览缩略图中的查看详情预览的缩略图标
+            // },
+            initialPreview: arr,
+            initialPreviewConfig: obj // 默认缩略图
+        });
+    });
+    $("#filesInput").on('filebeforedelete', function (event, key) {
+        var arr = $("#signPics").val().split(',');
+        var index = arr.indexOf(key);
+        arr.splice(index, 1);
+        $("#signPics").val(arr.join(','))
+    });
+    // 多图片上传成功后回调
+    $("#filesInput").on("fileuploaded", function (event, data, previewId, index) {
+        var pics = $("#signPics").val();
+        if (data.response.status === 'success') {
+            if (pics == '') {
+                pics = data.response.message;
+                $("#signPics").val(pics);
+            } else {
+                pics += ',' + data.response.message;
+                $("#signPics").val(pics);
+            }
+            $.modal.msgSuccess("上传成功！");
+        } else {
+            $.modal.msgError("上传错误！");
+        }
+    });
+    ///////////////多图片上传结束/////////////////////
+</script>
+</body>
+</html>

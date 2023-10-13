@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.HotUpdateWgtMapper">
+
+    <resultMap type="com.wlwq.api.domain.HotUpdateWgt" id="HotUpdateWgtResult">
+        <result property="id" column="id"/>
+        <result property="versionCode" column="version_code"/>
+        <result property="downloadUrl" column="download_url"/>
+        <result property="versionInfo" column="version_info"/>
+        <result property="versionName" column="version_name"/>
+        <result property="updateType" column="update_type"/>
+        <result property="type" column="type"/>
+        <result property="openStatus" column="open_status"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectHotUpdateWgtVo">
+        SELECT
+        id,
+        version_code,
+        download_url,
+        version_info,
+        version_name,
+        update_type,
+        type,
+        open_status,
+        create_time
+        FROM
+        hot_update_wgt
+    </sql>
+
+    <select id="selectHotUpdateWgtList" parameterType="com.wlwq.api.domain.HotUpdateWgt"
+            resultMap="HotUpdateWgtResult">
+        <include refid="selectHotUpdateWgtVo"/>
+        <where>
+            <if test="versionCode != null  and versionCode != ''">and version_code = #{versionCode}</if>
+            <if test="downloadUrl != null  and downloadUrl != ''">and download_url = #{downloadUrl}</if>
+            <if test="versionInfo != null  and versionInfo != ''">and version_info = #{versionInfo}</if>
+            <if test="versionName != null  and versionName != ''">and version_name like concat('%', #{versionName},
+                '%')
+            </if>
+            <if test="updateType != null  and updateType != ''">and update_type = #{updateType}</if>
+            <if test="type != null  and type != ''">and type = #{type}</if>
+            <if test="openStatus != null  and openStatus != ''">and open_status = #{openStatus}</if>
+        </where>
+        order by version_code desc
+    </select>
+
+    <select id="selectHotUpdateWgtById" parameterType="Long" resultMap="HotUpdateWgtResult">
+        <include refid="selectHotUpdateWgtVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getHotUpdateUrl" resultMap="HotUpdateWgtResult">
+        SELECT
+        id,
+        version_code,
+        download_url,
+        version_info,
+        version_name,
+        update_type,
+        type,
+        open_status,
+        create_time
+        FROM
+        hot_update_wgt
+        where open_status = 1 and version_code &gt; #{versionCode} and type = #{type} order by version_code desc limit 1
+    </select>
+
+    <insert id="insertHotUpdateWgt" parameterType="com.wlwq.api.domain.HotUpdateWgt">
+        insert into hot_update_wgt
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="versionCode != null">version_code,</if>
+            <if test="downloadUrl != null and downloadUrl != ''">download_url,</if>
+            <if test="versionInfo != null and versionInfo != ''">version_info,</if>
+            <if test="versionName != null">version_name,</if>
+            <if test="updateType != null and updateType != ''">update_type,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="openStatus != null and openStatus != ''">open_status,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="versionCode != null">#{versionCode},</if>
+            <if test="downloadUrl != null and downloadUrl != ''">#{downloadUrl},</if>
+            <if test="versionInfo != null and versionInfo != ''">#{versionInfo},</if>
+            <if test="versionName != null">#{versionName},</if>
+            <if test="updateType != null and updateType != ''">#{updateType},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="openStatus != null and openStatus != ''">#{openStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHotUpdateWgt" parameterType="com.wlwq.api.domain.HotUpdateWgt">
+        update hot_update_wgt
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="versionCode != null">version_code = #{versionCode},</if>
+            <if test="downloadUrl != null and downloadUrl != ''">download_url = #{downloadUrl},</if>
+            <if test="versionInfo != null and versionInfo != ''">version_info = #{versionInfo},</if>
+            <if test="versionName != null">version_name = #{versionName},</if>
+            <if test="updateType != null and updateType != ''">update_type = #{updateType},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="openStatus != null and openStatus != ''">open_status = #{openStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHotUpdateWgtById" parameterType="Long">
+        delete from hot_update_wgt where id = #{id}
+    </delete>
+
+    <delete id="deleteHotUpdateWgtByIds" parameterType="String">
+        delete from hot_update_wgt where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.setting.mapper.SettingCompanyMapper">
+    <resultMap type="SettingCompany" id="SettingCompanyResult">
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="companyLogo" column="company_logo"/>
+        <result property="companyPhone" column="company_phone"/>
+        <result property="companyContent" column="company_content"/>
+        <result property="versionNumber" column="version_number"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectSettingCompanyVo">
+        select company_id,
+               company_name,
+               company_logo,
+               company_phone,
+               company_content,
+               version_number,
+               create_time,
+               update_time
+        from setting_company
+    </sql>
+
+    <select id="selectSettingCompanyList" parameterType="SettingCompany" resultMap="SettingCompanyResult">
+        <include refid="selectSettingCompanyVo"/>
+        <where>
+            <if test="companyName != null  and companyName != ''">
+                and company_name like concat('%', #{companyName}, '%')
+            </if>
+            <if test="companyLogo != null  and companyLogo != ''">
+                and company_logo = #{companyLogo}
+            </if>
+            <if test="companyPhone != null  and companyPhone != ''">
+                and company_phone = #{companyPhone}
+            </if>
+            <if test="companyContent != null  and companyContent != ''">
+                and company_content = #{companyContent}
+            </if>
+            <if test="versionNumber != null  and versionNumber != ''">
+                and version_number = #{versionNumber}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSettingCompanyById" parameterType="Long" resultMap="SettingCompanyResult">
+        <include refid="selectSettingCompanyVo"/>
+        where company_id = #{companyId}
+    </select>
+
+    <insert id="insertSettingCompany" parameterType="SettingCompany" useGeneratedKeys="true" keyProperty="companyId">
+        insert into setting_company
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">
+                company_name,
+            </if>
+            <if test="companyLogo != null and companyLogo != ''">
+                company_logo,
+            </if>
+            <if test="companyPhone != null and companyPhone != ''">
+                company_phone,
+            </if>
+            <if test="companyContent != null and companyContent != ''">
+                company_content,
+            </if>
+            <if test="versionNumber != null and versionNumber != ''">
+                version_number,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">
+                #{companyName},
+            </if>
+            <if test="companyLogo != null and companyLogo != ''">
+                #{companyLogo},
+            </if>
+            <if test="companyPhone != null and companyPhone != ''">
+                #{companyPhone},
+            </if>
+            <if test="companyContent != null and companyContent != ''">
+                #{companyContent},
+            </if>
+            <if test="versionNumber != null and versionNumber != ''">
+                #{versionNumber},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSettingCompany" parameterType="SettingCompany">
+        update setting_company
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="companyName != null and companyName != ''">
+                company_name = #{companyName},
+            </if>
+            <if test="companyLogo != null and companyLogo != ''">
+                company_logo = #{companyLogo},
+            </if>
+            <if test="companyPhone != null and companyPhone != ''">
+                company_phone = #{companyPhone},
+            </if>
+            <if test="companyContent != null and companyContent != ''">
+                company_content = #{companyContent},
+            </if>
+            <if test="versionNumber != null and versionNumber != ''">
+                version_number = #{versionNumber},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </trim>
+        where company_id = #{companyId}
+    </update>
+
+    <delete id="deleteSettingCompanyById" parameterType="Long">
+        delete
+        from setting_company
+        where company_id = #{companyId}
+    </delete>
+
+    <delete id="deleteSettingCompanyByIds" parameterType="String">
+        delete
+        from setting_company where company_id in
+        <foreach item="companyId" collection="array" open="(" separator="," close=")">
+            #{companyId}
+        </foreach>
+    </delete>
+
+    <!--    获取公司详情-->
+    <select id="selectCompanyDetail" resultType="com.wlwq.setting.result.CompanyResult">
+        select company_name    as companyName,
+               company_logo    as companyLogo,
+               company_phone   as companyPhone,
+               company_content as companyContent,
+               version_number  as versionNumber
+        from setting_company
+        order by create_time desc
+        limit 1
+    </select>
+
+    <!--    获取版本号-->
+    <select id="selectVersion" resultType="java.lang.String">
+        select version_number as versionNumber
+        from setting_company
+        order by create_time desc
+        limit 1
+    </select>
+</mapper>

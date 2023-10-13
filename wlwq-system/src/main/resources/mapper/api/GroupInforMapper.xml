@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.GroupInforMapper">
+
+    <resultMap type="GroupInfor" id="GroupInforResult">
+        <result property="groupInforId" column="group_infor_id"/>
+        <result property="groupInforName" column="group_infor_name"/>
+        <result property="groupInforIcon" column="group_infor_icon"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="companyId" column="company_id"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorHeadPortrait" column="creator_head_portrait"/>
+        <result property="creatorNickName" column="creator_nick_name"/>
+    </resultMap>
+
+    <sql id="selectGroupInforVo">
+        select group_infor_id, group_infor_name, group_infor_icon, sort_num, show_status, create_time, update_time, del_status, company_id, creator_id, creator_head_portrait, creator_nick_name from group_infor
+    </sql>
+
+    <select id="selectGroupInforList" parameterType="GroupInfor" resultMap="GroupInforResult">
+        <include refid="selectGroupInforVo"/>
+        <where>
+            <if test="groupInforName != null  and groupInforName != ''">and group_infor_name like concat('%',
+                #{groupInforName}, '%')
+            </if>
+            <if test="groupInforIcon != null  and groupInforIcon != ''">and group_infor_icon = #{groupInforIcon}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="creatorId != null  and creatorId != ''">and creator_id = #{creatorId}</if>
+            <if test="creatorHeadPortrait != null  and creatorHeadPortrait != ''">and creator_head_portrait =
+                #{creatorHeadPortrait}
+            </if>
+            <if test="creatorNickName != null  and creatorNickName != ''">and creator_nick_name like concat('%',
+                #{creatorNickName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectGroupInforById" parameterType="Long" resultMap="GroupInforResult">
+        <include refid="selectGroupInforVo"/>
+        where group_infor_id = #{groupInforId}
+    </select>
+
+    <insert id="insertGroupInfor" parameterType="GroupInfor" useGeneratedKeys="true" keyProperty="groupInforId">
+        insert into group_infor
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="groupInforName != null">group_infor_name,</if>
+            <if test="groupInforIcon != null">group_infor_icon,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="creatorHeadPortrait != null">creator_head_portrait,</if>
+            <if test="creatorNickName != null">creator_nick_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="groupInforName != null">#{groupInforName},</if>
+            <if test="groupInforIcon != null">#{groupInforIcon},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="creatorHeadPortrait != null">#{creatorHeadPortrait},</if>
+            <if test="creatorNickName != null">#{creatorNickName},</if>
+        </trim>
+    </insert>
+
+    <update id="updateGroupInfor" parameterType="GroupInfor">
+        update group_infor
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="groupInforName != null">group_infor_name = #{groupInforName},</if>
+            <if test="groupInforIcon != null">group_infor_icon = #{groupInforIcon},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="creatorHeadPortrait != null">creator_head_portrait = #{creatorHeadPortrait},</if>
+            <if test="creatorNickName != null">creator_nick_name = #{creatorNickName},</if>
+        </trim>
+        where group_infor_id = #{groupInforId}
+    </update>
+
+    <delete id="deleteGroupInforById" parameterType="Long">
+        delete from group_infor where group_infor_id = #{groupInforId}
+    </delete>
+
+    <delete id="deleteGroupInforByIds" parameterType="String">
+        delete from group_infor where group_infor_id in
+        <foreach item="groupInforId" collection="array" open="(" separator="," close=")">
+            #{groupInforId}
+        </foreach>
+    </delete>
+
+</mapper>

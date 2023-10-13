@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AttachmentsMapper">
+
+    <resultMap type="Attachments" id="AttachmentsResult">
+        <result property="id"    column="id"    />
+        <result property="fileKey"    column="file_key"    />
+        <result property="height"    column="height"    />
+        <result property="mediaType"    column="media_type"    />
+        <result property="name"    column="name"    />
+        <result property="path"    column="path"    />
+        <result property="size"    column="size"    />
+        <result property="suffix"    column="suffix"    />
+        <result property="thumbPath"    column="thumb_path"    />
+        <result property="type"    column="type"    />
+        <result property="width"    column="width"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+    </resultMap>
+
+    <sql id="selectAttachmentsVo">
+        select id, file_key, height, media_type, name, path, size, suffix, thumb_path, type, width, create_date, update_date from attachments
+    </sql>
+
+    <select id="selectAttachmentsList" parameterType="Attachments" resultMap="AttachmentsResult">
+        <include refid="selectAttachmentsVo"/>
+        <where>
+            <if test="fileKey != null  and fileKey != ''"> and file_key = #{fileKey}</if>
+            <if test="height != null "> and height = #{height}</if>
+            <if test="mediaType != null  and mediaType != ''"> and media_type = #{mediaType}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="path != null  and path != ''"> and path = #{path}</if>
+            <if test="size != null "> and size = #{size}</if>
+            <if test="suffix != null  and suffix != ''"> and suffix = #{suffix}</if>
+            <if test="thumbPath != null  and thumbPath != ''"> and thumb_path = #{thumbPath}</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="width != null "> and width = #{width}</if>
+            <if test="createDate != null "> and create_date = #{createDate}</if>
+            <if test="updateDate != null "> and update_date = #{updateDate}</if>
+        </where>
+    </select>
+
+    <select id="selectAttachmentsById" parameterType="Long" resultMap="AttachmentsResult">
+        <include refid="selectAttachmentsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAttachments" parameterType="Attachments" useGeneratedKeys="true" keyProperty="id">
+        insert into attachments
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fileKey != null">file_key,</if>
+            <if test="height != null">height,</if>
+            <if test="mediaType != null and mediaType != ''">media_type,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="path != null and path != ''">path,</if>
+            <if test="size != null">size,</if>
+            <if test="suffix != null">suffix,</if>
+            <if test="thumbPath != null">thumb_path,</if>
+            <if test="type != null">type,</if>
+            <if test="width != null">width,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fileKey != null">#{fileKey},</if>
+            <if test="height != null">#{height},</if>
+            <if test="mediaType != null and mediaType != ''">#{mediaType},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="path != null and path != ''">#{path},</if>
+            <if test="size != null">#{size},</if>
+            <if test="suffix != null">#{suffix},</if>
+            <if test="thumbPath != null">#{thumbPath},</if>
+            <if test="type != null">#{type},</if>
+            <if test="width != null">#{width},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAttachments" parameterType="Attachments">
+        update attachments
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fileKey != null">file_key = #{fileKey},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="mediaType != null and mediaType != ''">media_type = #{mediaType},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="path != null and path != ''">path = #{path},</if>
+            <if test="size != null">size = #{size},</if>
+            <if test="suffix != null">suffix = #{suffix},</if>
+            <if test="thumbPath != null">thumb_path = #{thumbPath},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="width != null">width = #{width},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAttachmentsById" parameterType="Long">
+        delete from attachments where id = #{id}
+    </delete>
+
+    <delete id="deleteAttachmentsByIds" parameterType="String">
+        delete from attachments where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

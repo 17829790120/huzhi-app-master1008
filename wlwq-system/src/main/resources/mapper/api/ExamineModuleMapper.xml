@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExamineModuleMapper">
+
+    <resultMap type="ExamineModule" id="ExamineModuleResult">
+        <result property="examineModuleId" column="examine_module_id"/>
+        <result property="moduleName" column="module_name"/>
+        <result property="icon" column="icon"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="moduleLevel" column="module_level"/>
+    </resultMap>
+
+    <sql id="selectExamineModuleVo">
+        select examine_module_id,
+               module_name,
+               icon,
+               sort_num,
+               show_status,
+               del_status,
+               create_time,
+               update_time,
+               parent_id,
+               module_level
+        from examine_module
+    </sql>
+
+    <select id="selectExamineModuleList" parameterType="ExamineModule" resultMap="ExamineModuleResult">
+        <include refid="selectExamineModuleVo"/>
+        <where>
+            del_status = 0
+            <if test="tag != null and tag == 0">and examine_module_id in (1,2,3,4,5,26,27,30)</if>
+            <if test="tag != null and tag == 1">and examine_module_id in (1,2,3,4,5,30)</if>
+            <if test="moduleName != null  and moduleName != ''">and module_name like concat('%', #{moduleName}, '%')
+            </if>
+            <if test="icon != null  and icon != ''">and icon = #{icon}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="moduleLevel != null "> and module_level = #{moduleLevel}</if>
+        </where>
+        order by sort_num
+    </select>
+    <!--会议测试审批流程-->
+    <select id="selectMeetingExamineModuleList" parameterType="ExamineModule" resultMap="ExamineModuleResult">
+        <include refid="selectExamineModuleVo"/>
+        <where>
+            del_status = 0
+            <if test="tag != null and tag == 0">and examine_module_id in (24,25,28,29,31)</if>
+            <if test="moduleName != null  and moduleName != ''">and module_name like concat('%', #{moduleName}, '%')
+            </if>
+            <if test="icon != null  and icon != ''">and icon = #{icon}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="moduleLevel != null "> and module_level = #{moduleLevel}</if>
+        </where>
+        order by sort_num
+    </select>
+
+    <select id="selectExamineModuleById" parameterType="Long" resultMap="ExamineModuleResult">
+        select t.examine_module_id,
+               t.module_name,
+               t.icon,
+               t.sort_num,
+               t.show_status,
+               t.del_status,
+               t.create_time,
+               t.update_time,
+               t.parent_id,
+               t.module_level,
+               p.module_name as parent_name
+        from examine_module t
+                 left join examine_module p on p.examine_module_id = t.parent_id
+        where t.examine_module_id = #{examineModuleId}
+    </select>
+
+    <insert id="insertExamineModule" parameterType="ExamineModule">
+        insert into examine_module
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examineModuleId != null">examine_module_id,</if>
+            <if test="moduleName != null">module_name,</if>
+            <if test="icon != null">icon,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="moduleLevel != null">module_level,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examineModuleId != null">#{examineModuleId},</if>
+            <if test="moduleName != null">#{moduleName},</if>
+            <if test="icon != null">#{icon},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="moduleLevel != null">#{moduleLevel},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamineModule" parameterType="ExamineModule">
+        update examine_module
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="moduleName != null">module_name = #{moduleName},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="moduleLevel != null">module_level = #{moduleLevel},</if>
+        </trim>
+        where examine_module_id = #{examineModuleId}
+    </update>
+
+    <update id="deleteExamineModuleById" parameterType="Long">
+        update examine_module
+        set del_status = 1
+        where examine_module_id = #{examineModuleId}
+    </update>
+
+    <update id="deleteExamineModuleByIds" parameterType="String">
+        update examine_module set del_status = 1 where examine_module_id in
+        <foreach item="examineModuleId" collection="array" open="(" separator="," close=")">
+            #{examineModuleId}
+        </foreach>
+    </update>
+
+</mapper>

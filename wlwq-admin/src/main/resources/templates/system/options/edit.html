@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('附件设置')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-options-edit" th:object="${optionVO}">
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">存储位置：</label>
+            <div class="col-sm-8">
+                <select id="attachmentType" name="attachmentType" class="form-control m-b" onchange="changeAttachmentType()"
+                        th:field="*{attachmentType}">
+                    <option value="LOCAL">本地</option>
+                    <option value="UPOSS">又拍云</option>
+                    <option value="QINIUOSS">七牛云</option>
+<!--                    <option value="SMMS">sm.ms</option>-->
+                    <option value="ALIOSS">阿里云</option>
+                    <option value="BAIDUBOS">百度云</option>
+                    <option value="TENCENTCOS">腾讯云</option>
+                    <option value="HUAWEIOBS">华为云</option>
+                </select>
+            </div>
+        </div>
+
+        <!--            阿里云-->
+        <div id="ali" style="display: none">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名协议：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliDomainProtocol" th:field="*{ossAliDomainProtocol}" class="form-control"
+                           type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliDomain" th:field="*{ossAliDomain}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">地域节点：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliEndpoint" th:field="*{ossAliEndpoint}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">存储空间：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliBucketName" th:field="*{ossAliBucketName}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Access Key：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliAccessKey" th:field="*{ossAliAccessKey}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Secret Key：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliAccessSecret" th:field="*{ossAliAccessSecret}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">文件目录：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliSource" th:field="*{ossAliSource}" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">图片处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliStyleRule" th:field="*{ossAliStyleRule}" class="form-control" type="text"
+                           >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">缩略图处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="ossAliThumbnailStyleRule" th:field="*{ossAliThumbnailStyleRule}" class="form-control"
+                           type="text" >
+                </div>
+            </div>
+
+        </div>
+
+        <div id="baidu" style="display: none">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名协议：</label>
+                <div class="col-sm-8">
+                    <input name="bosBaiduDomainProtocol" th:field="*{bosBaiduDomainProtocol}" class="form-control"
+                           type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名：</label>
+                <div class="col-sm-8">
+                    <input name="bosBaiduDomain" th:field="*{bosBaiduDomain}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">节点：</label>
+                <div class="col-sm-8">
+                    <input name="bosBaiduEndpoint" th:field="*{bosBaiduEndpoint}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">存储空间：</label>
+                <div class="col-sm-8">
+                    <input name="bosBaiduBucketName" th:field="*{bosBaiduBucketName}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Access Key：</label>
+                <div class="col-sm-8">
+                    <input name="bosBaiduAccessKey" th:field="*{bosBaiduAccessKey}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Secret Key：</label>
+                <div class="col-sm-8">
+                    <input name="bosBaiduSecretKey" th:field="*{bosBaiduSecretKey}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">图片处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="bosBaiduStyleRule" th:field="*{bosBaiduStyleRule}" class="form-control" type="text"
+                           >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">缩略图处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="bosBaiduThumbnailStyleRule" th:field="*{bosBaiduThumbnailStyleRule}"
+                           class="form-control" type="text" >
+                </div>
+            </div>
+
+        </div>
+        <div id="huawei" style="display: none">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名协议：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiDomainProtocol" th:field="*{obsHuaweiDomainProtocol}" class="form-control"
+                           type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiDomain" th:field="*{obsHuaweiDomain}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">节点：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiEndpoint" th:field="*{obsHuaweiEndpoint}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">存储空间：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiBucketName" th:field="*{obsHuaweiBucketName}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Access Key：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiAccessKey" th:field="*{obsHuaweiAccessKey}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Secret Key：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiAccessSecret" th:field="*{obsHuaweiAccessSecret}" class="form-control"
+                           type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">文件目录：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiSource" th:field="*{obsHuaweiSource}" class="form-control" type="text"
+                           >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">图片处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiStyleRule" th:field="*{obsHuaweiStyleRule}" class="form-control" type="text"
+                           >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">缩略图处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="obsHuaweiThumbnailStyleRule" th:field="*{obsHuaweiThumbnailStyleRule}"
+                           class="form-control" type="text" >
+                </div>
+            </div>
+
+        </div>
+
+        <div id="qiniu" style="display: none">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">区域：</label>
+                <div class="col-sm-8">
+<!--                    <input name="ossQiniuZone" th:field="*{ossQiniuZone}" class="form-control" type="text" required>-->
+                    <select id="ossQiniuZone" name="ossQiniuZone" th:field="*{ossQiniuZone}" class="form-control m-b">
+                        <option value="z0">华东</option>
+                        <option value="z1">华北</option>
+                        <option value="z2">华南</option>
+                        <option value="na0">北美</option>
+                        <option value="as0">东南亚</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名协议：</label>
+                <div class="col-sm-8">
+                    <input name="ossQiniuDomainProtocol" th:field="*{ossQiniuDomainProtocol}" class="form-control"
+                           type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名：</label>
+                <div class="col-sm-8">
+                    <input name="ossQiniuDomain" th:field="*{ossQiniuDomain}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">存储空间：</label>
+                <div class="col-sm-8">
+                    <input name="ossQiniuBucket" th:field="*{ossQiniuBucket}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Access Key：</label>
+                <div class="col-sm-8">
+                    <input name="ossQiniuAccessKey" th:field="*{ossQiniuAccessKey}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Secret Key：</label>
+                <div class="col-sm-8">
+                    <input name="ossQiniuSecretKey" th:field="*{ossQiniuSecretKey}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">文件目录：</label>
+                <div class="col-sm-8">
+                    <input name="ossQiniuSource" th:field="*{ossQiniuSource}" class="form-control" type="text" >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">图片处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="ossQiniuStyleRule" th:field="*{ossQiniuStyleRule}" class="form-control" type="text"
+                           >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">缩略图处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="ossQiniuThumbnailStyleRule" th:field="*{ossQiniuThumbnailStyleRule}"
+                           class="form-control" type="text" >
+                </div>
+            </div>
+
+        </div>
+        <!--            Smms-->
+        <div id="smms" style="display: none">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Secret Token：</label>
+                <div class="col-sm-8">
+                    <input name="smmsApiSecretToken" th:field="*{smmsApiSecretToken}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+        </div>
+        <!--            腾讯云存储-->
+        <div id="tencent" style="display: none">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名协议：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentDomainProtocol" th:field="*{cosTencentDomainProtocol}" class="form-control"
+                           type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentDomain" th:field="*{cosTencentDomain}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">区域（代码）：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentRegion" th:field="*{cosTencentRegion}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">存储空间：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentBucketName" th:field="*{cosTencentBucketName}" class="form-control"
+                           type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Access Key：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentSecretId" th:field="*{cosTencentSecretId}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">Secret Key：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentSecretKey" th:field="*{cosTencentSecretKey}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">文件目录：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentSource" th:field="*{cosTencentSource}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">图片处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentStyleRule" th:field="*{cosTencentStyleRule}" class="form-control" type="text"
+                           >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">缩略图处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="cosTencentThumbnailStyleRule" th:field="*{cosTencentThumbnailStyleRule}"
+                           class="form-control" type="text" >
+                </div>
+            </div>
+        </div>
+        <!--            又拍云存储-->
+        <div id="upYun" style="display: none">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名协议：</label>
+                <div class="col-sm-8">
+                    <input name="ossUpyunDomainProtocol" th:field="*{ossUpyunDomainProtocol}" class="form-control"
+                           type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">绑定域名：</label>
+                <div class="col-sm-8">
+                    <input name="ossUpyunDomain" th:field="*{ossUpyunDomain}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">存储空间：</label>
+                <div class="col-sm-8">
+                    <input name="ossUpyunBucket" th:field="*{ossUpyunBucket}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">操作员账号：</label>
+                <div class="col-sm-8">
+                    <input name="ossUpyunOperator" th:field="*{ossUpyunOperator}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">操作员密码：</label>
+                <div class="col-sm-8">
+                    <input name="ossUpyunPassword" th:field="*{ossUpyunPassword}" class="form-control" type="text"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">文件目录：</label>
+                <div class="col-sm-8">
+                    <input name="ossUpyunSource" th:field="*{ossUpyunSource}" class="form-control" type="text" >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">图片处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="ossUpyunStyleRule" th:field="*{ossUpyunStyleRule}" class="form-control" type="text"
+                           >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">缩略图处理策略：</label>
+                <div class="col-sm-8">
+                    <input name="ossUpyunThumbnailStyleRule" th:field="*{ossUpyunThumbnailStyleRule}"
+                           class="form-control" type="text" >
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-8">
+                <button class="btn btn-primary" onclick="editOption()">提交</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/options";
+    $("#form-options-edit").validate({
+        focusCleanup: true
+    });
+    // $.operate.save(prefix + "/edit", $('#form-options-edit').serialize());
+    var data = $('#form-options-edit').serialize();
+    function editOption() {
+        if ($.validate.form()) {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url:  prefix + "/edit",
+                data: {
+                    attachmentType:$("#attachmentType").val(),
+                    ossAliDomainProtocol:$("input[name='ossAliDomainProtocol']").val(),
+                    ossAliDomain:$("input[name='ossAliDomain']").val(),
+                    ossAliEndpoint:$("input[name='ossAliEndpoint']").val(),
+                    ossAliBucketName:$("input[name='ossAliBucketName']").val(),
+                    ossAliAccessKey:$("input[name='ossAliAccessKey']").val(),
+                    ossAliAccessSecret:$("input[name='ossAliAccessSecret']").val(),
+                    ossAliSource:$("input[name='ossAliSource']").val(),
+                    ossAliStyleRule:$("input[name='ossAliStyleRule']").val(),
+                    ossAliThumbnailStyleRule:$("input[name='ossAliThumbnailStyleRule']").val(),
+                    bosBaiduDomainProtocol:$("input[name='bosBaiduDomainProtocol']").val(),
+                    bosBaiduDomain:$("input[name='bosBaiduDomain']").val(),
+                    bosBaiduEndpoint:$("input[name='bosBaiduEndpoint']").val(),
+                    bosBaiduBucketName:$("input[name='bosBaiduBucketName']").val(),
+                    bosBaiduAccessKey:$("input[name='bosBaiduAccessKey']").val(),
+                    bosBaiduSecretKey:$("input[name='bosBaiduSecretKey']").val(),
+                    bosBaiduStyleRule:$("input[name='bosBaiduStyleRule']").val(),
+                    bosBaiduThumbnailStyleRule:$("input[name='bosBaiduThumbnailStyleRule']").val(),
+                    obsHuaweiDomainProtocol:$("input[name='obsHuaweiDomainProtocol']").val(),
+                    obsHuaweiDomain:$("input[name='obsHuaweiDomain']").val(),
+                    obsHuaweiEndpoint:$("input[name='obsHuaweiEndpoint']").val(),
+                    obsHuaweiBucketName:$("input[name='obsHuaweiBucketName']").val(),
+                    obsHuaweiAccessKey:$("input[name='obsHuaweiAccessKey']").val(),
+                    obsHuaweiAccessSecret:$("input[name='obsHuaweiAccessSecret']").val(),
+                    obsHuaweiSource:$("input[name='obsHuaweiSource']").val(),
+                    obsHuaweiStyleRule:$("input[name='obsHuaweiStyleRule']").val(),
+                    obsHuaweiThumbnailStyleRule:$("input[name='obsHuaweiThumbnailStyleRule']").val(),
+                    ossQiniuZone:$("#ossQiniuZone").val(),
+                    ossQiniuAccessKey:$("input[name='ossQiniuAccessKey']").val(),
+                    ossQiniuSecretKey:$("input[name='ossQiniuSecretKey']").val(),
+                    ossQiniuSource:$("input[name='ossQiniuSource']").val(),
+                    ossQiniuDomainProtocol:$("input[name='ossQiniuDomainProtocol']").val(),
+                    ossQiniuDomain:$("input[name='ossQiniuDomain']").val(),
+                    ossQiniuBucket:$("input[name='ossQiniuBucket']").val(),
+                    ossQiniuStyleRule:$("input[name='ossQiniuStyleRule']").val(),
+                    ossQiniuThumbnailStyleRule:$("input[name='ossQiniuThumbnailStyleRule']").val(),
+                    smmsApiSecretToken:$("input[name='smmsApiSecretToken']").val(),
+                    cosTencentDomainProtocol:$("input[name='cosTencentDomainProtocol']").val(),
+                    cosTencentDomain:$("input[name='cosTencentDomain']").val(),
+                    cosTencentRegion:$("input[name='cosTencentRegion']").val(),
+                    cosTencentBucketName:$("input[name='cosTencentBucketName']").val(),
+                    cosTencentSecretId:$("input[name='cosTencentSecretId']").val(),
+                    cosTencentSecretKey:$("input[name='cosTencentSecretKey']").val(),
+                    cosTencentSource:$("input[name='cosTencentSource']").val(),
+                    cosTencentStyleRule:$("input[name='cosTencentStyleRule']").val(),
+                    cosTencentThumbnailStyleRule:$("input[name='cosTencentThumbnailStyleRule']").val(),
+                    ossUpyunSource:$("input[name='ossUpyunSource']").val(),
+                    ossUpyunPassword:$("input[name='ossUpyunPassword']").val(),
+                    ossUpyunBucket:$("input[name='ossUpyunBucket']").val(),
+                    ossUpyunDomainProtocol:$("input[name='ossUpyunDomainProtocol']").val(),
+                    ossUpyunDomain:$("input[name='ossUpyunDomain']").val(),
+                    ossUpyunOperator:$("input[name='ossUpyunOperator']").val(),
+                    ossUpyunStyleRule:$("input[name='ossUpyunStyleRule']").val(),
+                    ossUpyunThumbnailStyleRule:$("input[name='ossUpyunThumbnailStyleRule']").val(),
+                },
+                async: false,
+                error: function (request) {
+                    $.modal.alertError("系统错误！");
+                },
+                success: function (result) {
+                    if (result.code === 0){
+                        $.modal.alertSuccess(result.msg);
+                    }else {
+                        $.modal.alertError(result.msg);
+                    }
+
+                }
+            });
+        }
+    }
+
+    var attachmentType = $("#attachmentType").val();
+    if (attachmentType === "LOCAL") {
+        $("#ali").attr("style", "display:none;");
+        $("#baidu").attr("style", "display:none;");
+        $("#huawei").attr("style", "display:none;");
+        $("#qiniu").attr("style", "display:none;");
+        $("#smms").attr("style", "display:none;");
+        $("#tencent").attr("style", "display:none;");
+        $("#upYun").attr("style", "display:none;");
+
+    } else if (attachmentType === "UPOSS") {
+        $("#ali").attr("style", "display:none;");
+        $("#baidu").attr("style", "display:none;");
+        $("#huawei").attr("style", "display:none;");
+        $("#qiniu").attr("style", "display:none;");
+        $("#smms").attr("style", "display:none;");
+        $("#tencent").attr("style", "display:none;");
+        $("#upYun").attr("style", "display:block;");
+    } else if (attachmentType === "QINIUOSS") {
+        $("#ali").attr("style", "display:none;");
+        $("#baidu").attr("style", "display:none;");
+        $("#huawei").attr("style", "display:none;");
+        $("#qiniu").attr("style", "display:block;");
+        $("#smms").attr("style", "display:none;");
+        $("#tencent").attr("style", "display:none;");
+        $("#upYun").attr("style", "display:none;");
+    } else if (attachmentType === "SMMS") {
+        $("#ali").attr("style", "display:none;");
+        $("#baidu").attr("style", "display:none;");
+        $("#huawei").attr("style", "display:none;");
+        $("#qiniu").attr("style", "display:none;");
+        $("#smms").attr("style", "display:block;");
+        $("#tencent").attr("style", "display:none;");
+        $("#upYun").attr("style", "display:none;");
+    } else if (attachmentType === "ALIOSS") {
+        $("#ali").attr("style", "display:block;");
+        $("#baidu").attr("style", "display:none;");
+        $("#huawei").attr("style", "display:none;");
+        $("#qiniu").attr("style", "display:none;");
+        $("#smms").attr("style", "display:none;");
+        $("#tencent").attr("style", "display:none;");
+        $("#upYun").attr("style", "display:none;");
+    } else if (attachmentType === "BAIDUBOS") {
+        $("#ali").attr("style", "display:none;");
+        $("#baidu").attr("style", "display:block;");
+        $("#huawei").attr("style", "display:none;");
+        $("#qiniu").attr("style", "display:none;");
+        $("#smms").attr("style", "display:none;");
+        $("#tencent").attr("style", "display:none;");
+        $("#upYun").attr("style", "display:none;");
+    } else if (attachmentType === "TENCENTCOS") {
+        $("#ali").attr("style", "display:none;");
+        $("#baidu").attr("style", "display:none;");
+        $("#huawei").attr("style", "display:none;");
+        $("#qiniu").attr("style", "display:none;");
+        $("#smms").attr("style", "display:none;");
+        $("#tencent").attr("style", "display:block;");
+        $("#upYun").attr("style", "display:none;");
+    } else if (attachmentType === "HUAWEIOBS") {
+        $("#ali").attr("style", "display:none;");
+        $("#baidu").attr("style", "display:none;");
+        $("#huawei").attr("style", "display:block;");
+        $("#qiniu").attr("style", "display:none;");
+        $("#smms").attr("style", "display:none;");
+        $("#tencent").attr("style", "display:none;");
+        $("#upYun").attr("style", "display:none;");
+    }
+
+
+    function changeAttachmentType() {
+        var attachmentType = $("#attachmentType").val();
+        if (attachmentType === "LOCAL") {
+            $("#ali").attr("style", "display:none;");
+            $("#baidu").attr("style", "display:none;");
+            $("#huawei").attr("style", "display:none;");
+            $("#qiniu").attr("style", "display:none;");
+            $("#smms").attr("style", "display:none;");
+            $("#tencent").attr("style", "display:none;");
+            $("#upYun").attr("style", "display:none;");
+
+        } else if (attachmentType === "UPOSS") {
+            $("#ali").attr("style", "display:none;");
+            $("#baidu").attr("style", "display:none;");
+            $("#huawei").attr("style", "display:none;");
+            $("#qiniu").attr("style", "display:none;");
+            $("#smms").attr("style", "display:none;");
+            $("#tencent").attr("style", "display:none;");
+            $("#upYun").attr("style", "display:block;");
+        } else if (attachmentType === "QINIUOSS") {
+            $("#ali").attr("style", "display:none;");
+            $("#baidu").attr("style", "display:none;");
+            $("#huawei").attr("style", "display:none;");
+            $("#qiniu").attr("style", "display:block;");
+            $("#smms").attr("style", "display:none;");
+            $("#tencent").attr("style", "display:none;");
+            $("#upYun").attr("style", "display:none;");
+        } else if (attachmentType === "SMMS") {
+            $("#ali").attr("style", "display:none;");
+            $("#baidu").attr("style", "display:none;");
+            $("#huawei").attr("style", "display:none;");
+            $("#qiniu").attr("style", "display:none;");
+            $("#smms").attr("style", "display:block;");
+            $("#tencent").attr("style", "display:none;");
+            $("#upYun").attr("style", "display:none;");
+        } else if (attachmentType === "ALIOSS") {
+            $("#ali").attr("style", "display:block;");
+            $("#baidu").attr("style", "display:none;");
+            $("#huawei").attr("style", "display:none;");
+            $("#qiniu").attr("style", "display:none;");
+            $("#smms").attr("style", "display:none;");
+            $("#tencent").attr("style", "display:none;");
+            $("#upYun").attr("style", "display:none;");
+        } else if (attachmentType === "BAIDUBOS") {
+            $("#ali").attr("style", "display:none;");
+            $("#baidu").attr("style", "display:block;");
+            $("#huawei").attr("style", "display:none;");
+            $("#qiniu").attr("style", "display:none;");
+            $("#smms").attr("style", "display:none;");
+            $("#tencent").attr("style", "display:none;");
+            $("#upYun").attr("style", "display:none;");
+        } else if (attachmentType === "TENCENTCOS") {
+            $("#ali").attr("style", "display:none;");
+            $("#baidu").attr("style", "display:none;");
+            $("#huawei").attr("style", "display:none;");
+            $("#qiniu").attr("style", "display:none;");
+            $("#smms").attr("style", "display:none;");
+            $("#tencent").attr("style", "display:block;");
+            $("#upYun").attr("style", "display:none;");
+        } else if (attachmentType === "HUAWEIOBS") {
+            $("#ali").attr("style", "display:none;");
+            $("#baidu").attr("style", "display:none;");
+            $("#huawei").attr("style", "display:block;");
+            $("#qiniu").attr("style", "display:none;");
+            $("#smms").attr("style", "display:none;");
+            $("#tencent").attr("style", "display:none;");
+            $("#upYun").attr("style", "display:none;");
+        }
+    }
+</script>
+</body>
+</html>

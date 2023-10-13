@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountClockingMapper">
+
+    <resultMap type="AccountClocking" id="AccountClockingResult">
+        <result property="accountClockingId" column="account_clocking_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+        <result property="clockingDate" column="clocking_date"/>
+        <result property="clockingAddress" column="clocking_address"/>
+        <result property="onWorkTime" column="on_work_time"/>
+        <result property="offWorkTime" column="off_work_time"/>
+        <result property="clockingType" column="clocking_type"/>
+        <result property="clockingStatus" column="clocking_status"/>
+        <result property="offClockingStatus" column="off_clocking_status"/>
+        <result property="offClockingType" column="off_clocking_type"/>
+        <result property="pics" column="pics"/>
+        <result property="remark" column="remark"/>
+        <result property="clockingScore" column="clocking_score"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="offClockingAddress" column="off_clocking_address"/>
+        <result property="offClockingPics" column="off_clocking_pics"/>
+        <result property="offClockingRemark" column="off_clocking_remark"/>
+    </resultMap>
+
+    <sql id="selectAccountClockingVo">
+        select a.account_clocking_id,
+               a.account_id,
+               a.account_name,
+               a.account_phone,
+               a.account_head,
+               a.clocking_date,
+               a.clocking_address,
+               a.on_work_time,
+               a.off_work_time,
+               a.clocking_type,
+               a.clocking_status,
+               a.off_clocking_type,
+               a.off_clocking_status,
+               a.off_clocking_address,
+               a.pics,
+               a.remark,
+               a.clocking_score,
+               a.dept_id,
+               a.company_id,
+               a.post_ids,
+               a.off_clocking_pics,
+               a.off_clocking_remark,
+               a.create_time,
+               a.update_time
+        from account_clocking a
+                 left join sys_dept d on a.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectAccountClockingList" parameterType="AccountClocking" resultMap="AccountClockingResult">
+        <include refid="selectAccountClockingVo"/>
+        <where>
+            a.del_status = 0
+            <if test="accountId != null  and accountId != ''">and a.account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and a.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and a.account_phone like concat('%', #{accountPhone},
+                '%')</if>
+            <if test="accountHead != null  and accountHead != ''">and a.account_head = #{accountHead}</if>
+            <if test="clockingDate != null ">and a.clocking_date = #{clockingDate}</if>
+            <if test="clockingAddress != null  and clockingAddress != ''">and a.clocking_address = #{clockingAddress}</if>
+            <if test="onWorkTime != null ">and a.on_work_time = #{onWorkTime}</if>
+            <if test="offWorkTime != null ">and a.off_work_time = #{offWorkTime}</if>
+            <if test="clockingType != null ">and a.clocking_type = #{clockingType}</if>
+            <if test="clockingStatus != null ">and a.clocking_status = #{clockingStatus}</if>
+            <if test="offClockingType != null ">and a.off_clocking_type = #{offClockingType}</if>
+            <if test="offClockingStatus != null ">and a.off_clocking_status = #{offClockingStatus}</if>
+            <if test="pics != null  and pics != ''">and a.pics = #{pics}</if>
+            <if test="clockingScore != null ">and a.clocking_score = #{clockingScore}</if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and a.post_ids = #{postIds}</if>
+            <if test="offClockingAddress != null  and offClockingAddress != ''">and a.off_clocking_address =
+                #{offClockingAddress}
+            </if>
+            <if test="offClockingPics != null  and offClockingPics != ''"> and a.off_clocking_pics = #{offClockingPics}</if>
+            <if test="offClockingRemark != null  and offClockingRemark != ''"> and a.off_clocking_remark = #{offClockingRemark}</if>
+            <if test="startTime != null  and startTime != ''">and date_format(a.create_time,'%Y-%m-%d')
+                <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null  and endTime != ''">and date_format(a.create_time,'%Y-%m-%d')
+                <![CDATA[ <= ]]> #{endTime}
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by a.create_time desc
+    </select>
+
+    <select id="selectAccountClockingById" parameterType="String" resultMap="AccountClockingResult">
+        <include refid="selectAccountClockingVo"/>
+        where a.del_status = 0 and a.account_clocking_id = #{accountClockingId}
+    </select>
+
+    <insert id="insertAccountClocking" parameterType="AccountClocking">
+        insert into account_clocking
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountClockingId != null">account_clocking_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+            <if test="clockingDate != null">clocking_date,</if>
+            <if test="clockingAddress != null">clocking_address,</if>
+            <if test="onWorkTime != null">on_work_time,</if>
+            <if test="offWorkTime != null">off_work_time,</if>
+            <if test="clockingStatus != null">clocking_status,</if>
+            <if test="pics != null">pics,</if>
+            <if test="remark != null">remark,</if>
+            <if test="clockingScore != null">clocking_score,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="offClockingStatus != null">off_clocking_status,</if>
+            <if test="offClockingAddress != null">off_clocking_address,</if>
+            <if test="clockingType != null">clocking_type,</if>
+            <if test="offClockingType != null">off_clocking_type,</if>
+            <if test="offClockingPics != null">off_clocking_pics,</if>
+            <if test="offClockingRemark != null">off_clocking_remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountClockingId != null">#{accountClockingId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+            <if test="clockingDate != null">#{clockingDate},</if>
+            <if test="clockingAddress != null">#{clockingAddress},</if>
+            <if test="onWorkTime != null">#{onWorkTime},</if>
+            <if test="offWorkTime != null">#{offWorkTime},</if>
+            <if test="clockingStatus != null">#{clockingStatus},</if>
+            <if test="pics != null">#{pics},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="clockingScore != null">#{clockingScore},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="offClockingStatus != null">#{offClockingStatus},</if>
+            <if test="offClockingAddress != null">#{offClockingAddress},</if>
+            <if test="clockingType != null">#{clockingType},</if>
+            <if test="offClockingType != null">#{offClockingType},</if>
+            <if test="offClockingPics != null">#{offClockingPics},</if>
+            <if test="offClockingRemark != null">#{offClockingRemark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountClocking" parameterType="AccountClocking">
+        update account_clocking
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+            <if test="clockingDate != null">clocking_date = #{clockingDate},</if>
+            <if test="clockingAddress != null">clocking_address = #{clockingAddress},</if>
+            <if test="onWorkTime != null">on_work_time = #{onWorkTime},</if>
+            <if test="offWorkTime != null">off_work_time = #{offWorkTime},</if>
+            <if test="clockingStatus != null">clocking_status = #{clockingStatus},</if>
+            <if test="pics != null">pics = #{pics},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="clockingScore != null">clocking_score = #{clockingScore},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="offClockingStatus != null">off_clocking_status = #{offClockingStatus},</if>
+            <if test="offClockingAddress != null">off_clocking_address = #{offClockingAddress},</if>
+            <if test="clockingType != null">clocking_type = #{clockingType},</if>
+            <if test="offClockingType != null">off_clocking_type = #{offClockingType},</if>
+            <if test="offClockingPics != null">off_clocking_pics = #{offClockingPics},</if>
+            <if test="offClockingRemark != null">off_clocking_remark = #{offClockingRemark},</if>
+        </trim>
+        where account_clocking_id = #{accountClockingId}
+    </update>
+
+    <update id="deleteAccountClockingById" parameterType="String">
+        update account_clocking
+        set del_status = 1
+        where account_clocking_id = #{accountClockingId}
+    </update>
+
+    <update id="deleteAccountClockingByIds" parameterType="String">
+        update account_clocking set del_status = 1 where account_clocking_id in
+        <foreach item="accountClockingId" collection="array" open="(" separator="," close=")">
+            #{accountClockingId}
+        </foreach>
+    </update>
+
+    <select id="selectAccountClocking" parameterType="AccountClocking" resultMap="AccountClockingResult">
+        <include refid="selectAccountClockingVo"/>
+        <where>
+            a.del_status = 0
+            <if test="accountId != null  and accountId != ''">and a.account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and a.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and a.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and a.account_head = #{accountHead}</if>
+            <if test="clockingDate != null ">and DATE_FORMAT(a.clocking_date,'%Y-%m-%d') =
+                DATE_FORMAT(#{clockingDate},'%Y-%m-%d')
+            </if>
+            <if test="clockingAddress != null  and clockingAddress != ''">and a.clocking_address = #{clockingAddress}</if>
+            <if test="onWorkTime != null ">and a.on_work_time = #{onWorkTime}</if>
+            <if test="offWorkTime != null ">and a.off_work_time = #{offWorkTime}</if>
+            <if test="clockingStatus != null ">and a.clocking_status = #{clockingStatus}</if>
+            <if test="pics != null  and pics != ''">and a.pics = #{pics}</if>
+            <if test="clockingScore != null ">and a.clocking_score = #{clockingScore}</if>
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and a.post_ids = #{postIds}</if>
+            <if test="offClockingStatus != null ">and a.off_clocking_status = #{offClockingStatus}</if>
+            <if test="offClockingAddress != null  and offClockingAddress != ''">and a.off_clocking_address =
+                #{offClockingAddress}
+            </if>
+            <if test="clockingType != null ">and a.clocking_type = #{clockingType}</if>
+            <if test="offClockingType != null ">and a.off_clocking_type = #{offClockingType}</if>
+            <if test="offClockingPics != null  and offClockingPics != ''"> and a.off_clocking_pics = #{offClockingPics}</if>
+            <if test="offClockingRemark != null  and offClockingRemark != ''"> and a.off_clocking_remark = #{offClockingRemark}</if>
+        </where>
+        limit 1
+    </select>
+
+<!--    api查询考勤列表-->
+    <select id="selectApiAccountClockingList" parameterType="AccountClocking" resultMap="AccountClockingResult">
+        <include refid="selectAccountClockingVo"/>
+        <where>
+            a.del_status = 0
+            <if test="status != null ">and (a.clocking_type = #{status} or a.off_clocking_type = #{status})</if>
+            <if test="month != null and month != ''">and DATE_FORMAT(a.clocking_date,'%Y-%m') =
+                #{month}
+            </if>
+            <if test="accountId != null  and accountId != ''">and a.account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and a.account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and a.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and a.account_head = #{accountHead}</if>
+            <if test="clockingDate != null ">and DATE_FORMAT(a.clocking_date,'%Y-%m-%d') =
+                DATE_FORMAT(#{clockingDate},'%Y-%m-%d')
+            </if>
+
+            <if test="deptId != null ">and a.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and a.company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and a.post_ids = #{postIds}</if>
+            <if test="clockingStatus != null ">and a.clocking_status = #{clockingStatus}</if>
+            <if test="offClockingStatus != null ">and a.off_clocking_status = #{offClockingStatus}</if>
+            <if test="tag != null and tag == 1">and (a.clocking_status = 0 or a.off_clocking_status = 0)</if>
+            <if test="date != null and date != ''">and DATE_FORMAT(clocking_date,'%Y-%m-%d') <![CDATA[ < ]]>
+                #{date}
+            </if>
+        </where>
+        order by a.update_time desc
+    </select>
+
+    <!--    api查询考勤数量-->
+    <select id="selectApiAccountClockingCount" parameterType="AccountClocking" resultType="Integer">
+        select count(*) from account_clocking
+        <where>
+            del_status = 0
+            <if test="status != null ">and (clocking_type = #{status} or off_clocking_type = #{status})</if>
+            <if test="month != null and month != ''">and DATE_FORMAT(clocking_date,'%Y-%m') =
+                #{month}
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="clockingDate != null ">and DATE_FORMAT(clocking_date,'%Y-%m-%d') =
+                DATE_FORMAT(#{clockingDate},'%Y-%m-%d')
+            </if>
+
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="clockingStatus != null ">and clocking_status = #{clockingStatus}</if>
+            <if test="offClockingStatus != null ">and off_clocking_status = #{offClockingStatus}</if>
+        </where>
+    </select>
+
+
+    <!--    api查询考勤统计-->
+    <select id="selectApiAccountClockingStatisticsCount" parameterType="AccountClocking" resultType="Map">
+        select
+        count(*) as clockingCount,
+        count(CASE WHEN clocking_status = '2' THEN clocking_status END) AS beLateCount,
+        count(CASE WHEN off_clocking_status = '3' THEN clocking_status END) AS leaveEarlyCount,
+        (count(CASE WHEN clocking_status = '0' THEN clocking_status END) + count(CASE WHEN off_clocking_status = '0' THEN off_clocking_status END)) AS lackCount
+        from account_clocking
+        <where>
+            del_status = 0
+            <if test="status != null ">and (clocking_type = #{status} or off_clocking_type = #{status})</if>
+            <if test="month != null and month != ''">and DATE_FORMAT(clocking_date,'%Y-%m') =
+                #{month}
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="clockingDate != null ">and DATE_FORMAT(clocking_date,'%Y-%m-%d') =
+                DATE_FORMAT(#{clockingDate},'%Y-%m-%d')
+            </if>
+            <if test="date != null and date != ''">and DATE_FORMAT(clocking_date,'%Y-%m-%d') <![CDATA[ < ]]>
+                #{date}
+            </if>
+
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+        </where>
+    </select>
+
+<!--    查询某个人某个月每一天的考勤情况-->
+    <select id="selectApiClockingListByMonth" parameterType="AccountClocking" resultType="com.wlwq.api.resultVO.clocking.ClockingDayResultVO">
+        SELECT
+            a.date,
+            DATE_FORMAT(a.date, '%Y-%m-%d') as dateStr,
+            ifnull(b.clockingCount, 0) AS clockingCount,
+            (select count(*) from holidays where holidays_date = a.date) as holidayTag
+        FROM
+            (
+            SELECT date FROM
+            (select
+            DATE_ADD(t1.dayed,INTERVAL t2.number DAY) date from
+            (select DATE_ADD(CONCAT(#{month}, '-01'),interval -day(CONCAT(#{month}, '-01'))+1 day) dayed) t1,
+            (SELECT @xi:=@xi+1 as number from
+            (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4) xc1,
+            (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8) xc2,
+            (SELECT @xi:=-1) xc0 ) t2
+            where DATE_ADD(t1.dayed ,INTERVAL t2.number DAY))time WHERE SUBSTRING(date,1,7)=SUBSTRING(CONCAT(#{month}, '-01'),1,7)
+            ) AS a
+            LEFT JOIN (
+            SELECT
+            count(*) AS clockingCount,
+            DATE_FORMAT(clocking_date, '%Y-%m-%d') date
+            FROM
+            account_clocking
+            WHERE
+            account_id = #{accountId}
+            AND DATE_FORMAT(clocking_date, '%Y-%m') = #{month}
+            GROUP BY
+            date
+            ) b ON a.date = b.date
+        ORDER BY
+            a.date
+    </select>
+
+
+    <!--    api查询平均工时-->
+    <select id="selectApiAccountClockingWorkHour" parameterType="AccountClocking" resultType="Double">
+        select
+        ifnull(ROUND(AVG(TimeStampDiff(MINUTE,on_work_time,off_work_time))/60,1),0)
+        from account_clocking
+        <where>
+            del_status = 0 and on_work_time is not null and off_work_time is not null
+            <if test="status != null ">and (clocking_type = #{status} or off_clocking_type = #{status})</if>
+            <if test="month != null and month != ''">and DATE_FORMAT(clocking_date,'%Y-%m') =
+                #{month}
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="clockingDate != null ">and DATE_FORMAT(clocking_date,'%Y-%m-%d') =
+                DATE_FORMAT(#{clockingDate},'%Y-%m-%d')
+            </if>
+
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+        </where>
+    </select>
+
+    <!--    api查询考勤正常天数-->
+    <select id="selectApiAccountNormalClockingDay" parameterType="AccountClocking" resultType="Integer">
+        select count(distinct account_clocking_id) from account_clocking
+        <where>
+            del_status = 0 and clocking_status in(1,6) and off_clocking_status in(1,6)
+            <if test="status != null ">and (clocking_type = #{status} or off_clocking_type = #{status})</if>
+            <if test="month != null and month != ''">and DATE_FORMAT(clocking_date,'%Y-%m') =
+                #{month}
+            </if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},
+                '%')
+            </if>
+            <if test="accountPhone != null  and accountPhone != ''">and account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''">and account_head = #{accountHead}</if>
+            <if test="clockingDate != null ">and DATE_FORMAT(clocking_date,'%Y-%m-%d') =
+                DATE_FORMAT(#{clockingDate},'%Y-%m-%d')
+            </if>
+
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+        </where>
+    </select>
+</mapper>

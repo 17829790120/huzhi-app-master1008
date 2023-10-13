@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('热更新列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>版本号：</label>
+                            <input type="text" name="versionCode"/>
+                        </li>
+                        <li>
+                            <label>版本名称：</label>
+                            <input type="text" name="versionName"/>
+                        </li>
+                        <li>
+                            <label>更新类型：</label>
+                            <select name="updateType" th:with="type=${@dict.getType('hot_update_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+
+                        <li>
+                            <label>更新平台：</label>
+
+                            <select name="type" th:with="type=${@dict.getType('hot_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:hotUpdateWgt:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <!--            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"-->
+            <!--               shiro:hasPermission="web:hotUpdateWgt:edit">-->
+            <!--                <i class="fa fa-edit"></i> 修改-->
+            <!--            </a>-->
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:hotUpdateWgt:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:hotUpdateWgt:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:hotUpdateWgt:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:hotUpdateWgt:remove')}]];
+    var hot_update_type = [[${@dict.getType('hot_update_type')}]];
+    var hot_type = [[${@dict.getType('hot_type')}]];
+    var prefix = ctx + "web/hotUpdateWgt";
+
+    function statusTools(row) {
+        if (row.openStatus == 0) {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.id + '\',1)"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.id + '\',0)"></i> ';
+        }
+    }
+
+    function disable(id, openStatus) {
+        $.modal.confirm("确认禁用该版本嘛？", function () {
+            $.operate.post(prefix + "/changeOpenStatus", {"id": id, "openStatus": openStatus});
+        })
+
+    }
+
+    function enable(id, openStatus) {
+        $.modal.confirm("确认启用该版本嘛？", function () {
+            $.operate.post(prefix + "/changeOpenStatus", {"id": id, "openStatus": openStatus});
+        })
+    }
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "热更新",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '更新id',
+                    visible: false
+                },
+                {
+                    field: 'versionCode',
+                    title: '版本号'
+                },
+                {
+                    field: 'versionName',
+                    title: '版本名称'
+                },
+                {
+                    field: 'versionInfo',
+                    title: '版本描述'
+                },
+                {
+                    field: 'downloadUrl',
+                    title: '更新的路径'
+                },
+                {
+                    field: 'openStatus',
+                    title: '该版本开放状态',
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+
+                {
+                    field: 'updateType',
+                    title: '更新类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(hot_update_type, value);
+                    }
+                },
+
+                {
+                    field: 'type',
+                    title: '更新平台',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(hot_type, value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

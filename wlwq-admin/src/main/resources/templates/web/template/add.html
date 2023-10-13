@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增自定义模版')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-template-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">模版类型：</label>
+            <div class="col-sm-8">
+                <select name="templateType" class="form-control m-b" th:with="type=${@dict.getType('template_type')}" required>
+                    <option value="">请选择</option>
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                            th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <h4 class="form-header h4">自定义字段</h4>
+        <div class="row">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-white btn-sm" onclick="addColumn()"><i class="fa fa-plus"> 增加</i>
+                </button>
+                <span type="button" class="btn btn-white btn-sm" onclick="sub.delColumn()"><i class="fa fa-minus">
+                    删除</i></span>
+                <div class="col-sm-12 select-table table-striped">
+                    <table id="bootstrap-table"></table>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/template"
+    $("#form-template-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-template-add').serializeArray());
+        }
+    }
+
+
+
+    function addColumn() {
+        var count = $("#" + table.options.id).bootstrapTable('getData').length;
+        sub.editColumn();
+        $("#" + table.options.id).bootstrapTable('insertRow', {
+            index: count,
+            row: {
+                index: $.table.serialNumber(count),
+                fieldEnglishName: "",
+                fieldName: "",
+                fieldType: "",
+                fieldOptional: "",
+                fieldLength: "",
+                sortNum: ""
+            }
+        });
+    }
+
+    // 自定义模版字段类型
+    var templateFieldTypeDatas = [[${@dict.getType('template_field_type')}]];
+    // 自定义字段必填/选填
+    var templateFieldOptionalDatas = [[${@dict.getType('template_field_optional')}]];
+
+    $(function () {
+        var options = {
+            pagination: false,
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            sidePagination: "client",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'index',
+                    align: 'center',
+                    title: "序号",
+                    formatter: function (value, row, index) {
+                        var columnIndex = $.common.sprintf("<input required type='hidden' name='index' value='%s'>", $.table.serialNumber(index));
+                        return columnIndex + $.table.serialNumber(index);
+                    }
+                },
+                {
+                    field: 'fieldEnglishName',
+                    align: 'center',
+                    title: '字段英文名称',
+                    formatter: function (value, row, index) {
+                        var html = $.common.sprintf("<input required class='form-control' required type='text' name='templateFieldList[%s].fieldEnglishName' value='%s'>", index, value);
+                        return html;
+                    }
+                },
+                {
+                    field: 'fieldName',
+                    align: 'center',
+                    title: '字段中文名称',
+                    formatter: function (value, row, index) {
+                        var html = $.common.sprintf("<input required class='form-control' required type='text' name='templateFieldList[%s].fieldName' value='%s'>", index, value);
+                        return html;
+                    }
+                },
+                {
+                    field: 'fieldType',
+                    align: 'center',
+                    title: '字段类型',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push($.common.sprintf("<select name='templateFieldList[%s].fieldType'   required>", index));
+                        $.each(templateFieldTypeDatas, function (index, dict) {
+                            actions.push($.common.sprintf("<option %s value='%s'>%s</option>", dict.dictValue == value ? 'selected' : '', dict.dictValue, dict.dictLabel));
+                        });
+                        actions.push("</select>");
+                        return actions.join('');
+                    }
+                },
+                {
+                    field: 'fieldOptional',
+                    align: 'center',
+                    title: '字段是否必填',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push($.common.sprintf("<select name='templateFieldList[%s].fieldOptional'  required>", index));
+                        $.each(templateFieldOptionalDatas, function (index, dict) {
+                            actions.push($.common.sprintf("<option %s value='%s'>%s</option>", dict.dictValue == value ? 'selected' : '', dict.dictValue, dict.dictLabel));
+                        });
+                        actions.push("</select>");
+                        return actions.join('');
+                    }
+                },
+                {
+                    field: 'fieldLength',
+                    align: 'center',
+                    title: '字段长度',
+                    formatter: function (value, row, index) {
+                        var html = $.common.sprintf("<input required class='form-control' type='number' required name='templateFieldList[%s].fieldLength' value='%s'>", index, value);
+                        return html;
+                    }
+                },
+                {
+                    field: 'sortNum',
+                    align: 'center',
+                    title: '字段排序，越小越靠前',
+                    formatter: function (value, row, index) {
+                        var html = $.common.sprintf("<input required class='form-control' type='number' required name='templateFieldList[%s].sortNum' value='%s'>", index, value);
+                        return html;
+                    }
+                }
+            ]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

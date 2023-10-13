@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.QuestionnaireMapper">
+
+    <resultMap type="Questionnaire" id="QuestionnaireResult">
+        <result property="questionnaireId" column="questionnaire_id"/>
+        <result property="insideSurveyCategoryId" column="inside_survey_category_id"/>
+        <result property="title" column="title"/>
+        <result property="questionnaireCount" column="questionnaire_count"/>
+        <result property="score" column="score"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="creatorDeptId" column="creator_dept_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="sortNum" column="sort_num"/>
+    </resultMap>
+
+    <sql id="selectQuestionnaireVo">
+        select questionnaire_id, inside_survey_category_id, title, questionnaire_count, score, creator_id, creator_name,
+            creator_dept_id, create_time, sort_num, del_status, dept_id, image_url from questionnaire
+    </sql>
+
+    <select id="selectQuestionnaireList" parameterType="Questionnaire" resultMap="QuestionnaireResult">
+        <include refid="selectQuestionnaireVo"/>
+        <where>
+            del_status = 0
+            <if test="insideSurveyCategoryId != null  and insideSurveyCategoryId != ''">and inside_survey_category_id =
+                #{insideSurveyCategoryId}
+            </if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="questionnaireCount != null ">and questionnaire_count = #{questionnaireCount}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="creatorId != null ">and creator_id = #{creatorId}</if>
+            <if test="creatorName != null  and creatorName != ''">and creator_name like concat('%', #{creatorName},
+                '%')
+            </if>
+            <if test="creatorDeptId != null ">and creator_dept_id = #{creatorDeptId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="imageUrl != null  and imageUrl != ''">and image_url = #{imageUrl}</if>
+            <if test="sortNum != null "> and sort_num = #{sortNum}</if>
+        </where>
+        order by sort_num, create_time desc
+    </select>
+
+    <select id="selectQuestionnaireById" parameterType="String" resultMap="QuestionnaireResult">
+        <include refid="selectQuestionnaireVo"/>
+        where questionnaire_id = #{questionnaireId}
+    </select>
+
+    <insert id="insertQuestionnaire" parameterType="Questionnaire">
+        insert into questionnaire
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionnaireId != null">questionnaire_id,</if>
+            <if test="insideSurveyCategoryId != null">inside_survey_category_id,</if>
+            <if test="title != null">title,</if>
+            <if test="questionnaireCount != null">questionnaire_count,</if>
+            <if test="score != null">score,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="creatorName != null">creator_name,</if>
+            <if test="creatorDeptId != null">creator_dept_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="imageUrl != null">image_url,</if>
+            <if test="sortNum != null">sort_num,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionnaireId != null">#{questionnaireId},</if>
+            <if test="insideSurveyCategoryId != null">#{insideSurveyCategoryId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="questionnaireCount != null">#{questionnaireCount},</if>
+            <if test="score != null">#{score},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="creatorName != null">#{creatorName},</if>
+            <if test="creatorDeptId != null">#{creatorDeptId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="imageUrl != null">#{imageUrl},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+        </trim>
+    </insert>
+
+    <update id="updateQuestionnaire" parameterType="Questionnaire">
+        update questionnaire
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="insideSurveyCategoryId != null">inside_survey_category_id = #{insideSurveyCategoryId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="questionnaireCount != null">questionnaire_count = #{questionnaireCount},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="creatorName != null">creator_name = #{creatorName},</if>
+            <if test="creatorDeptId != null">creator_dept_id = #{creatorDeptId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+        </trim>
+        where questionnaire_id = #{questionnaireId}
+    </update>
+
+    <!--    <delete id="deleteQuestionnaireById" parameterType="String">
+            delete from questionnaire where questionnaire_id = #{questionnaireId}
+        </delete>
+
+        <delete id="deleteQuestionnaireByIds" parameterType="String">
+            delete from questionnaire where questionnaire_id in
+            <foreach item="questionnaireId" collection="array" open="(" separator="," close=")">
+                #{questionnaireId}
+            </foreach>
+        </delete>-->
+    <update id="deleteQuestionnaireById" parameterType="String">
+        update questionnaire set del_status = 1 where questionnaire_id = #{questionnaireId}
+    </update>
+
+    <update id="deleteQuestionnaireByIds" parameterType="String">
+        update questionnaire set del_status = 1 where questionnaire_id in
+        <foreach item="questionnaireId" collection="array" open="(" separator="," close=")">
+            #{questionnaireId}
+        </foreach>
+    </update>
+</mapper>

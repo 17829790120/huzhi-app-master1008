@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.MeetingTrainingItemMapper">
+
+    <resultMap type="MeetingTrainingItem" id="MeetingTrainingItemResult">
+        <result property="meetingTrainingItemId" column="meeting_training_item_id"/>
+        <result property="title" column="title"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="companyId" column="company_id"/>
+        <result property="meetingTrainingId" column="meeting_training_id"/>
+    </resultMap>
+
+    <sql id="selectMeetingTrainingItemVo">
+        select meeting_training_item_id, title, synopsis, create_time, update_time, sort_num, begin_time, end_time, company_id, meeting_training_id from meeting_training_item
+    </sql>
+
+    <select id="selectMeetingTrainingItemList" parameterType="MeetingTrainingItem"
+            resultMap="MeetingTrainingItemResult">
+        <include refid="selectMeetingTrainingItemVo"/>
+        <where>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="synopsis != null  and synopsis != ''">and synopsis like concat('%', #{synopsis}, '%')</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="beginTime != null ">and begin_time = #{beginTime}</if>
+            <if test="endTime != null ">and end_time = #{endTime}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="meetingTrainingId != null  and meetingTrainingId != ''">and meeting_training_id =
+                #{meetingTrainingId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMeetingTrainingItemById" parameterType="String" resultMap="MeetingTrainingItemResult">
+        <include refid="selectMeetingTrainingItemVo"/>
+        where meeting_training_item_id = #{meetingTrainingItemId}
+    </select>
+
+    <insert id="insertMeetingTrainingItem" parameterType="MeetingTrainingItem">
+        insert into meeting_training_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="meetingTrainingItemId != null">meeting_training_item_id,</if>
+            <if test="title != null">title,</if>
+            <if test="synopsis != null">synopsis,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="beginTime != null">begin_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="meetingTrainingId != null and meetingTrainingId != ''">meeting_training_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="meetingTrainingItemId != null">#{meetingTrainingItemId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="synopsis != null">#{synopsis},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="beginTime != null">#{beginTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="meetingTrainingId != null and meetingTrainingId != ''">#{meetingTrainingId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMeetingTrainingItem" parameterType="MeetingTrainingItem">
+        update meeting_training_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="synopsis != null">synopsis = #{synopsis},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="beginTime != null">begin_time = #{beginTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="meetingTrainingId != null and meetingTrainingId != ''">meeting_training_id =
+                #{meetingTrainingId},
+            </if>
+        </trim>
+        where meeting_training_item_id = #{meetingTrainingItemId}
+    </update>
+
+    <delete id="deleteMeetingTrainingItemById" parameterType="String">
+        delete from meeting_training_item where meeting_training_item_id = #{meetingTrainingItemId}
+    </delete>
+
+    <delete id="deleteMeetingTrainingItemByIds" parameterType="String">
+        delete from meeting_training_item where meeting_training_item_id in
+        <foreach item="meetingTrainingItemId" collection="array" open="(" separator="," close=")">
+            #{meetingTrainingItemId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMeetingTrainingItemByMeetingTrainingId">
+        delete from meeting_training_item where meeting_training_id = #{meetingTrainingId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.SysDeptScoreMapper">
+
+    <resultMap type="SysDeptScore" id="SysDeptScoreResult">
+        <result property="sysDeptScoreId" column="sys_dept_score_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="sysSetScore" column="sys_set_score"/>
+        <result property="score" column="score"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delStatus" column="del_status"/>
+    </resultMap>
+
+    <sql id="selectSysDeptScoreVo">
+        select sys_dept_score_id, dept_id, sys_set_score, score, create_time, update_time, del_status
+        from sys_dept_score
+    </sql>
+
+    <select id="selectSysDeptScoreList" parameterType="SysDeptScore" resultMap="SysDeptScoreResult">
+        <include refid="selectSysDeptScoreVo"/>
+        <where>
+            del_status = 0
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="sysSetScore != null">and sys_set_score = #{sysSetScore}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectSysDeptScoreById" parameterType="String" resultMap="SysDeptScoreResult">
+        <include refid="selectSysDeptScoreVo"/>
+        where del_status = 0 and sys_dept_score_id = #{sysDeptScoreId}
+    </select>
+
+    <insert id="insertSysDeptScore" parameterType="SysDeptScore">
+        insert into sys_dept_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sysDeptScoreId != null">sys_dept_score_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="sysSetScore != null">sys_set_score,</if>
+            <if test="score != null">score,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delStatus != null">del_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sysDeptScoreId != null">#{sysDeptScoreId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="sysSetScore != null">#{sysSetScore},</if>
+            <if test="score != null">#{score},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysDeptScore" parameterType="SysDeptScore">
+        update sys_dept_score
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="sysSetScore != null">sys_set_score = #{sysSetScore},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+        </trim>
+        where sys_dept_score_id = #{sysDeptScoreId}
+    </update>
+
+    <update id="deleteSysDeptScoreById" parameterType="String">
+        update sys_dept_score set del_status = 1
+        where sys_dept_score_id = #{sysDeptScoreId}
+    </update>
+
+    <update id="deleteSysDeptScoreByIds" parameterType="String">
+        update sys_dept_score set del_status = 1 where sys_dept_score_id in
+        <foreach item="sysDeptScoreId" collection="array" open="(" separator="," close=")">
+            #{sysDeptScoreId}
+        </foreach>
+    </update>
+
+    <select id="selectSysDeptScore" parameterType="SysDeptScore" resultMap="SysDeptScoreResult">
+        <include refid="selectSysDeptScoreVo"/>
+        <where>
+            del_status = 0
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="sysSetScore != null">and sys_set_score = #{sysSetScore}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+        </where>
+        order by create_time desc limit 1
+    </select>
+</mapper>

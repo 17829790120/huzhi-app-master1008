@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增用户列表')"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-account-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">用户手机号：</label>
+            <div class="col-sm-8">
+                <input name="phone" class="form-control" type="number" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">头像：</label>
+            <div class="col-sm-8">
+                <input id="image" name="headPortrait" class="form-control">
+                <div class="file-loading">
+                    <input id="fileInput" name="file" type="file" multiple>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">姓名：</label>
+            <div class="col-sm-8">
+                <input name="nickName" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">性别：</label>
+            <div class="col-sm-8">
+                <select class="form-control" name="sex" required>
+                    <option value="">请选择</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                    <option value="0">未知</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">生日：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <input name="birthday" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">地址：</label>
+            <div class="col-sm-8">
+                <input name="address" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">个性签名：</label>
+            <div class="col-sm-8">
+                <textarea name="briefIntroduction" class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">用户归属公司：</label>
+            <div class="col-sm-8">
+                <select name="companyId" id="companyId" class="form-control" onchange="selectPostsById()" required>
+                    <option value="">请选择</option>
+                    <option th:each="company : ${companyList}" th:text="${company.deptName}"
+                            th:value="${company.deptId}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">归属部门：</label>
+            <div class="col-sm-8">
+                <select name="deptId" id="deptId" class="form-control" required>
+
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">岗位：</label>
+            <div class="col-sm-8">
+                <select name="postIds" id="postIds" class="form-control select2-multiple" multiple required>
+
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">所属小组：</label>
+            <div class="col-sm-8">
+                <select name="groupInforIds" id="groupInforIds" class="form-control select2-multiple" multiple>
+
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">APP权限：</label>
+            <div class="col-sm-8">
+                <select name="appPower" class="form-control select2-multiple" multiple>
+                    <option th:each="post : ${sysDictDataList}" th:text="${post.dictLabel}"
+                            th:value="${post.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">职位等级：</label>
+            <div class="col-sm-8">
+                <select name="positionType" class="form-control select2-multiple">
+                    <option th:each="post : ${positionTypeList}" th:text="${post.dictLabel}"
+                            th:value="${post.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">工号：</label>
+            <div class="col-sm-8">
+                <input name="jobNumber" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">是否禁用：</label>
+            <div class="col-sm-8">
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" checked value="0" name="forbiddenStatus"> <i></i> 否</label>
+                </div>
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" value="1" name="forbiddenStatus"> <i></i>
+                        是</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">是否体验账号：</label>
+            <div class="col-sm-8">
+                <select class="form-control" name="isExperience" required>
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+
+
+    var prefix = ctx + "web/account"
+    $("#form-account-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-account-add').serialize());
+        }
+    }
+
+    $("input[name='birthday']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+
+    // 根据公司查询岗位
+    function selectPostsById() {
+        var companyId = $("#companyId").val();
+        if (companyId == null || companyId == "") {
+            $('#postIds').html("");
+            $('#deptId').html("");
+            $('#groupInforIds').html("");
+            return;
+        }
+        $.post(ctx + 'system/post/selectPostsById', {companyId: companyId,accountId:0}, function (data) {
+            $('#postIds').html("");
+            if (data != null) {
+                //先创建好select里面的option元素
+                var option = document.createElement("option");
+                //转换DOM对象为JQ对象,好用JQ里面提供的方法 给option的value赋值
+                $(option).val("");
+                //给option的text赋值,这就是你点开下拉框能够看到的东西
+                $(option).text("请选择");
+                //获取select 下拉框对象,并将option添加进select
+                $('#postIds').append(option);
+                for (var i = 0; i < data.length; i++) {
+                    //先创建好select里面的option元素
+                    var option = document.createElement("option");
+                    //转换DOM对象为JQ对象,好用JQ里面提供的方法 给option的value赋值
+                    $(option).val(data[i].postId);
+                    //给option的text赋值,这就是你点开下拉框能够看到的东西
+                    $(option).text(data[i].postName);
+                    //获取select 下拉框对象,并将option添加进select
+                    $('#postIds').append(option);
+                }
+            }
+
+        })
+        // 根据公司查询部门
+        $.post(ctx + 'system/dept/selectDeptListById', {companyId: companyId}, function (data) {
+            $('#deptId').html("");
+            if (data != null) {
+                //先创建好select里面的option元素
+                var option = document.createElement("option");
+                //转换DOM对象为JQ对象,好用JQ里面提供的方法 给option的value赋值
+                $(option).val("");
+                //给option的text赋值,这就是你点开下拉框能够看到的东西
+                $(option).text("请选择");
+                //获取select 下拉框对象,并将option添加进select
+                $('#deptId').append(option);
+                for (var i = 0; i < data.length; i++) {
+                    //先创建好select里面的option元素
+                    var option = document.createElement("option");
+                    //转换DOM对象为JQ对象,好用JQ里面提供的方法 给option的value赋值
+                    $(option).val(data[i].deptId);
+                    //给option的text赋值,这就是你点开下拉框能够看到的东西
+                    $(option).text(data[i].deptName);
+                    //获取select 下拉框对象,并将option添加进select
+                    $('#deptId').append(option);
+                }
+            }
+
+        })
+        // 根据公司查询小组信息
+        $.post(ctx + 'web/account/selectGroupListById', {companyId: companyId}, function (data) {
+            $('#groupInforIds').html("");
+            if (data != null) {
+                //先创建好select里面的option元素
+                var option = document.createElement("option");
+                //转换DOM对象为JQ对象,好用JQ里面提供的方法 给option的value赋值
+                $(option).val("");
+                //给option的text赋值,这就是你点开下拉框能够看到的东西
+                $(option).text("请选择");
+                //获取select 下拉框对象,并将option添加进select
+                $('#groupInforIds').append(option);
+                for (var i = 0; i < data.length; i++) {
+                    //先创建好select里面的option元素
+                    var option = document.createElement("option");
+                    //转换DOM对象为JQ对象,好用JQ里面提供的方法 给option的value赋值
+                    $(option).val(data[i].groupInforId);
+                    //给option的text赋值,这就是你点开下拉框能够看到的东西
+                    $(option).text(data[i].groupInforName);
+                    //获取select 下拉框对象,并将option添加进select
+                    $('#groupInforIds').append(option);
+                }
+            }
+
+        })
+    }
+
+    // 单图片上传成功后回调值存储到这个变量中
+    var imageUploadResult = '';
+    // 单图片上传组件
+    $(document).ready(function () {
+        $("#fileInput").fileinput({
+            theme: 'explorer-fas',
+            uploadUrl: ctx + 'app/upload',
+            overwriteInitial: false,
+            initialPreviewAsData: true,
+            uploadAsync: true, // 异步上传
+            minFileCount: 1, // 上传最小数量
+            maxFileCount: 1, //上传最大数量
+            autoReplace: true, // 自动替换当前图片
+            maxFileSize: 20480 // 文件大小限制 最大2M
+        });
+    });
+    // 单图片上传成功后回调
+    $("#fileInput").on("fileuploaded", function (event, data, previewId, index) {
+        if (data.response.status === 'success') {
+            imageUploadResult = data.response.message;
+            $("#image").val(imageUploadResult);
+            $.modal.msgSuccess("上传成功！");
+        } else {
+            $.modal.msgError("上传错误！");
+        }
+    });
+</script>
+</body>
+</html>

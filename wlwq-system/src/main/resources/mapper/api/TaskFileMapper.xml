@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.TaskFileMapper">
+
+    <resultMap type="TaskFile" id="TaskFileResult">
+        <result property="taskFileId" column="task_file_id"/>
+        <result property="taskInitiateId" column="task_initiate_id"/>
+        <result property="taskFileType" column="task_file_type"/>
+        <result property="taskFileName" column="task_file_name"/>
+        <result property="taskFileUrl" column="task_file_url"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineFileSize" column="examine_file_size"/>
+        <result property="fileTag" column="file_tag"/>
+    </resultMap>
+
+    <sql id="selectTaskFileVo">
+        select task_file_id,
+               task_initiate_id,
+               task_file_type,
+               task_file_name,
+               task_file_url,
+               del_status,
+               create_time,
+               update_time,
+               examine_file_size,
+               file_tag
+        from task_file
+    </sql>
+
+    <select id="selectTaskFileList" parameterType="TaskFile" resultMap="TaskFileResult">
+        <include refid="selectTaskFileVo"/>
+        <where>
+            del_status = 0
+            <if test="taskInitiateId != null  and taskInitiateId != ''">and task_initiate_id = #{taskInitiateId}</if>
+            <if test="taskFileType != null ">and task_file_type = #{taskFileType}</if>
+            <if test="taskFileName != null  and taskFileName != ''">and task_file_name like concat('%', #{taskFileName},
+                '%')
+            </if>
+            <if test="taskFileUrl != null  and taskFileUrl != ''">and task_file_url = #{taskFileUrl}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examineFileSize != null ">and examine_file_size = #{examineFileSize}</if>
+            <if test="fileTag != null  and fileTag != ''">and file_tag = #{fileTag}</if>
+        </where>
+    </select>
+
+    <select id="selectTaskFileById" parameterType="String" resultMap="TaskFileResult">
+        <include refid="selectTaskFileVo"/>
+        where del_status = 0 and task_file_id = #{taskFileId}
+    </select>
+
+    <insert id="insertTaskFile" parameterType="TaskFile">
+        insert into task_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskFileId != null">task_file_id,</if>
+            <if test="taskInitiateId != null">task_initiate_id,</if>
+            <if test="taskFileType != null">task_file_type,</if>
+            <if test="taskFileName != null">task_file_name,</if>
+            <if test="taskFileUrl != null">task_file_url,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineFileSize != null">examine_file_size,</if>
+            <if test="fileTag != null">file_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskFileId != null">#{taskFileId},</if>
+            <if test="taskInitiateId != null">#{taskInitiateId},</if>
+            <if test="taskFileType != null">#{taskFileType},</if>
+            <if test="taskFileName != null">#{taskFileName},</if>
+            <if test="taskFileUrl != null">#{taskFileUrl},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineFileSize != null">#{examineFileSize},</if>
+            <if test="fileTag != null">#{fileTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTaskFile" parameterType="TaskFile">
+        update task_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskInitiateId != null">task_initiate_id = #{taskInitiateId},</if>
+            <if test="taskFileType != null">task_file_type = #{taskFileType},</if>
+            <if test="taskFileName != null">task_file_name = #{taskFileName},</if>
+            <if test="taskFileUrl != null">task_file_url = #{taskFileUrl},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineFileSize != null">examine_file_size = #{examineFileSize},</if>
+            <if test="fileTag != null">file_tag = #{fileTag},</if>
+        </trim>
+        where task_file_id = #{taskFileId}
+    </update>
+
+    <delete id="deleteTaskFileById" parameterType="String">
+        delete
+        from task_file
+        where task_file_id = #{taskFileId}
+    </delete>
+
+    <delete id="deleteTaskFileByIds" parameterType="String">
+        delete from task_file where task_file_id in
+        <foreach item="taskFileId" collection="array" open="(" separator="," close=")">
+            #{taskFileId}
+        </foreach>
+    </delete>
+
+</mapper>

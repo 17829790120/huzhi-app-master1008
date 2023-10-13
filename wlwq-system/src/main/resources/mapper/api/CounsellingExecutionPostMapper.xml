@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CounsellingExecutionPostMapper">
+
+    <resultMap type="CounsellingExecutionPost" id="CounsellingExecutionPostResult">
+        <result property="counsellingExecutionPostId" column="counselling_execution_post_id"/>
+        <result property="counsellingExecutionCategoryId" column="counselling_execution_category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="informationPostImages" column="information_post_images"/>
+        <result property="informationPostContent" column="information_post_content"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="basicsBrowseNumber" column="basics_browse_number"/>
+        <result property="hostStatus" column="host_status"/>
+        <result property="topStatus" column="top_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="informationPostTitle" column="information_post_title"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="realBrowseNumber" column="realBrowseNumber"/>
+    </resultMap>
+
+    <sql id="selectCounsellingExecutionPostVo">
+        select counselling_execution_post_id, counselling_execution_category_id, dept_id, user_id, information_post_images,
+            information_post_content, sort_num, basics_browse_number, host_status, top_status, del_status, create_time, update_time,
+            information_post_title, synopsis,
+            (select ifnull(count(br.information_browse_record_id), 0)
+                from information_browse_record br
+                where br.information_post_id = counselling_execution_post.counselling_execution_post_id)  as realBrowseNumber,
+            (select category_name
+                from counselling_execution_category cat
+                where cat.counselling_execution_category_id = counselling_execution_post.counselling_execution_category_id)  as category_name
+        from counselling_execution_post
+    </sql>
+
+    <select id="selectCounsellingExecutionPostList" parameterType="CounsellingExecutionPost"
+            resultMap="CounsellingExecutionPostResult">
+        <include refid="selectCounsellingExecutionPostVo"/>
+        <where>
+            <if test="counsellingExecutionCategoryId != null  and counsellingExecutionCategoryId != ''">and
+                counselling_execution_category_id = #{counsellingExecutionCategoryId}
+            </if>
+            <if test="categoryName != null  and categoryName != ''">and category_name like concat('%', #{categoryName},
+                '%')
+            </if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="informationPostImages != null  and informationPostImages != ''">and information_post_images =
+                #{informationPostImages}
+            </if>
+            <if test="informationPostContent != null  and informationPostContent != ''">and information_post_content
+                like concat('%', #{informationPostContent}, '%')
+            </if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="basicsBrowseNumber != null ">and basics_browse_number = #{basicsBrowseNumber}</if>
+            <if test="hostStatus != null ">and host_status = #{hostStatus}</if>
+            <if test="topStatus != null ">and top_status = #{topStatus}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="informationPostTitle != null  and informationPostTitle != ''">and information_post_title like
+                concat('%', #{informationPostTitle}, '%')
+            </if>
+            <if test="synopsis != null  and synopsis != ''">and synopsis like concat('%', #{synopsis}, '%')</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectCounsellingExecutionPostById" parameterType="String" resultMap="CounsellingExecutionPostResult">
+        <include refid="selectCounsellingExecutionPostVo"/>
+        where counselling_execution_post_id = #{counsellingExecutionPostId}
+    </select>
+
+    <insert id="insertCounsellingExecutionPost" parameterType="CounsellingExecutionPost">
+        insert into counselling_execution_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="counsellingExecutionPostId != null">counselling_execution_post_id,</if>
+            <if test="counsellingExecutionCategoryId != null">counselling_execution_category_id,</if>
+            <if test="categoryName != null">category_name,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="informationPostImages != null">information_post_images,</if>
+            <if test="informationPostContent != null">information_post_content,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="basicsBrowseNumber != null">basics_browse_number,</if>
+            <if test="hostStatus != null">host_status,</if>
+            <if test="topStatus != null">top_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="informationPostTitle != null">information_post_title,</if>
+            <if test="synopsis != null">synopsis,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="counsellingExecutionPostId != null">#{counsellingExecutionPostId},</if>
+            <if test="counsellingExecutionCategoryId != null">#{counsellingExecutionCategoryId},</if>
+            <if test="categoryName != null">#{categoryName},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="informationPostImages != null">#{informationPostImages},</if>
+            <if test="informationPostContent != null">#{informationPostContent},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="basicsBrowseNumber != null">#{basicsBrowseNumber},</if>
+            <if test="hostStatus != null">#{hostStatus},</if>
+            <if test="topStatus != null">#{topStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="informationPostTitle != null">#{informationPostTitle},</if>
+            <if test="synopsis != null">#{synopsis},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCounsellingExecutionPost" parameterType="CounsellingExecutionPost">
+        update counselling_execution_post
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="counsellingExecutionCategoryId != null">counselling_execution_category_id =
+                #{counsellingExecutionCategoryId},
+            </if>
+            <if test="categoryName != null">category_name = #{categoryName},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="informationPostImages != null">information_post_images = #{informationPostImages},</if>
+            <if test="informationPostContent != null">information_post_content = #{informationPostContent},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="basicsBrowseNumber != null">basics_browse_number = #{basicsBrowseNumber},</if>
+            <if test="hostStatus != null">host_status = #{hostStatus},</if>
+            <if test="topStatus != null">top_status = #{topStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="informationPostTitle != null">information_post_title = #{informationPostTitle},</if>
+            <if test="synopsis != null">synopsis = #{synopsis},</if>
+        </trim>
+        where counselling_execution_post_id = #{counsellingExecutionPostId}
+    </update>
+
+    <delete id="deleteCounsellingExecutionPostById" parameterType="String">
+        delete from counselling_execution_post where counselling_execution_post_id = #{counsellingExecutionPostId}
+    </delete>
+
+    <delete id="deleteCounsellingExecutionPostByIds" parameterType="String">
+        delete from counselling_execution_post where counselling_execution_post_id in
+        <foreach item="counsellingExecutionPostId" collection="array" open="(" separator="," close=")">
+            #{counsellingExecutionPostId}
+        </foreach>
+    </delete>
+
+</mapper>

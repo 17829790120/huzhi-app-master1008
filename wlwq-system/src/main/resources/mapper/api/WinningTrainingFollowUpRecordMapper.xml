@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.WinningTrainingFollowUpRecordMapper">
+
+    <resultMap type="WinningTrainingFollowUpRecord" id="WinningTrainingFollowUpRecordResult">
+        <result property="winningTrainingFollowUpRecordId" column="winning_training_follow_up_record_id"/>
+        <result property="winningTrainingRecordId" column="winning_training_record_id"/>
+        <result property="content" column="content"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="companyId" column="company_id"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorHeadPortrait" column="creator_head_portrait"/>
+        <result property="creatorNickName" column="creator_nick_name"/>
+        <result property="pkBettingType" column="pk_betting_type"/>
+        <result property="winningTrainingType" column="winning_training_type"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="postNames" column="post_names"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="companyName" column="company_name"/>
+        <result property="pictureUrl" column="picture_url"/>
+    </resultMap>
+
+    <sql id="selectWinningTrainingFollowUpRecordVo">
+        select winning_training_follow_up_record_id, winning_training_record_id, content, del_status, create_time, update_time,
+            show_status, company_id, creator_id, creator_head_portrait, creator_nick_name, pk_betting_type, winning_training_type,
+            dept_id, post_ids, post_names, dept_name, company_name, picture_url
+        from winning_training_follow_up_record
+    </sql>
+
+    <select id="selectWinningTrainingFollowUpRecordList" parameterType="WinningTrainingFollowUpRecord"
+            resultMap="WinningTrainingFollowUpRecordResult">
+        <include refid="selectWinningTrainingFollowUpRecordVo"/>
+        <where>
+            1=1
+            <if test="winningTrainingRecordId != null  and winningTrainingRecordId != ''">and winning_training_record_id
+                = #{winningTrainingRecordId}
+            </if>
+            <if test="content != null  and content != ''">and content like concat('%', #{content}, '%')</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="creatorId != null ">and creator_id = #{creatorId}</if>
+            <if test="creatorHeadPortrait != null  and creatorHeadPortrait != ''">and creator_head_portrait =
+                #{creatorHeadPortrait}
+            </if>
+            <if test="creatorNickName != null  and creatorNickName != ''">and creator_nick_name like concat('%',
+                #{creatorNickName}, '%')
+            </if>
+            <if test="pkBettingType != null ">and pk_betting_type = #{pkBettingType}</if>
+            <if test="winningTrainingType != null ">and winning_training_type = #{winningTrainingType}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="postNames != null  and postNames != ''">and post_names like concat('%', #{postNames}, '%')</if>
+            <if test="deptName != null  and deptName != ''">and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="companyName != null  and companyName != ''">and company_name like concat('%', #{companyName},
+                '%')
+            </if>
+            <if test="pictureUrl != null  and pictureUrl != ''">and picture_url = #{pictureUrl}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectWinningTrainingFollowUpRecordById" parameterType="String"
+            resultMap="WinningTrainingFollowUpRecordResult">
+        <include refid="selectWinningTrainingFollowUpRecordVo"/>
+        where winning_training_follow_up_record_id = #{winningTrainingFollowUpRecordId}
+    </select>
+
+    <insert id="insertWinningTrainingFollowUpRecord" parameterType="WinningTrainingFollowUpRecord">
+        insert into winning_training_follow_up_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="winningTrainingFollowUpRecordId != null">winning_training_follow_up_record_id,</if>
+            <if test="winningTrainingRecordId != null">winning_training_record_id,</if>
+            <if test="content != null">content,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="creatorHeadPortrait != null">creator_head_portrait,</if>
+            <if test="creatorNickName != null">creator_nick_name,</if>
+            <if test="pkBettingType != null">pk_betting_type,</if>
+            <if test="winningTrainingType != null">winning_training_type,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="postNames != null">post_names,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="pictureUrl != null">picture_url,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="winningTrainingFollowUpRecordId != null">#{winningTrainingFollowUpRecordId},</if>
+            <if test="winningTrainingRecordId != null">#{winningTrainingRecordId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="creatorHeadPortrait != null">#{creatorHeadPortrait},</if>
+            <if test="creatorNickName != null">#{creatorNickName},</if>
+            <if test="pkBettingType != null">#{pkBettingType},</if>
+            <if test="winningTrainingType != null">#{winningTrainingType},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="postNames != null">#{postNames},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="pictureUrl != null">#{pictureUrl},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWinningTrainingFollowUpRecord" parameterType="WinningTrainingFollowUpRecord">
+        update winning_training_follow_up_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="winningTrainingRecordId != null">winning_training_record_id = #{winningTrainingRecordId},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="creatorHeadPortrait != null">creator_head_portrait = #{creatorHeadPortrait},</if>
+            <if test="creatorNickName != null">creator_nick_name = #{creatorNickName},</if>
+            <if test="pkBettingType != null">pk_betting_type = #{pkBettingType},</if>
+            <if test="winningTrainingType != null">winning_training_type = #{winningTrainingType},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="postNames != null">post_names = #{postNames},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="pictureUrl != null">picture_url = #{pictureUrl},</if>
+        </trim>
+        where winning_training_follow_up_record_id = #{winningTrainingFollowUpRecordId}
+    </update>
+
+    <delete id="deleteWinningTrainingFollowUpRecordById" parameterType="String">
+        delete from winning_training_follow_up_record where winning_training_follow_up_record_id = #{winningTrainingFollowUpRecordId}
+    </delete>
+
+    <delete id="deleteWinningTrainingFollowUpRecordByIds" parameterType="String">
+        delete from winning_training_follow_up_record where winning_training_follow_up_record_id in
+        <foreach item="winningTrainingFollowUpRecordId" collection="array" open="(" separator="," close=")">
+            #{winningTrainingFollowUpRecordId}
+        </foreach>
+    </delete>
+
+</mapper>

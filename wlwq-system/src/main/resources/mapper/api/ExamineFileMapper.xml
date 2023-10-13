@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExamineFileMapper">
+
+    <resultMap type="ExamineFile" id="ExamineFileResult">
+        <result property="examineFileId" column="examine_file_id"/>
+        <result property="examineInitiateId" column="examine_initiate_id"/>
+        <result property="examineFileType" column="examine_file_type"/>
+        <result property="examineFileName" column="examine_file_name"/>
+        <result property="examineFileUrl" column="examine_file_url"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="examineFileSize" column="examine_file_size"/>
+        <result property="fileTag" column="file_tag"/>
+    </resultMap>
+
+    <sql id="selectExamineFileVo">
+        select examine_file_id,
+               examine_initiate_id,
+               examine_file_type,
+               examine_file_name,
+               examine_file_url,
+               del_status,
+               create_time,
+               update_time,
+               examine_file_size,
+               file_tag
+        from examine_file
+    </sql>
+
+    <select id="selectExamineFileList" parameterType="ExamineFile" resultMap="ExamineFileResult">
+        <include refid="selectExamineFileVo"/>
+        <where>
+            del_status = 0
+            <if test="examineInitiateId != null  and examineInitiateId != ''">and examine_initiate_id =
+                #{examineInitiateId}
+            </if>
+            <if test="examineFileType != null ">and examine_file_type = #{examineFileType}</if>
+            <if test="examineFileName != null  and examineFileName != ''">and examine_file_name like concat('%',
+                #{examineFileName}, '%')
+            </if>
+            <if test="examineFileUrl != null  and examineFileUrl != ''">and examine_file_url = #{examineFileUrl}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="examineFileSize != null ">and examine_file_size = #{examineFileSize}</if>
+            <if test="fileTag != null  and fileTag != ''">and file_tag = #{fileTag}</if>
+        </where>
+    </select>
+
+    <select id="selectExamineFileById" parameterType="String" resultMap="ExamineFileResult">
+        <include refid="selectExamineFileVo"/>
+        where del_status = 0 and examine_file_id = #{examineFileId}
+    </select>
+
+    <insert id="insertExamineFile" parameterType="ExamineFile">
+        insert into examine_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examineFileId != null">examine_file_id,</if>
+            <if test="examineInitiateId != null">examine_initiate_id,</if>
+            <if test="examineFileType != null">examine_file_type,</if>
+            <if test="examineFileName != null">examine_file_name,</if>
+            <if test="examineFileUrl != null">examine_file_url,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="examineFileSize != null">examine_file_size,</if>
+            <if test="fileTag != null">file_tag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examineFileId != null">#{examineFileId},</if>
+            <if test="examineInitiateId != null">#{examineInitiateId},</if>
+            <if test="examineFileType != null">#{examineFileType},</if>
+            <if test="examineFileName != null">#{examineFileName},</if>
+            <if test="examineFileUrl != null">#{examineFileUrl},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="examineFileSize != null">#{examineFileSize},</if>
+            <if test="fileTag != null">#{fileTag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamineFile" parameterType="ExamineFile">
+        update examine_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examineInitiateId != null">examine_initiate_id = #{examineInitiateId},</if>
+            <if test="examineFileType != null">examine_file_type = #{examineFileType},</if>
+            <if test="examineFileName != null">examine_file_name = #{examineFileName},</if>
+            <if test="examineFileUrl != null">examine_file_url = #{examineFileUrl},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="examineFileSize != null">examine_file_size = #{examineFileSize},</if>
+            <if test="fileTag != null">file_tag = #{fileTag},</if>
+        </trim>
+        where examine_file_id = #{examineFileId}
+    </update>
+
+    <update id="deleteExamineFileById" parameterType="String">
+        update examine_file set del_status = 1
+        where examine_file_id = #{examineFileId}
+    </update>
+
+    <update id="deleteExamineFileByIds" parameterType="String">
+        update examine_file set del_status = 1 where examine_file_id in
+        <foreach item="examineFileId" collection="array" open="(" separator="," close=")">
+            #{examineFileId}
+        </foreach>
+    </update>
+
+    <!--    删除之前的文件-->
+    <update id="deleteExamineBeforeFileByInitiateId" parameterType="String">
+        update examine_file
+        set del_status = 1
+        where del_status = 0
+          and examine_initiate_id = #{examineInitiateId}
+    </update>
+</mapper>

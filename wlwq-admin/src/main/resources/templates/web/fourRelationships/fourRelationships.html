@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+  <th:block th:include="include :: header('四类关系列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+  <div class="row">
+    <div class="col-sm-12 search-collapse">
+      <form id="formId">
+        <div class="select-list">
+          <ul>
+            <li>
+              <label>用户信息：</label>
+              <input type="text" name="accountName"/>
+            </li>
+            <li class="select-time"
+                style="display: flex;justify-content: space-between;align-items: center;">
+              创建时间：
+              <input type="text" class="input-sm form-control" name="startTime"
+                     id="datetimepicker-startTime" style=" width: 174px;"
+                     placeholder="yyyy-MM-dd"/>
+              <span class="input-group-addon"
+                    style="border: 0;padding: 0;margin: 0 0.75rem;margin-right: 1.25rem;">到</span>
+              <input type="text" class="input-sm form-control" name="endTime" id="datetimepicker-endTime"
+                     style=" width: 174px;"
+                     placeholder="yyyy-MM-dd"/>
+            </li>
+            <li>
+              <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                      class="fa fa-search"></i>&nbsp;搜索</a>
+              <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                      class="fa fa-refresh"></i>&nbsp;重置</a>
+            </li>
+          </ul>
+        </div>
+      </form>
+    </div>
+
+    <div class="btn-group-sm" id="toolbar" role="group">
+      <!--            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:fourRelationships:add">-->
+      <!--                <i class="fa fa-plus"></i> 添加-->
+      <!--            </a>-->
+      <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+         shiro:hasPermission="web:fourRelationships:edit">
+        <i class="fa fa-edit"></i> 修改
+      </a>
+      <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+         shiro:hasPermission="web:fourRelationships:remove">
+        <i class="fa fa-remove"></i> 删除
+      </a>
+      <!--            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:fourRelationships:export">-->
+      <!--                <i class="fa fa-download"></i> 导出-->
+      <!--            </a>-->
+    </div>
+    <div class="col-sm-12 select-table table-striped">
+      <table id="bootstrap-table"></table>
+    </div>
+    <div class="enlarge_box" style="cursor:pointer;">
+      <img id="enlarge_box_img" alt="" name="pic" src="" style="z-index: 99;">
+    </div>
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modalTitle"></h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p id="modalContent"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<th:block th:include="include :: bootstrap-table-fixed-columns-js"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('web:fourRelationships:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:fourRelationships:remove')}]];
+    var prefix = ctx + "web/fourRelationships";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "四类关系",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'fourRelationshipsId',
+                    title: '四类关系id',
+                    visible: false
+                },
+                {
+                    field: 'className',
+                    align: 'center',
+                    title: '分类',
+                    formatter: function (value, row, index) {
+                        return "<span class=\"label label-primary\">"+value+"</span>";
+                    },
+                },
+                {
+                    field: 'fourRelationshipsList',
+                    align: 'center',
+                    title: '内容',
+                    formatter: function (value, row, index) {
+                        var data = JSON.parse(value);
+                        var maxLength = 20; // 最大字符数，超过该长度则显示省略号
+                        var html = '';
+                        for (var i = 0; i < data.length; i++) {
+                            var truncatedContent = data[i].content.length > maxLength ? data[i].content.substring(0, maxLength) + '...' : data[i].content;
+                            html += '<div class="ellipsis" onclick="showModal(\'' + data[i].title + '\', \'' + data[i].content + '\')">' + data[i].title + '：' + truncatedContent + '</div>';
+                        }
+                        return html;
+                    }
+                },
+                {
+                    field: 'picture',
+                    align: 'center',
+                    title: '照片',
+                    formatter: function (value, row, index) {
+                        if (!value) {
+                            return "-";
+                        }
+                        return "<img class=\"img-clouds\" onclick=\"clouds(this)\" src=" + replaceSpace(value) + "  style=\" width:50px; height:50px;\">";
+                    }
+                },
+                {
+                    field: 'remark',
+                    align: 'center',
+                    title: '备注'
+                },
+                {
+                    field: 'file',
+                    align: 'center',
+                    title: '附件',
+                    formatter: function (value, row, index) {
+                        if (value) {
+                            var attachments = value.split(",");
+                            var html = "";
+                            for (var i = 0; i < attachments.length; i++) {
+                                var attachment = attachments[i].split("+");
+                                var fileName = attachment[0]; // 附件的文件名
+                                html += '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openWord(\'' + fileName + '\')" data-target="#myModal2">查看</button> ';
+                            }
+                            return html;
+                        }
+                    }
+                },
+                {
+                    field: 'accountName',
+                    title: '用户信息'
+                },
+                {
+                    field: 'postNames',
+                    title: '岗位'
+                },
+                {
+                    field: 'createTime',
+                    align: 'center',
+                    title: '创建时间',
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.fourRelationshipsId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.fourRelationshipsId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function showModal(title, content) {
+        // 使用模态框组件展示完整的标题和内容
+        // 根据需要自定义样式和布局
+        // 示例代码：
+        $('#myModal').modal('show');
+        $('#modalTitle').text(title);
+        $('#modalContent').text(content);
+    }
+
+    // 打开文档
+    function openWord(url) {
+        window.open(url)
+    }
+
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+    function replaceSpace(value) {
+        return value.replace(/ /g, '%20');
+    }
+</script>
+</body>
+</html>

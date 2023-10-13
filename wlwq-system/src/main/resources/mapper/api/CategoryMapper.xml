@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CategoryMapper">
+
+    <resultMap type="Categorys" id="CategoryResult">
+        <result property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="createTime" column="create_time"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="examTime" column="exam_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="description" column="description"/>
+        <result property="level" column="level"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="trainingModuleId" column="training_module_id"/>
+
+    </resultMap>
+
+    <sql id="selectCategoryVo">
+        select category_id,
+               category_name,
+               parent_id,
+               sort_num,
+               create_time,
+               exam_time,
+               training_module_id,
+               category_code,
+               description,
+               level,
+               show_status
+        from categorys
+    </sql>
+
+    <select id="selectCategoryList" parameterType="Categorys" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
+        <where>
+            del_status = 0
+            <if test="categoryName != null  and categoryName != ''">and category_name like concat('%', #{categoryName},
+                '%')
+            </if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="parentIds != null and parentIds !=''">and parent_id in (${parentIds})</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="level != null ">and level = #{level}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="trainingModuleId != null  and trainingModuleId != ''"> and training_module_id = #{trainingModuleId}</if>
+        </where>
+        order by sort_num
+    </select>
+
+    <select id="selectApiCategoryList" parameterType="Categorys" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
+        <where>
+            del_status = 0 and show_status = 1
+            <if test="categoryName != null  and categoryName != ''">and category_name like concat('%', #{categoryName},
+                '%')
+            </if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+            <if test="parentIds != null and parentIds !=''">and parent_id in (${parentIds})</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="level != null ">and level = #{level}</if>
+            <if test="trainingModuleId != null  and trainingModuleId != ''"> and training_module_id = #{trainingModuleId}</if>
+        </where>
+        order by sort_num
+    </select>
+
+    <select id="selectCategoryById" parameterType="Long" resultMap="CategoryResult">
+        select t.category_id,
+               t.category_name,
+               t.parent_id,
+               t.sort_num,
+               t.create_time,
+               t.exam_time,
+               p.category_name as parent_name,
+               t.description,
+               t.show_status,
+               t.training_module_id,
+               t.level
+        from categorys t
+                 left join categorys p on p.category_id = t.parent_id
+        where t.category_id = #{categoryId}
+    </select>
+
+    <insert id="insertCategory" parameterType="Categorys" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into categorys
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="examTime != null">exam_time,</if>
+            <if test="categoryCode != null">category_code,</if>
+            <if test="description != null">description,</if>
+            <if test="level != null">level,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="trainingModuleId != null">training_module_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="examTime != null">#{examTime},</if>
+            <if test="categoryCode != null">#{categoryCode},</if>
+            <if test="description != null">#{description},</if>
+            <if test="level != null">#{level},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="trainingModuleId != null">#{trainingModuleId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCategory" parameterType="Categorys">
+        update categorys
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="examTime != null">exam_time = #{examTime},</if>
+            <if test="categoryCode != null">category_code = #{categoryCode},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="trainingModuleId != null">training_module_id = #{trainingModuleId},</if>
+        </trim>
+        where category_id = #{categoryId}
+    </update>
+
+    <update id="deleteCategoryById" parameterType="Long">
+        update categorys
+        set del_status = 1
+        where category_id = #{categoryId}
+    </update>
+
+    <update id="deleteCategoryByIds" parameterType="String">
+        update categorys set del_status = 1 where category_id in
+        <foreach item="categoryId" collection="array" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </update>
+
+    <!--    根据分类的id查询其中一条分类-->
+    <select id="selectCategoryByCategoryById" resultMap="CategoryResult">
+        select category_id,category_name from categorys
+        <where>
+            del_status = 0 and show_status = 1
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+        </where>
+        order by sort_num desc limit 1
+    </select>
+
+    <!-- 根据分类id查询对应的图片 -->
+    <select id="selectCategoryCode" resultMap="CategoryResult">
+        select category_id,category_code from categorys
+        <where>
+            del_status = 0 and show_status = 1
+            <if test="categoryId != null ">and category_id = #{categoryId}</if>
+            <if test="parentId != null ">and parent_id = #{parentId}</if>
+        </where>
+    </select>
+
+    <select id="selectCategoryListByParentId" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
+        <where>
+            del_status = 0 and show_status = 1
+            <if test="parentId != null ">and parent_id in (${parentId})</if>
+        </where>
+        /*order by sort_num desc*/
+    </select>
+
+    <select id="selectTwoCategoryList" resultMap="CategoryResult">
+        <include refid="selectCategoryVo"/>
+        where del_status = 0 and parent_id != 0 and show_status = 1
+        /*order by sort_num desc*/
+    </select>
+</mapper>

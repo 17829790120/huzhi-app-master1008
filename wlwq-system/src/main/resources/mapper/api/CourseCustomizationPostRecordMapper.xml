@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.CourseCustomizationPostRecordMapper">
+
+    <resultMap type="CourseCustomizationPostRecord" id="CourseCustomizationPostRecordResult">
+        <result property="courseCustomizationPostRecordId" column="course_customization_post_record_id"/>
+        <result property="courseCustomizationPostId" column="course_customization_post_id"/>
+        <result property="informationCategoryId" column="information_category_id"/>
+        <result property="informationPostTitle" column="information_post_title"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="informationPostImages" column="information_post_images"/>
+        <result property="informationPostImagesType" column="information_post_images_type"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="accountId" column="account_id"/>
+        <result property="headPortrait" column="head_portrait"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="postIds" column="post_ids"/>
+        <result property="postNames" column="post_names"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="companyAddress" column="company_address"/>
+        <result property="reservationTime" column="reservation_time"/>
+        <result property="contacts" column="contacts"/>
+        <result property="telephone" column="telephone"/>
+        <result property="remark" column="remark"/>
+        <result property="industryId" column="industry_id"/>
+        <result property="industryName" column="industry_name"/>
+    </resultMap>
+
+    <sql id="selectCourseCustomizationPostRecordVo">
+        select course_customization_post_record_id, course_customization_post_id, information_category_id, information_post_title,
+            synopsis, information_post_images, information_post_images_type, del_status, create_time, update_time, account_id,
+            head_portrait, nick_name, post_ids, post_names , company_id, company_name, company_address, reservation_time, contacts,
+            telephone, remark, industry_id, industry_name
+        from course_customization_post_record
+    </sql>
+
+    <select id="selectCourseCustomizationPostRecordList" parameterType="CourseCustomizationPostRecord"
+            resultMap="CourseCustomizationPostRecordResult">
+        <include refid="selectCourseCustomizationPostRecordVo"/>
+        <where>
+            <if test="courseCustomizationPostId != null  and courseCustomizationPostId != ''">and
+                course_customization_post_id = #{courseCustomizationPostId}
+            </if>
+            <if test="informationCategoryId != null ">and information_category_id = #{informationCategoryId}</if>
+            <if test="informationPostTitle != null  and informationPostTitle != ''">and information_post_title
+            like concat('%', #{informationPostTitle}, '%')
+            </if>
+            <if test="synopsis != null  and synopsis != ''">and synopsis = #{synopsis}</if>
+            <if test="informationPostImages != null  and informationPostImages != ''">and information_post_images =
+                #{informationPostImages}
+            </if>
+            <if test="informationPostImagesType != null ">and information_post_images_type =
+                #{informationPostImagesType}
+            </if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="headPortrait != null  and headPortrait != ''">and head_portrait = #{headPortrait}</if>
+            <if test="nickName != null  and nickName != ''">and nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
+            <if test="postNames != null  and postNames != ''">and post_names like concat('%', #{postNames}, '%')</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="companyName != null  and companyName != ''">and company_name like concat('%', #{companyName},
+                '%')
+            </if>
+            <if test="companyAddress != null  and companyAddress != ''">and company_address = #{companyAddress}</if>
+            <if test="reservationTime != null ">and reservation_time = #{reservationTime}</if>
+            <if test="contacts != null  and contacts != ''">and contacts = #{contacts}</if>
+            <if test="telephone != null  and telephone != ''">and telephone = #{telephone}</if>
+            <if test="industryId != null "> and industry_id = #{industryId}</if>
+            <if test="industryName != null  and industryName != ''"> and industry_name like concat('%', #{industryName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectCourseCustomizationPostRecordById" parameterType="String"
+            resultMap="CourseCustomizationPostRecordResult">
+        <include refid="selectCourseCustomizationPostRecordVo"/>
+        where course_customization_post_record_id = #{courseCustomizationPostRecordId}
+    </select>
+
+    <insert id="insertCourseCustomizationPostRecord" parameterType="CourseCustomizationPostRecord">
+        insert into course_customization_post_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseCustomizationPostRecordId != null">course_customization_post_record_id,</if>
+            <if test="courseCustomizationPostId != null and courseCustomizationPostId != ''">
+                course_customization_post_id,
+            </if>
+            <if test="informationCategoryId != null">information_category_id,</if>
+            <if test="informationPostTitle != null">information_post_title,</if>
+            <if test="synopsis != null">synopsis,</if>
+            <if test="informationPostImages != null">information_post_images,</if>
+            <if test="informationPostImagesType != null">information_post_images_type,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="headPortrait != null">head_portrait,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="postIds != null">post_ids,</if>
+            <if test="postNames != null">post_names,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null">company_name,</if>
+            <if test="companyAddress != null">company_address,</if>
+            <if test="reservationTime != null">reservation_time,</if>
+            <if test="contacts != null">contacts,</if>
+            <if test="telephone != null">telephone,</if>
+            <if test="remark != null">remark,</if>
+            <if test="industryId != null">industry_id,</if>
+            <if test="industryName != null">industry_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseCustomizationPostRecordId != null">#{courseCustomizationPostRecordId},</if>
+            <if test="courseCustomizationPostId != null and courseCustomizationPostId != ''">
+                #{courseCustomizationPostId},
+            </if>
+            <if test="informationCategoryId != null">#{informationCategoryId},</if>
+            <if test="informationPostTitle != null">#{informationPostTitle},</if>
+            <if test="synopsis != null">#{synopsis},</if>
+            <if test="informationPostImages != null">#{informationPostImages},</if>
+            <if test="informationPostImagesType != null">#{informationPostImagesType},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="headPortrait != null">#{headPortrait},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="postIds != null">#{postIds},</if>
+            <if test="postNames != null">#{postNames},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="companyAddress != null">#{companyAddress},</if>
+            <if test="reservationTime != null">#{reservationTime},</if>
+            <if test="contacts != null">#{contacts},</if>
+            <if test="telephone != null">#{telephone},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="industryId != null">#{industryId},</if>
+            <if test="industryName != null">#{industryName},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCourseCustomizationPostRecord" parameterType="CourseCustomizationPostRecord">
+        update course_customization_post_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseCustomizationPostId != null and courseCustomizationPostId != ''">
+                course_customization_post_id = #{courseCustomizationPostId},
+            </if>
+            <if test="informationCategoryId != null">information_category_id = #{informationCategoryId},</if>
+            <if test="informationPostTitle != null">information_post_title = #{informationPostTitle},</if>
+            <if test="synopsis != null">synopsis = #{synopsis},</if>
+            <if test="informationPostImages != null">information_post_images = #{informationPostImages},</if>
+            <if test="informationPostImagesType != null">information_post_images_type = #{informationPostImagesType},
+            </if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="headPortrait != null">head_portrait = #{headPortrait},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="postIds != null">post_ids = #{postIds},</if>
+            <if test="postNames != null">post_names = #{postNames},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="companyAddress != null">company_address = #{companyAddress},</if>
+            <if test="reservationTime != null">reservation_time = #{reservationTime},</if>
+            <if test="contacts != null">contacts = #{contacts},</if>
+            <if test="telephone != null">telephone = #{telephone},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="industryId != null">industry_id = #{industryId},</if>
+            <if test="industryName != null">industry_name = #{industryName},</if>
+        </trim>
+        where course_customization_post_record_id = #{courseCustomizationPostRecordId}
+    </update>
+
+    <delete id="deleteCourseCustomizationPostRecordById" parameterType="String">
+        delete from course_customization_post_record where course_customization_post_record_id = #{courseCustomizationPostRecordId}
+    </delete>
+
+    <delete id="deleteCourseCustomizationPostRecordByIds" parameterType="String">
+        delete from course_customization_post_record where course_customization_post_record_id in
+        <foreach item="courseCustomizationPostRecordId" collection="array" open="(" separator="," close=")">
+            #{courseCustomizationPostRecordId}
+        </foreach>
+    </delete>
+
+</mapper>

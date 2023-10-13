@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('考试答题记录列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <!--<input type="hidden" name="examRecordId" id="examRecordId"/>-->
+                        <ul>
+                            <li>
+                                <label>题型：</label>
+                                <select class="form-control" name="questionStatus">
+                                    <option value="">所有</option>
+                                    <option value="1">单项选择题</option>
+                                    <option value="2">多项选择题</option>
+                                    <option value="3">解答题</option>
+                                    <option value="4">判断题</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>难易程度：</label>
+                                <select class="form-control" name="complexityStatus">
+                                    <option value="">所有</option>
+                                    <option value="1">难</option>
+                                    <option value="2">中等</option>
+                                    <option value="3">易</option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+<!--                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:examQuestionRecord:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="web:examQuestionRecord:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="web:examQuestionRecord:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:examQuestionRecord:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var examRecordId = [[${examRecordId}]];
+        var editFlag = [[${@permission.hasPermi('web:examQuestionRecord:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('web:examQuestionRecord:remove')}]];
+        var prefix = ctx + "web/examQuestionRecord";
+
+        /*$("#examRecordId").val(examRecordId);*/
+        $(function() {
+            var options = {
+                url: prefix + "/list?examRecordId="+examRecordId,
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "考试答题记录",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'examQuestionRecordId',
+                    title: 'id',
+                    visible: false
+                },
+/*                {
+                    field: 'questionManagerId',
+                    align: 'center',
+                    title: '题库表id'
+                },
+                {
+                    field: 'examRecordId',
+                    align: 'center',
+                    title: '考试记录表id'
+                },*/
+                {
+                    field: 'questionStatus',
+                    align: 'center',
+                    title: '题型',
+                    formatter: function (value, row, index) {
+                        if (value == 1) {
+                            return "<span class=\"label label-success\">单项选择题</span>";
+                        }else if (value == 2) {
+                            return "<span class=\"label label-primary\">多项选择题</span>";
+                        }else if (value == 3) {
+                            return "<span class=\"label label-primary\">解答题</span>";
+                        }else if (value == 4) {
+                            return '<span class="label label-primary">判断题</span>';
+                        } else {
+                            return '';
+                        }
+                    }
+                },
+                {
+                    field: 'content',
+                    align: 'center',
+                    title: '内容'
+                },
+                {
+                    field: 'analysis',
+                    align: 'center',
+                    title: '解析'
+                },
+                {
+                    field: 'score',
+                    align: 'center',
+                    title: '分数'
+                },
+                {
+                    field: 'myScore',
+                    align: 'center',
+                    title: '我的分数'
+                },
+/*                {
+                    field: 'showStatus',
+                    align: 'center',
+                    title: '显示状态 0：显示 1：隐藏'
+                },*/
+                {
+                    field: 'complexityStatus',
+                    align: 'center',
+                    title: '难易程度',
+                    formatter: function (value, row, index) {
+                        if (value == 1) {
+                            return "<span class=\"label label-success\">难</span>";
+                        }else if (value == 2) {
+                            return "<span class=\"label label-primary\">中等</span>";
+                        }else if (value == 3) {
+                            return "<span class=\"label label-primary\">易</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'optionA',
+                    align: 'center',
+                    title: '选项A'
+                },
+                {
+                    field: 'optionB',
+                    align: 'center',
+                    title: '选项B'
+                },
+                {
+                    field: 'optionC',
+                    align: 'center',
+                    title: '选项C'
+                },
+                {
+                    field: 'optionD',
+                    align: 'center',
+                    title: '选项D'
+                },
+                {
+                    field: 'answerStatus',
+                    align: 'center',
+                    title: '正确答案'
+                },
+                {
+                    field: 'myAnswerStatus',
+                    align: 'center',
+                    title: '我的答案'
+                },
+                {
+                    field: 'chapterId',
+                    align: 'center',
+                    title: '章节ID'
+                },
+                {
+                    field: 'courseId',
+                    align: 'center',
+                    title: '课程ID'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if(row.questionStatus == 3){
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.examQuestionRecordId + '\')"><i class="fa fa-edit"></i>解答题打分</a> ');
+                        }
+                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.examQuestionRecordId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.examQuestionRecordId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.note.mapper.NoteTemplateMapper">
+    
+    <resultMap type="NoteTemplate" id="NoteTemplateResult">
+        <result property="noteTemplateId"    column="note_template_id"    />
+        <result property="noteConfigId"    column="note_config_id"    />
+        <result property="noteTemplateName"    column="note_template_name"    />
+        <result property="noteTemplateCode"    column="note_template_code"    />
+        <result property="noteTemplateType"    column="note_template_type"    />
+        <result property="noteTemplateContent"    column="note_template_content"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="noteConfigName"    column="noteConfigName"    />
+    </resultMap>
+
+    <sql id="selectNoteTemplateVo">
+        select note_template_id, note_config_id,(select note_config_name from note_config where note_config_id = note_template.note_config_id) as noteConfigName, note_template_name, note_template_code, note_template_type, note_template_content, create_time, update_time from note_template
+    </sql>
+
+    <select id="selectNoteTemplateList" parameterType="NoteTemplate" resultMap="NoteTemplateResult">
+        <include refid="selectNoteTemplateVo"/>
+        <where>  
+            <if test="noteConfigId != null  and noteConfigId != ''"> and note_config_id = #{noteConfigId}</if>
+            <if test="noteTemplateName != null  and noteTemplateName != ''"> and note_template_name like concat('%', #{noteTemplateName}, '%')</if>
+            <if test="noteTemplateCode != null  and noteTemplateCode != ''"> and note_template_code = #{noteTemplateCode}</if>
+            <if test="noteTemplateType != null  and noteTemplateType != ''"> and note_template_type = #{noteTemplateType}</if>
+            <if test="noteTemplateContent != null  and noteTemplateContent != ''"> and note_template_content = #{noteTemplateContent}</if>
+        </where>
+    </select>
+    
+    <select id="selectNoteTemplateById" parameterType="String" resultMap="NoteTemplateResult">
+        <include refid="selectNoteTemplateVo"/>
+        where note_template_id = #{noteTemplateId}
+    </select>
+        
+    <insert id="insertNoteTemplate" parameterType="NoteTemplate">
+        insert into note_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noteTemplateId != null">note_template_id,</if>
+            <if test="noteConfigId != null and noteConfigId != ''">note_config_id,</if>
+            <if test="noteTemplateName != null and noteTemplateName != ''">note_template_name,</if>
+            <if test="noteTemplateCode != null and noteTemplateCode != ''">note_template_code,</if>
+            <if test="noteTemplateType != null and noteTemplateType != ''">note_template_type,</if>
+            <if test="noteTemplateContent != null and noteTemplateContent != ''">note_template_content,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="noteTemplateId != null">#{noteTemplateId},</if>
+            <if test="noteConfigId != null and noteConfigId != ''">#{noteConfigId},</if>
+            <if test="noteTemplateName != null and noteTemplateName != ''">#{noteTemplateName},</if>
+            <if test="noteTemplateCode != null and noteTemplateCode != ''">#{noteTemplateCode},</if>
+            <if test="noteTemplateType != null and noteTemplateType != ''">#{noteTemplateType},</if>
+            <if test="noteTemplateContent != null and noteTemplateContent != ''">#{noteTemplateContent},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateNoteTemplate" parameterType="NoteTemplate">
+        update note_template
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="noteConfigId != null and noteConfigId != ''">note_config_id = #{noteConfigId},</if>
+            <if test="noteTemplateName != null and noteTemplateName != ''">note_template_name = #{noteTemplateName},</if>
+            <if test="noteTemplateCode != null and noteTemplateCode != ''">note_template_code = #{noteTemplateCode},</if>
+            <if test="noteTemplateType != null and noteTemplateType != ''">note_template_type = #{noteTemplateType},</if>
+            <if test="noteTemplateContent != null and noteTemplateContent != ''">note_template_content = #{noteTemplateContent},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where note_template_id = #{noteTemplateId}
+    </update>
+
+    <delete id="deleteNoteTemplateById" parameterType="String">
+        delete from note_template where note_template_id = #{noteTemplateId}
+    </delete>
+
+    <delete id="deleteNoteTemplateByIds" parameterType="String">
+        delete from note_template where note_template_id in 
+        <foreach item="noteTemplateId" collection="array" open="(" separator="," close=")">
+            #{noteTemplateId}
+        </foreach>
+    </delete>
+
+</mapper>

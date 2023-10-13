@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('常见问题列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>标题：</label>
+                            <input type="text" name="problemTitle"/>
+                        </li>
+                        <li>
+                            <label>展示状态：</label>
+                            <select name="showStatus">
+                                <option value="">所有</option>
+                                <option value="0">隐藏</option>
+                                <option value="1">展示</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="setting:problem:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="setting:problem:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="setting:problem:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="setting:problem:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('setting:problem:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('setting:problem:remove')}]];
+    var prefix = ctx + "setting/problem";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "常见问题",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'problemId',
+                    title: '常见问题ID',
+                    visible: false
+                },
+                {
+                    field: 'problemTitle',
+                    title: '标题'
+                },
+                {
+                    field: 'sortNum',
+                    title: '排序'
+                },
+                {
+                    visible: editFlag === 'hidden' ? false : true,
+                    field: 'showStatus',
+                    title: '展示状态',
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                },
+                {
+                    field: 'updateTime',
+                    title: '修改时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.problemId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.problemId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function statusTools(row) {
+        // 显示/隐藏
+        if (row.showStatus === 0) {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="enable(\'' + row.problemId + '\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="disable(\'' + row.problemId + '\')"></i> ';
+        }
+    }
+
+
+    function disable(problemId) {
+        $.modal.confirm("确认要隐藏吗？", function () {
+            $.operate.post(prefix + "/edit", {"problemId": problemId, "showStatus": 0});
+        })
+
+    }
+
+
+    function enable(problemId) {
+        $.modal.confirm("确认要显示吗？", function () {
+            $.operate.post(prefix + "/edit", {"problemId": problemId, "showStatus": 1});
+        })
+    }
+</script>
+</body>
+</html>

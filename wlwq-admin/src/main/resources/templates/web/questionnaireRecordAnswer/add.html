@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增问卷记录答案')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-questionnaireRecordAnswer-add">
+        <input name="questionnaireRecordId" class="form-control" type="hidden" th:value="${questionnaireRecordId}">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">答题内容：</label>
+            <div class="col-sm-8">
+                <textarea cols="5" rows="5" name="content" class="form-control" maxlength="300" required></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">答题得分：</label>
+            <div class="col-sm-8">
+                <input name="score" class="form-control" type="text">
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/questionnaireRecordAnswer"
+    $("#form-questionnaireRecordAnswer-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-questionnaireRecordAnswer-add').serialize());
+        }
+    }
+</script>
+</body>
+</html>

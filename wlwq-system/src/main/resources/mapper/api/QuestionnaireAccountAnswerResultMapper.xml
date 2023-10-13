@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.QuestionnaireAccountAnswerResultMapper">
+
+    <resultMap type="QuestionnaireAccountAnswerResult" id="QuestionnaireAccountAnswerResultResult">
+        <result property="questionnaireAccountAnswerResultId" column="questionnaire_account_answer_result_id"/>
+        <result property="questionnaireAccountAnswerId" column="questionnaire_account_answer_id"/>
+        <result property="content" column="content"/>
+        <result property="score" column="score"/>
+        <result property="myScore" column="my_score"/>
+        <result property="accountId" column="account_id"/>
+        <result property="answerStatus" column="answer_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="selectStatus" column="select_status"/>
+        <result property="postId" column="post_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="accountPhone" column="account_phone"/>
+        <result property="accountHead" column="account_head"/>
+    </resultMap>
+
+    <sql id="selectQuestionnaireAccountAnswerResultVo">
+        select r.questionnaire_account_answer_result_id,
+               r.questionnaire_account_answer_id,
+               r.content,
+               r.score,
+               r.my_score,
+               r.account_id,
+               r.answer_status,
+               r.create_time,
+               r.select_status,
+               r.post_id,
+               r.dept_id,
+               r.account_name,
+               r.account_phone,
+               r.account_head
+        from questionnaire_account_answer_result r
+                 left join sys_dept d on r.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectQuestionnaireAccountAnswerResultList" parameterType="QuestionnaireAccountAnswerResult"
+            resultMap="QuestionnaireAccountAnswerResultResult">
+        <include refid="selectQuestionnaireAccountAnswerResultVo"/>
+        <where>
+            r.del_status = 0
+            <if test="questionnaireAccountAnswerId != null  and questionnaireAccountAnswerId != ''">and
+                r.questionnaire_account_answer_id = #{questionnaireAccountAnswerId}
+            </if>
+            <if test="content != null  and content != ''">and r.content like concat('%', #{content}, '%')</if>
+            <if test="score != null ">and r.score = #{score}</if>
+            <if test="myScore != null ">and r.my_score = #{myScore}</if>
+            <if test="accountId != null  and accountId != ''">and r.account_id = #{accountId}</if>
+            <if test="answerStatus != null ">and r.answer_status = #{answerStatus}</if>
+            <if test="selectStatus != null ">and r.select_status = #{selectStatus}</if>
+            <if test="postId != null "> and r.post_id = #{postId}</if>
+            <if test="deptId != null "> and r.dept_id = #{deptId}</if>
+            <if test="accountName != null  and accountName != ''"> and r.account_name like concat('%', #{accountName}, '%')</if>
+            <if test="accountPhone != null  and accountPhone != ''"> and r.account_phone = #{accountPhone}</if>
+            <if test="accountHead != null  and accountHead != ''"> and r.account_head = #{accountHead}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by r.create_time desc
+    </select>
+
+    <select id="selectQuestionnaireAccountAnswerResultById" parameterType="String"
+            resultMap="QuestionnaireAccountAnswerResultResult">
+        <include refid="selectQuestionnaireAccountAnswerResultVo"/>
+        where r.del_status = 0 and r.questionnaire_account_answer_result_id = #{questionnaireAccountAnswerResultId}
+    </select>
+
+    <insert id="insertQuestionnaireAccountAnswerResult" parameterType="QuestionnaireAccountAnswerResult">
+        insert into questionnaire_account_answer_result
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionnaireAccountAnswerResultId != null">questionnaire_account_answer_result_id,</if>
+            <if test="questionnaireAccountAnswerId != null">questionnaire_account_answer_id,</if>
+            <if test="content != null">content,</if>
+            <if test="score != null">score,</if>
+            <if test="myScore != null">my_score,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="answerStatus != null">answer_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="selectStatus != null">select_status,</if>
+            <if test="postId != null">post_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountPhone != null">account_phone,</if>
+            <if test="accountHead != null">account_head,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionnaireAccountAnswerResultId != null">#{questionnaireAccountAnswerResultId},</if>
+            <if test="questionnaireAccountAnswerId != null">#{questionnaireAccountAnswerId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="score != null">#{score},</if>
+            <if test="myScore != null">#{myScore},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="answerStatus != null">#{answerStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="selectStatus != null">#{selectStatus},</if>
+            <if test="postId != null">#{postId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountPhone != null">#{accountPhone},</if>
+            <if test="accountHead != null">#{accountHead},</if>
+        </trim>
+    </insert>
+
+    <update id="updateQuestionnaireAccountAnswerResult" parameterType="QuestionnaireAccountAnswerResult">
+        update questionnaire_account_answer_result
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionnaireAccountAnswerId != null">questionnaire_account_answer_id =
+                #{questionnaireAccountAnswerId},
+            </if>
+            <if test="content != null">content = #{content},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="myScore != null">my_score = #{myScore},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="answerStatus != null">answer_status = #{answerStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="selectStatus != null">select_status = #{selectStatus},</if>
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountPhone != null">account_phone = #{accountPhone},</if>
+            <if test="accountHead != null">account_head = #{accountHead},</if>
+        </trim>
+        where questionnaire_account_answer_result_id = #{questionnaireAccountAnswerResultId}
+    </update>
+
+    <delete id="deleteQuestionnaireAccountAnswerResultById" parameterType="String">
+        delete
+        from questionnaire_account_answer_result
+        where questionnaire_account_answer_result_id = #{questionnaireAccountAnswerResultId}
+    </delete>
+
+    <delete id="deleteQuestionnaireAccountAnswerResultByIds" parameterType="String">
+        delete from questionnaire_account_answer_result where questionnaire_account_answer_result_id in
+        <foreach item="questionnaireAccountAnswerResultId" collection="array" open="(" separator="," close=")">
+            #{questionnaireAccountAnswerResultId}
+        </foreach>
+    </delete>
+
+</mapper>

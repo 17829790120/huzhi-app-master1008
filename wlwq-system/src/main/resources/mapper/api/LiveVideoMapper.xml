@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.LiveVideoMapper">
+
+    <resultMap type="LiveVideo" id="LiveVideoResult">
+        <result property="liveVideoId" column="live_video_id"/>
+        <result property="title" column="title"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="details" column="details"/>
+        <result property="resourceUrl" column="resource_url"/>
+        <result property="resourceType" column="resource_type"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="duration" column="duration"/>
+        <result property="liveStreamerName" column="live_streamer_name"/>
+        <result property="liveStreamerPosition" column="live_streamer_position"/>
+        <result property="liveStreamerHead" column="live_streamer_head"/>
+        <result property="liveUrl" column="live_url"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="userId" column="user_id"/>
+        <result property="registrationsNumber" column="registrations_number"/>
+    </resultMap>
+
+    <sql id="selectLiveVideoVo">
+        select v.live_video_id,
+               v.title,
+               v.synopsis,
+               v.details,
+               v.resource_url,
+               v.resource_type,
+               v.start_time,
+               v.end_time,
+               v.duration,
+               v.live_streamer_name,
+               v.live_streamer_position,
+               v.live_streamer_head,
+               v.live_url,
+               v.dept_id,
+               v.company_id,
+               v.user_id,
+               (select count(0)
+                from live_registration
+                where live_video_id = v.live_video_id) registrations_number
+        from live_video v
+                 left join sys_dept d on v.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectLiveVideoList" parameterType="LiveVideo" resultMap="LiveVideoResult">
+        <include refid="selectLiveVideoVo"/>
+        <where>
+            v.del_status = 0
+            <if test="title != null  and title != ''">and v.title like concat('%', #{title}, '%')</if>
+            <if test="synopsis != null  and synopsis != ''">and v.synopsis like concat('%', #{synopsis}, '%')</if>
+            <if test="details != null  and details != ''">and v.details like concat('%', #{details}, '%')</if>
+            <if test="resourceUrl != null  and resourceUrl != ''">and v.resource_url = #{resourceUrl}</if>
+            <if test="resourceType != null ">and v.resource_type = #{resourceType}</if>
+            <if test="startTime != null ">and v.start_time = #{startTime}</if>
+            <if test="endTime != null ">and v.end_time = #{endTime}</if>
+            <if test="duration != null ">and v.duration = #{duration}</if>
+            <if test="liveStreamerName != null  and liveStreamerName != ''">and v.live_streamer_name like concat('%',
+                #{liveStreamerName}, '%')
+            </if>
+            <if test="liveStreamerPosition != null  and liveStreamerPosition != ''">and v.live_streamer_position like
+                concat('%', #{liveStreamerPosition}, '%')
+            </if>
+            <if test="liveStreamerHead != null  and liveStreamerHead != ''">and v.live_streamer_head =
+                #{liveStreamerHead}
+            </if>
+            <if test="liveUrl != null  and liveUrl != ''">and v.live_url = #{liveUrl}</if>
+            <if test="deptId != null ">and v.dept_id = #{deptId}</if>
+            <if test="companyId != null ">and v.company_id = #{companyId}</if>
+            <if test="userId != null ">and v.user_id = #{userId}</if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by v.end_time desc
+    </select>
+
+    <select id="selectLiveVideoById" parameterType="String" resultMap="LiveVideoResult">
+        <include refid="selectLiveVideoVo"/>
+        where v.del_status = 0 and v.live_video_id = #{liveVideoId}
+    </select>
+
+    <insert id="insertLiveVideo" parameterType="LiveVideo">
+        insert into live_video
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="liveVideoId != null">live_video_id,</if>
+            <if test="title != null">title,</if>
+            <if test="synopsis != null">synopsis,</if>
+            <if test="details != null">details,</if>
+            <if test="resourceUrl != null">resource_url,</if>
+            <if test="resourceType != null">resource_type,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="duration != null">duration,</if>
+            <if test="liveStreamerName != null">live_streamer_name,</if>
+            <if test="liveStreamerPosition != null">live_streamer_position,</if>
+            <if test="liveStreamerHead != null">live_streamer_head,</if>
+            <if test="liveUrl != null">live_url,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="userId != null">user_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="liveVideoId != null">#{liveVideoId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="synopsis != null">#{synopsis},</if>
+            <if test="details != null">#{details},</if>
+            <if test="resourceUrl != null">#{resourceUrl},</if>
+            <if test="resourceType != null">#{resourceType},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="duration != null">#{duration},</if>
+            <if test="liveStreamerName != null">#{liveStreamerName},</if>
+            <if test="liveStreamerPosition != null">#{liveStreamerPosition},</if>
+            <if test="liveStreamerHead != null">#{liveStreamerHead},</if>
+            <if test="liveUrl != null">#{liveUrl},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="userId != null">#{userId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLiveVideo" parameterType="LiveVideo">
+        update live_video
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="synopsis != null">synopsis = #{synopsis},</if>
+            <if test="details != null">details = #{details},</if>
+            <if test="resourceUrl != null">resource_url = #{resourceUrl},</if>
+            <if test="resourceType != null">resource_type = #{resourceType},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="duration != null">duration = #{duration},</if>
+            <if test="liveStreamerName != null">live_streamer_name = #{liveStreamerName},</if>
+            <if test="liveStreamerPosition != null">live_streamer_position = #{liveStreamerPosition},</if>
+            <if test="liveStreamerHead != null">live_streamer_head = #{liveStreamerHead},</if>
+            <if test="liveUrl != null">live_url = #{liveUrl},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where live_video_id = #{liveVideoId}
+    </update>
+
+    <delete id="deleteLiveVideoById" parameterType="String">
+        delete from live_video where live_video_id = #{liveVideoId}
+    </delete>
+
+    <delete id="deleteLiveVideoByIds" parameterType="String">
+        delete from live_video where live_video_id in
+        <foreach item="liveVideoId" collection="array" open="(" separator="," close=")">
+            #{liveVideoId}
+        </foreach>
+    </delete>
+
+</mapper>

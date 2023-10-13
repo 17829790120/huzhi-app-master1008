@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('考试试卷记录列表')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>试卷名称：</label>
+                            <input type="text" name="examPaperTitle"/>
+                        </li>
+                        <li>
+                            <label>试题类型：</label>
+                            <select class="form-control m-b" name="testTrainingCategoryId">
+                                <option value="">请选择</option>
+                                <option th:each="testTrainingCategory : ${testTrainingCategoryList}" th:text="${testTrainingCategory.title}"
+                                        th:value="${testTrainingCategory.testTrainingCategoryId}">
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:examPaperRecord:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()"
+               shiro:hasPermission="web:examPaperRecord:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="web:examPaperRecord:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:examPaperRecord:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    //var questionsFlag = [[${@permission.hasPermi('web:questionManagerTestTraining:view')}]];
+    var editFlag = [[${@permission.hasPermi('web:examPaperRecord:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('web:examPaperRecord:remove')}]];
+    var prefix = ctx + "web/examPaperRecord";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "考试试卷记录",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'examPaperRecordId',
+                    title: '考试试卷记录表id',
+                    visible: false
+                },
+                {
+                    field: 'examPaperTitle',
+                    align: 'center',
+                    title: '试卷名称',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'beginTime',
+                    align: 'center',
+                    title: '考试开始时间'
+                },
+                {
+                    field: 'endTime',
+                    align: 'center',
+                    title: '考试结束时间'
+                },
+                {
+                    field: 'score',
+                    align: 'center',
+                    title: '分数'
+                },
+                {
+                    field: 'examDuration',
+                    align: 'center',
+                    title: '考试时长',
+                    formatter: function (value, row, index) {
+                        return value+("分钟");
+                    }
+                },
+                {
+                    field: 'examTypes',
+                    align: 'center',
+                    title: '考试题型',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'examExplain',
+                    align: 'center',
+                    title: '考试说明',
+                    width: '300',
+                    formatter: function(value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'fullScore',
+                    align: 'center',
+                    title: '满分'
+                },
+                {
+                    field: 'excellentScore',
+                    align: 'center',
+                    title: '优秀分数'
+                },
+                {
+                    field: 'goodScore',
+                    align: 'center',
+                    title: '良好分数'
+                },
+                {
+                    field: 'passingScore',
+                    align: 'center',
+                    title: '及格分数'
+                },
+                {
+                    field: 'fullIntegralScore',
+                    align: 'center',
+                    title: '满分获得积分'
+                },
+                {
+                    field: 'excellentIntegralScore',
+                    align: 'center',
+                    title: '优秀获得积分'
+                },
+                {
+                    field: 'goodIntegralScore',
+                    align: 'center',
+                    title: '良好获得积分'
+                },
+                {
+                    field: 'passingIntegralScore',
+                    align: 'center',
+                    title: '及格获得积分'
+                },
+                {
+                    field: 'grantStatus',
+                    align: 'center',
+                    title: '发放状态'
+                },
+                {
+                    field: 'testTrainingCategoryTitle',
+                    align: 'center',
+                    title: '类别标题'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-warning btn-xs" href="javascript:void(0)" onclick="checkQuestions(\'' + row.examPaperRecordId+ '\',\''+ row.examPaperTitle+'\')"><i class="fa fa-edit"></i>查看题库</a> ');
+                        actions.push('<a class="btn btn-warning btn-xs" href="javascript:void(0)" onclick="checkExamQuestionManager(\'' + row.examPaperRecordId+'\')"><i class="fa fa-edit"></i>查看试题</a> ');
+                        actions.push('<a class="btn btn-warning btn-xs" href="javascript:void(0)" onclick="checkAllAccount(\'' + row.examPaperRecordId+'\')"><i class="fa fa-edit"></i>下发试卷</a> ');
+                        actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="examRecordDetails(\'' + row.examPaperRecordId + '\')"><i class="fa fa-edit"></i>考试记录</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.examPaperRecordId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.examPaperRecordId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 查看题库数据列表
+    function checkQuestions(examPaperRecordId,examPaperTitle) {
+        var url = "/web/questionManagerTestTraining/allQuestions?examPaperRecordId="+examPaperRecordId+"&examPaperTitle="+examPaperTitle;
+        $.modal.openFull("查看题库列表",url);
+    }
+    // 查看试卷试题列表
+    function checkExamQuestionManager(examPaperRecordId) {
+        var url = "/web/examQuestionManager/allQuestionsManager?examPaperRecordId="+examPaperRecordId;
+        $.modal.openFull("查看考题列表",url);
+    }
+    // 查看用户列表
+    function checkAllAccount(examPaperRecordId) {
+        var url = "/web/examQuestionManager/allAccount?examPaperRecordId="+examPaperRecordId;
+        $.modal.openFull("查看用户列表",url);
+    }
+    /*考试记录-详细*/
+    function examRecordDetails(examPaperRecordId) {
+        $.modal.openFull("考试记录列表", ctx + "web/examRecord/examRecordTestTrainingList?examPaperRecordId="+examPaperRecordId);
+    }
+</script>
+</body>
+</html>

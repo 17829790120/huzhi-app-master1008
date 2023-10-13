@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.QuestionnaireAccountMapper">
+
+    <resultMap type="QuestionnaireAccount" id="QuestionnaireAccountResult">
+        <result property="questionnaireAccountId" column="questionnaire_account_id"/>
+        <result property="questionnaireId" column="questionnaire_id"/>
+        <result property="title" column="title"/>
+        <result property="score" column="score"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="creatorDeptId" column="creator_dept_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="accountId" column="account_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="headPortrait" column="head_portrait"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="answerStatus" column="answer_status"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="questionnaireDistributeRecordId" column="questionnaire_distribute_record_id"/>
+        <result property="imageUrl" column="image_url"/>
+    </resultMap>
+
+    <sql id="selectQuestionnaireAccountVo">
+        select questionnaire_account_id, questionnaire_id, title, score, creator_id, creator_name, creator_dept_id, create_time,
+            del_status, dept_id, account_id, company_id, head_portrait, nick_name, answer_status, submit_time, questionnaire_distribute_record_id,
+            (select image_url from questionnaire where questionnaire_id = questionnaire_account.questionnaire_id ) image_url
+        from questionnaire_account
+    </sql>
+
+    <select id="selectQuestionnaireAccountList" parameterType="QuestionnaireAccount"
+            resultMap="QuestionnaireAccountResult">
+        <include refid="selectQuestionnaireAccountVo"/>
+        <where>
+            <if test="questionnaireId != null  and questionnaireId != ''">and questionnaire_id = #{questionnaireId}</if>
+            <if test="title != null  and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="creatorId != null ">and creator_id = #{creatorId}</if>
+            <if test="creatorName != null  and creatorName != ''">and creator_name like concat('%', #{creatorName},
+                '%')
+            </if>
+            <if test="creatorDeptId != null ">and creator_dept_id = #{creatorDeptId}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="companyId != null ">and company_id = #{companyId}</if>
+            <if test="headPortrait != null  and headPortrait != ''">and head_portrait = #{headPortrait}</if>
+            <if test="nickName != null  and nickName != ''">and nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="answerStatus != null ">and answer_status = #{answerStatus}</if>
+            <if test="submitTime != null ">and submit_time = #{submitTime}</if>
+            <if test="questionnaireDistributeRecordId != null  and questionnaireDistributeRecordId != ''">and
+                questionnaire_distribute_record_id = #{questionnaireDistributeRecordId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectQuestionnaireAccountById" parameterType="String" resultMap="QuestionnaireAccountResult">
+        <include refid="selectQuestionnaireAccountVo"/>
+        where questionnaire_account_id = #{questionnaireAccountId}
+    </select>
+
+    <insert id="insertQuestionnaireAccount" parameterType="QuestionnaireAccount">
+        insert into questionnaire_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionnaireAccountId != null">questionnaire_account_id,</if>
+            <if test="questionnaireId != null">questionnaire_id,</if>
+            <if test="title != null">title,</if>
+            <if test="score != null">score,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="creatorName != null">creator_name,</if>
+            <if test="creatorDeptId != null">creator_dept_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="accountId != null">account_id,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="headPortrait != null">head_portrait,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="answerStatus != null">answer_status,</if>
+            <if test="submitTime != null">submit_time,</if>
+            <if test="questionnaireDistributeRecordId != null">questionnaire_distribute_record_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionnaireAccountId != null">#{questionnaireAccountId},</if>
+            <if test="questionnaireId != null">#{questionnaireId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="score != null">#{score},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="creatorName != null">#{creatorName},</if>
+            <if test="creatorDeptId != null">#{creatorDeptId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="accountId != null">#{accountId},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="headPortrait != null">#{headPortrait},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="answerStatus != null">#{answerStatus},</if>
+            <if test="submitTime != null">#{submitTime},</if>
+            <if test="questionnaireDistributeRecordId != null">#{questionnaireDistributeRecordId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateQuestionnaireAccount" parameterType="QuestionnaireAccount">
+        update questionnaire_account
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionnaireId != null">questionnaire_id = #{questionnaireId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="creatorName != null">creator_name = #{creatorName},</if>
+            <if test="creatorDeptId != null">creator_dept_id = #{creatorDeptId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="accountId != null">account_id = #{accountId},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="headPortrait != null">head_portrait = #{headPortrait},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="answerStatus != null">answer_status = #{answerStatus},</if>
+            <if test="submitTime != null">submit_time = #{submitTime},</if>
+            <if test="questionnaireDistributeRecordId != null">questionnaire_distribute_record_id =
+                #{questionnaireDistributeRecordId},
+            </if>
+        </trim>
+        where questionnaire_account_id = #{questionnaireAccountId}
+    </update>
+
+    <delete id="deleteQuestionnaireAccountById" parameterType="String">
+        delete from questionnaire_account where questionnaire_account_id = #{questionnaireAccountId}
+    </delete>
+
+    <delete id="deleteQuestionnaireAccountByIds" parameterType="String">
+        delete from questionnaire_account where questionnaire_account_id in
+        <foreach item="questionnaireAccountId" collection="array" open="(" separator="," close=")">
+            #{questionnaireAccountId}
+        </foreach>
+    </delete>
+
+</mapper>

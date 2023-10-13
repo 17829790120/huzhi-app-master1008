@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ResourceFilePostMapper">
+
+    <resultMap type="ResourceFilePost" id="ResourceFilePostResult">
+        <result property="resourceFilePostId" column="resource_file_post_id"/>
+        <result property="resourceFileCategoryId" column="resource_file_category_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="price" column="price"/>
+        <result property="primaryPrice" column="primary_price"/>
+        <result property="informationPostTitle" column="information_post_title"/>
+        <result property="informationPostImages" column="information_post_images"/>
+        <result property="informationPostImagesType" column="information_post_images_type"/>
+        <result property="imagesAddress" column="images_address"/>
+        <result property="informationPostContent" column="information_post_content"/>
+        <result property="informationPostFile" column="information_post_file"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="basicsDownloadNumber" column="basics_download_number"/>
+        <result property="hostStatus" column="host_status"/>
+        <result property="topStatus" column="top_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="categoryTitle" column="category_title"/>
+        <result property="companyId" column="company_id"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="applePrice" column="apple_price"/>
+        <result property="appleCoding" column="apple_coding"/>
+    </resultMap>
+
+    <sql id="selectResourceFilePostVo">
+        select resource_file_post_id,
+               resource_file_category_id,
+               dept_id,
+               user_id,
+               price,
+               primary_price,
+               information_post_title,
+               information_post_images,
+               information_post_images_type,
+               images_address,
+               information_post_content,
+               information_post_file,
+               sort_num,
+               basics_download_number,
+               host_status,
+               top_status,
+               del_status,
+               create_time,
+               update_time,
+               ancestors,
+               company_id,
+               file_size,
+               apple_price,
+               apple_coding
+        from resource_file_post
+    </sql>
+    <sql id="selectResourceFilePost">
+        select n.resource_file_post_id,
+               n.resource_file_category_id,
+               n.dept_id,
+               n.user_id,
+               n.price,
+               n.primary_price,
+               n.information_post_title,
+               n.information_post_images,
+               n.information_post_images_type,
+               n.images_address,
+               n.information_post_content,
+               n.information_post_file,
+               n.sort_num,
+               n.basics_download_number,
+               n.host_status,
+               n.top_status,
+               n.del_status,
+               n.create_time,
+               n.update_time,
+               n.ancestors,
+               n.company_id,
+               n.file_size,
+               n.apple_price,
+               n.apple_coding,
+               (select dept_name from sys_dept where dept_id = n.dept_id)      dept_name,
+               (select user_name from sys_user where user_id = n.user_id)      user_name,
+               (SELECT category_title
+                FROM resource_file_category
+                WHERE resource_file_category_id = n.resource_file_category_id) category_title
+        from resource_file_post n
+    </sql>
+    <select id="selectResourceFilePostList" parameterType="ResourceFilePost" resultMap="ResourceFilePostResult">
+        <include refid="selectResourceFilePost"/>
+        <where>
+            <!--<if test="resourceFileCategoryId != null ">and resource_file_category_id = #{resourceFileCategoryId}</if>-->
+            <if test="resourceFileCategoryId != null ">and ( n.resource_file_category_id = #{resourceFileCategoryId}
+                or n.ancestors like concat('%', #{resourceFileCategoryId}, '%'))
+            </if>
+            <if test="deptId != null ">and n.dept_id = #{deptId}</if>
+            <if test="userId != null ">and n.user_id = #{userId}</if>
+            <if test="price != null ">and n.price = #{price}</if>
+            <if test="primaryPrice != null ">and n.primary_price = #{primaryPrice}</if>
+            <if test="informationPostTitle != null  and informationPostTitle != ''">and n.information_post_title like
+                concat('%', #{informationPostTitle}, '%')
+            </if>
+            <if test="informationPostImages != null  and informationPostImages != ''">and n.information_post_images =
+                #{informationPostImages}
+            </if>
+            <if test="informationPostImagesType != null ">and n.information_post_images_type =
+                #{informationPostImagesType}
+            </if>
+            <if test="imagesAddress != null  and imagesAddress != ''">and n.images_address = #{imagesAddress}</if>
+            <if test="informationPostContent != null  and informationPostContent != ''">and n.information_post_content
+                like concat('%', #{informationPostContent}, '%')
+            </if>
+            <if test="informationPostFile != null  and informationPostFile != ''">and n.information_post_file =
+                #{informationPostFile}
+            </if>
+            <if test="sortNum != null ">and n.sort_num = #{sortNum}</if>
+            <if test="basicsDownloadNumber != null ">and n.basics_download_number = #{basicsDownloadNumber}</if>
+            <if test="hostStatus != null ">and n.host_status = #{hostStatus}</if>
+            <if test="topStatus != null ">and n.top_status = #{topStatus}</if>
+            <if test="delStatus != null ">and n.del_status = #{delStatus}</if>
+            <if test="ancestors != null  and ancestors != ''">and ancestors = #{ancestors}</if>
+            <if test="companyId != null">and n.company_id = #{companyId}</if>
+            <if test="applePrice != null "> and n.apple_price = #{applePrice}</if>
+            <if test="appleCoding != null  and appleCoding != ''"> and n.apple_coding = #{appleCoding}</if>
+            <!--            <if test="companyId != null and tag == 1"> and (n.company_id = 100 or n.company_id = #{companyId})</if>
+                        <if test="companyId == null and tag == 1"> and n.company_id = 100 </if>
+
+                        <if test="companyId != null and tag == 2"> and n.company_id = #{companyId}</if>-->
+        </where>
+        order by n.create_time desc
+    </select>
+
+    <select id="selectResourceFilePostById" parameterType="String" resultMap="ResourceFilePostResult">
+        <include refid="selectResourceFilePost"/>
+        where resource_file_post_id = #{resourceFilePostId}
+    </select>
+
+    <insert id="insertResourceFilePost" parameterType="ResourceFilePost">
+        insert into resource_file_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="resourceFilePostId != null">resource_file_post_id,</if>
+            <if test="resourceFileCategoryId != null">resource_file_category_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="price != null">price,</if>
+            <if test="primaryPrice != null">primary_price,</if>
+            <if test="informationPostTitle != null">information_post_title,</if>
+            <if test="informationPostImages != null">information_post_images,</if>
+            <if test="informationPostImagesType != null">information_post_images_type,</if>
+            <if test="imagesAddress != null">images_address,</if>
+            <if test="informationPostContent != null">information_post_content,</if>
+            <if test="informationPostFile != null">information_post_file,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="basicsDownloadNumber != null">basics_download_number,</if>
+            <if test="hostStatus != null">host_status,</if>
+            <if test="topStatus != null">top_status,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="ancestors != null">ancestors,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="fileSize != null">file_size,</if>
+            <if test="applePrice != null">apple_price,</if>
+            <if test="appleCoding != null">apple_coding,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="resourceFilePostId != null">#{resourceFilePostId},</if>
+            <if test="resourceFileCategoryId != null">#{resourceFileCategoryId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="primaryPrice != null">#{primaryPrice},</if>
+            <if test="informationPostTitle != null">#{informationPostTitle},</if>
+            <if test="informationPostImages != null">#{informationPostImages},</if>
+            <if test="informationPostImagesType != null">#{informationPostImagesType},</if>
+            <if test="imagesAddress != null">#{imagesAddress},</if>
+            <if test="informationPostContent != null">#{informationPostContent},</if>
+            <if test="informationPostFile != null">#{informationPostFile},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="basicsDownloadNumber != null">#{basicsDownloadNumber},</if>
+            <if test="hostStatus != null">#{hostStatus},</if>
+            <if test="topStatus != null">#{topStatus},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="ancestors != null">#{ancestors},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="fileSize != null">#{fileSize},</if>
+            <if test="applePrice != null">#{applePrice},</if>
+            <if test="appleCoding != null">#{appleCoding},</if>
+        </trim>
+    </insert>
+
+    <update id="updateResourceFilePost" parameterType="ResourceFilePost">
+        update resource_file_post
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="resourceFileCategoryId != null">resource_file_category_id = #{resourceFileCategoryId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="primaryPrice != null">primary_price = #{primaryPrice},</if>
+            <if test="informationPostTitle != null">information_post_title = #{informationPostTitle},</if>
+            <if test="informationPostImages != null">information_post_images = #{informationPostImages},</if>
+            <if test="informationPostImagesType != null">information_post_images_type = #{informationPostImagesType},
+            </if>
+            <if test="imagesAddress != null">images_address = #{imagesAddress},</if>
+            <if test="informationPostContent != null">information_post_content = #{informationPostContent},</if>
+            <if test="informationPostFile != null">information_post_file = #{informationPostFile},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="basicsDownloadNumber != null">basics_download_number = #{basicsDownloadNumber},</if>
+            <if test="hostStatus != null">host_status = #{hostStatus},</if>
+            <if test="topStatus != null">top_status = #{topStatus},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="ancestors != null">ancestors = #{ancestors},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="applePrice != null">apple_price = #{applePrice},</if>
+            <if test="appleCoding != null">apple_coding = #{appleCoding},</if>
+        </trim>
+        where resource_file_post_id = #{resourceFilePostId}
+    </update>
+
+    <delete id="deleteResourceFilePostById" parameterType="String">
+        delete
+        from resource_file_post
+        where resource_file_post_id = #{resourceFilePostId}
+    </delete>
+
+    <delete id="deleteResourceFilePostByIds" parameterType="String">
+        delete from resource_file_post where resource_file_post_id in
+        <foreach item="resourceFilePostId" collection="array" open="(" separator="," close=")">
+            #{resourceFilePostId}
+        </foreach>
+    </delete>
+
+</mapper>

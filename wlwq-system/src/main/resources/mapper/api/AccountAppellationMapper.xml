@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.AccountAppellationMapper">
+
+    <resultMap type="AccountAppellation" id="AccountAppellationResult">
+        <result property="accountAppellationId" column="account_appellation_id"/>
+        <result property="appellationName" column="appellation_name"/>
+        <result property="minScore" column="min_score"/>
+        <result property="maxScore" column="max_score"/>
+        <result property="appellationType" column="appellation_type"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectAccountAppellationVo">
+        select account_appellation_id,
+               appellation_name,
+               min_score,
+               max_score,
+               appellation_type,
+               del_status,
+               create_time,
+               update_time
+        from account_appellation
+    </sql>
+
+    <select id="selectAccountAppellationList" parameterType="AccountAppellation" resultMap="AccountAppellationResult">
+        <include refid="selectAccountAppellationVo"/>
+        <where>
+            del_status = 0
+            <if test="appellationName != null  and appellationName != ''">and appellation_name like concat('%',
+                #{appellationName}, '%')
+            </if>
+            <if test="minScore != null ">and min_score = #{minScore}</if>
+            <if test="maxScore != null ">and max_score = #{maxScore}</if>
+            <if test="appellationType != null ">and appellation_type = #{appellationType}</if>
+        </where>
+        order by appellation_type,min_score
+    </select>
+
+    <select id="selectAccountAppellationById" parameterType="String" resultMap="AccountAppellationResult">
+        <include refid="selectAccountAppellationVo"/>
+        where del_status = 0 and account_appellation_id = #{accountAppellationId}
+    </select>
+
+    <insert id="insertAccountAppellation" parameterType="AccountAppellation">
+        insert into account_appellation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountAppellationId != null">account_appellation_id,</if>
+            <if test="appellationName != null">appellation_name,</if>
+            <if test="minScore != null">min_score,</if>
+            <if test="maxScore != null">max_score,</if>
+            <if test="appellationType != null">appellation_type,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountAppellationId != null">#{accountAppellationId},</if>
+            <if test="appellationName != null">#{appellationName},</if>
+            <if test="minScore != null">#{minScore},</if>
+            <if test="maxScore != null">#{maxScore},</if>
+            <if test="appellationType != null">#{appellationType},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountAppellation" parameterType="AccountAppellation">
+        update account_appellation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appellationName != null">appellation_name = #{appellationName},</if>
+            <if test="minScore != null">min_score = #{minScore},</if>
+            <if test="maxScore != null">max_score = #{maxScore},</if>
+            <if test="appellationType != null">appellation_type = #{appellationType},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where account_appellation_id = #{accountAppellationId}
+    </update>
+
+    <update id="deleteAccountAppellationById" parameterType="String">
+        update account_appellation set del_status = 1
+        where account_appellation_id = #{accountAppellationId}
+    </update>
+
+    <update id="deleteAccountAppellationByIds" parameterType="String">
+        update account_appellation set del_status = 1 where account_appellation_id in
+        <foreach item="accountAppellationId" collection="array" open="(" separator="," close=")">
+            #{accountAppellationId}
+        </foreach>
+    </update>
+
+    <select id="selectAccountAppellationName" parameterType="AccountAppellation" resultType="String">
+        select appellation_name from account_appellation
+        <where>
+            del_status = 0
+            <if test="appellationName != null  and appellationName != ''">and appellation_name like concat('%',
+                #{appellationName}, '%')
+            </if>
+            <if test="minScore != null ">and #{minScore} <![CDATA[ >= ]]> min_score</if>
+            <if test="maxScore != null ">and #{maxScore} <![CDATA[ <= ]]> max_score</if>
+            <if test="appellationType != null ">and appellation_type = #{appellationType}</if>
+        </where>
+        order by max_score desc limit 1
+    </select>
+</mapper>

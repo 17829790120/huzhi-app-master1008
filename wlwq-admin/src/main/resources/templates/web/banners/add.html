@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增banner')"/>
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+    <!--导入下面这三个-->
+    <script th:src="@{/editor/jq.js}"></script>
+    <script th:src="@{/editor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/editor/editor.js}"></script>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-banners-add">
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">排序：</label>
+            <div class="col-sm-8">
+                <input class="form-control" name="sortNum" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
+                       required type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">公司：</label>
+            <div class="col-sm-8">
+                <select class="form-control m-b" id="deptId" name="deptId" required>
+                    <option value="">请选择</option>
+                    <option th:each="dept : ${deptList}" th:text="${dept.deptName}"
+                            th:value="${dept.deptId}">
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">文件类型：</label>
+            <div class="col-sm-8">
+                <select class="form-control m-b" id="fileType" name="fileType" th:with="type=${@dict.getType('file_type')}">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}">
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">banner位置：</label>
+            <div class="col-sm-8">
+                <select class="form-control m-b" id="bannerLocation" name="bannerLocation" th:with="type=${@dict.getType('banner_location')}">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}">
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">跳转类型：</label>
+            <div class="col-sm-8">
+                <select class="form-control m-b" id="jumpType" name="jumpType" onchange="sourceNameChange()"
+                        th:with="type=${@dict.getType('jump_type')}">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}">
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">上传文件(700px*250px)：<p id="image"></p></label>
+            <div class="col-sm-8">
+                <input name="imageUrl" id="fileUrl"  class="form-control" type="text">
+                <div class="file-loading">
+                    <input class="form-control file-upload" id="imageUrl" name="file" type="file">
+                </div>
+            </div>
+        </div>
+
+<!--        <div class="form-group" id="jumpUrlDiv">-->
+<!--            <label class="col-sm-3 control-label">跳转地址：</label>-->
+<!--            <div class="col-sm-8">-->
+<!--                <input type="text" class="form-control" name="jumpUrl" id="jumpUrl">-->
+<!--                <span class="input-group-btn">-->
+<!--                    <button type="button" onclick="addUrl()" class="btn btn-primary">选择链接</button>-->
+<!--                    </span>-->
+<!--            </div>-->
+<!--        </div>-->
+        <div class="form-group" id="jumpUrlDiv">
+            <label class="col-sm-3 control-label">跳转地址：</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" name="jumpUrl" id="jumpUrl">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">详情：</label>
+            <div class="col-sm-8">
+                <input class="form-control" id="content" name="content" type="hidden">
+                <textarea id="mytextareaone" style="visibility: inherit;"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">显示状态：</label>
+            <div class="col-sm-8">
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" value="0" name="showStatus"> <i></i> 否</label>
+                </div>
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" checked value="1" name="showStatus"> <i></i> 显示</label>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<script th:inline="javascript">
+
+    sourceNameChange();
+
+    function sourceNameChange() {
+        var jumpType = $("#jumpType").val();
+        if(jumpType == "0" || jumpType == "1"){
+            $("#jumpUrlDiv").attr("style","display:none;");//隐藏div
+        }else{
+            $("#jumpUrlDiv").attr("style","display:block;");//显示div
+        }
+    }
+    // //选择链接
+    // function addUrl() {
+    //     var jumpType = $("#jumpType").val();
+    //     if(jumpType == "0" || jumpType == "1"){
+    //         $.modal.msgError("不需要跳转！");
+    //         return;
+    //     }
+    //     var deptId = $("#deptId").val();
+    //     if(deptId == null || deptId == ''){
+    //         $.modal.msgError("请选择公司！");
+    //         return;
+    //     }
+    //     var url = "";
+    //     if(jumpType == 2){
+    //         url = ctx + "web/banners/addGoodsUrl";
+    //     }else{
+    //         url = ctx + "web/banners/addServeUrl"
+    //     }
+    //     var index = layer.open({
+    //         type: 2,
+    //         title: "广告链接",
+    //         shadeClose: false,
+    //         area: ['90%', '90%'],
+    //         content: url+"?jumpType="+jumpType+"&deptId="+deptId
+    //     });
+    // }
+
+    var prefix = ctx + "web/banners"
+
+    $("#form-banners-add").validate({
+        focusCleanup: true
+    });
+
+
+    window.onload = function () {
+        // 内容
+        setMytextareaIdName('mytextareaone');
+    }
+
+    function GetTinyMceContent() {
+        $("#content").val(tinyMCE.editors[0].getContent());
+    }
+
+
+    function submitHandler() {
+        var fileUrl = $("#fileUrl").val();
+        if(fileUrl == "" || fileUrl == null){
+            $.modal.msgError("请上传文件！");
+            return;
+        }
+        GetTinyMceContent();
+        var jumpType = $("#jumpType").val();
+        if(jumpType == "1"){
+            var content = $("#content").val();
+            if (!content) {
+                $.modal.msgError("请编辑跳转详情！");
+                return;
+            }
+        }
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-banners-add').serialize());
+        }
+    }
+
+    //上传文件  图片/视频
+    $(".file-upload").fileinput({
+        uploadUrl: ctx + 'app/upload',
+        maxFileCount: 1,
+        autoReplace: true
+    }).on('fileuploaded', function (event, data, previewId, index) {
+        $("input[name='" + event.currentTarget.id + "']").val(data.response.message)
+    }).on('fileremoved', function (event, id, index) {
+        $("input[name='" + event.currentTarget.id + "']").val('')
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.wlwq</groupId>
+        <artifactId>huzhi-app</artifactId>
+        <version>4.6.0</version>
+    </parent>
+
+    <artifactId>wlwq-api</artifactId>
+    <description>API接口</description>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.wlwq</groupId>
+            <artifactId>wlwq-sms</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wlwq</groupId>
+            <artifactId>wlwq-jwt</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wlwq</groupId>
+            <artifactId>wlwq-best-pay</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wlwq</groupId>
+            <artifactId>wlwq-baidu-ai</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wlwq</groupId>
+            <artifactId>wlwq-private-phone</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wlwq</groupId>
+            <artifactId>wlwq-information-center</artifactId>
+        </dependency>
+
+        <!--        融云SDK-->
+        <dependency>
+            <groupId>cn.rongcloud.im</groupId>
+            <artifactId>server-sdk-java</artifactId>
+            <version>3.2.18</version>
+        </dependency>
+        <!-- 微信小程序开发文档 -->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>wx-java-miniapp-spring-boot-starter</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+    </dependencies>
+
+</project>

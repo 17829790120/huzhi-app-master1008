@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('修改汇报训练')"/>
+    <th:block th:include="include :: select2-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-reportTraining-edit" th:object="${reportTraining}">
+        <input name="reportTrainingId" th:field="*{reportTrainingId}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">模版类型：</label>
+            <div class="col-sm-8">
+                <select name="templateType" th:field="*{templateType}" class="form-control m-b"
+                        th:with="type=${@dict.getType('template_type')}" required>
+                    <option value="">请选择</option>
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                            th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <h4 class="form-header h4">字段值</h4>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="col-sm-12 select-table table-striped">
+                    <table id="bootstrap-table"></table>
+                </div>
+                <div class="enlarge_box" style="cursor:pointer;">
+                    <img id="enlarge_box_img" alt="" name="pic" src="" style="z-index: 99;">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/reportTraining";
+    $("#form-reportTraining-edit").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-reportTraining-edit').serialize());
+        }
+    }
+    $(function () {
+        var options = {
+            data: [[${reportTraining.templateFieldList}]],
+            pagination: false,
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            sidePagination: "client",
+            columns: [
+                {
+                    field: 'index',
+                    align: 'center',
+                    title: "序号",
+                    formatter: function (value, row, index) {
+                        var columnIndex = $.common.sprintf("<input required type='hidden' name='index' value='%s'>", $.table.serialNumber(index));
+                        return columnIndex + $.table.serialNumber(index);
+                    }
+                },
+                {
+                    field: 'fieldName',
+                    align: 'center',
+                    title: '名称',
+                    formatter: function (value, row, index) {
+                        return $.table.tooltip(value);
+                    }
+                },
+                {
+                    field: 'value',
+                    align: 'center',
+                    title: '内容',
+                    formatter: function (value, row, index) {
+                        if (value != null && value != "") {
+                            // value.indexOf("")的值为-1时表示不包含
+                            if (value.indexOf("png") != -1
+                                || value.indexOf("PNG") != -1
+                                || value.indexOf("jpg") != -1
+                                || value.indexOf("JPG") != -1
+                                || value.indexOf("gif") != -1
+                                || value.indexOf("GIF") != -1) {
+                                var valueArr = value.split(",");
+                                var html = "";
+                                for (var i = 0; i < valueArr.length; i++) {
+                                    var one = '<img class="img-clouds" onclick="clouds(this)" src=' + replaceSpace(valueArr[i]) + ' style=" width:80px; height:80px;"> ';
+                                    html += one;
+                                }
+                                return html;
+                            }
+                            if (value.indexOf("xls") != -1
+                                || value.indexOf("XLS") != -1
+                                || value.indexOf("xlsx") != -1
+                                || value.indexOf("XLSX") != -1
+                                || value.indexOf("txt") != -1
+                                || value.indexOf("TXT") != -1
+                                || value.indexOf("DOC") != -1
+                                || value.indexOf("doc") != -1
+                                || value.indexOf("ppt") != -1
+                                || value.indexOf("PPT") != -1
+                                || value.indexOf("docx") != -1
+                                || value.indexOf("DOCX") != -1
+                                || value.indexOf("PPTX") != -1
+                                || value.indexOf("pptx") != -1) {
+                                var valueArr = value.split(",");
+                                var html = "";
+                                for (var i = 0; i < valueArr.length; i++) {
+                                    html += '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="openWord(\'' + valueArr[i] + '\')" data-target="#myModal2">查看</button> '
+                                }
+                                return html;
+                            }
+                        }
+                        return $.table.tooltip(value);
+                    }
+                }
+            ]
+        };
+        $.table.init(options);
+    });
+
+
+    // 打开文档
+    function openWord(url) {
+        window.open(url)
+    }
+
+    // 放大和隐藏图片
+    function clouds(that) {
+        $('.enlarge_box').show();
+        let img_src = $(that).attr('src');
+        let $preview = $('#enlarge_box_img').attr('src')
+        if ($preview != img_src) {
+            $('#enlarge_box_img').attr('src', img_src)
+        }
+        //获取图片大小
+        let widthHtml = $('#enlarge_box_img').width();
+        let heightHtml = $('#enlarge_box_img').height();
+        let a_widthHtml = '-' + widthHtml / 2;
+        let a_heightHtml = '-' + heightHtml / 2;
+        //图片宽高比例
+        let proportion = widthHtml / heightHtml;
+
+        //获取浏览器可视区域大小
+        let windowsWidth = $(window).width();
+        let windowsHeight = $(window).height();
+        let a_windowsWidth = windowsWidth * 0.8;
+        let a_windowsHeight = windowsHeight * 0.8;
+        let b_windowsWidth = '-' + a_windowsWidth / 2;
+        let b_windowsHeight = "-" + a_windowsHeight / 2
+        let a = "-" + proportion * a_windowsHeight / 2;
+
+        if (widthHtml > a_windowsWidth || heightHtml > a_windowsHeight) {
+            $('#enlarge_box_img').css({
+                'height': a_windowsHeight + 'px',
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a + 'px',
+                'top': 50 + '%',
+                'margin-top': b_windowsHeight + 'px',
+                'z-index': 9999,
+            })
+        } else {
+            $('#enlarge_box_img').css({
+                'position': 'fixed',
+                'display': 'block',
+                'left': 50 + '%',
+                'margin-left': a_widthHtml + 'px',
+                'top': 50 + '%',
+                'margin-top': a_heightHtml + 'px',
+                'z-index': 9999,
+            })
+        }
+    }
+
+    //点击放大后的图片隐藏
+    $('.enlarge_box').click(function () {
+        $('.enlarge_box').hide();
+        $('#enlarge_box_img').attr('src', '')
+        $('#enlarge_box_img').removeAttr("style")
+    });
+
+    function replaceSpace(value) {
+        return value.replace(/ /g, '%20');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.setting.mapper.SettingAppVersionMapper">
+    
+    <resultMap type="SettingAppVersion" id="SettingAppVersionResult">
+        <result property="versionId"    column="version_id"    />
+        <result property="versionNo"    column="version_no"    />
+        <result property="resourceUrl"    column="resource_url"    />
+        <result property="versionTitle"    column="version_title"    />
+        <result property="versionDescription"    column="version_description"    />
+        <result property="updateType"    column="update_type"    />
+        <result property="resourceType"    column="resource_type"    />
+        <result property="openStatus"    column="open_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSettingAppVersionVo">
+        select version_id, version_no, resource_url, version_title, version_description, update_type, resource_type, open_status, create_time, update_time from setting_app_version
+    </sql>
+
+    <select id="selectSettingAppVersionList" parameterType="SettingAppVersion" resultMap="SettingAppVersionResult">
+        <include refid="selectSettingAppVersionVo"/>
+        <where>  
+            <if test="versionNo != null "> and version_no = #{versionNo}</if>
+            <if test="versionTitle != null  and versionTitle != ''"> and version_title like concat('%', #{versionTitle}, '%')</if>
+            <if test="updateType != null  and updateType != ''"> and update_type = #{updateType}</if>
+            <if test="resourceType != null  and resourceType != ''"> and resource_type = #{resourceType}</if>
+            <if test="openStatus != null "> and open_status = #{openStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectSettingAppVersionById" parameterType="Long" resultMap="SettingAppVersionResult">
+        <include refid="selectSettingAppVersionVo"/>
+        where version_id = #{versionId}
+    </select>
+        
+    <insert id="insertSettingAppVersion" parameterType="SettingAppVersion" useGeneratedKeys="true" keyProperty="versionId">
+        insert into setting_app_version
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="versionNo != null">version_no,</if>
+            <if test="resourceUrl != null and resourceUrl != ''">resource_url,</if>
+            <if test="versionTitle != null and versionTitle != ''">version_title,</if>
+            <if test="versionDescription != null and versionDescription != ''">version_description,</if>
+            <if test="updateType != null and updateType != ''">update_type,</if>
+            <if test="resourceType != null and resourceType != ''">resource_type,</if>
+            <if test="openStatus != null">open_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="versionNo != null">#{versionNo},</if>
+            <if test="resourceUrl != null and resourceUrl != ''">#{resourceUrl},</if>
+            <if test="versionTitle != null and versionTitle != ''">#{versionTitle},</if>
+            <if test="versionDescription != null and versionDescription != ''">#{versionDescription},</if>
+            <if test="updateType != null and updateType != ''">#{updateType},</if>
+            <if test="resourceType != null and resourceType != ''">#{resourceType},</if>
+            <if test="openStatus != null">#{openStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSettingAppVersion" parameterType="SettingAppVersion">
+        update setting_app_version
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="versionNo != null">version_no = #{versionNo},</if>
+            <if test="resourceUrl != null and resourceUrl != ''">resource_url = #{resourceUrl},</if>
+            <if test="versionTitle != null and versionTitle != ''">version_title = #{versionTitle},</if>
+            <if test="versionDescription != null and versionDescription != ''">version_description = #{versionDescription},</if>
+            <if test="updateType != null and updateType != ''">update_type = #{updateType},</if>
+            <if test="resourceType != null and resourceType != ''">resource_type = #{resourceType},</if>
+            <if test="openStatus != null">open_status = #{openStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where version_id = #{versionId}
+    </update>
+
+    <delete id="deleteSettingAppVersionById" parameterType="Long">
+        delete from setting_app_version where version_id = #{versionId}
+    </delete>
+
+    <delete id="deleteSettingAppVersionByIds" parameterType="String">
+        delete from setting_app_version where version_id in 
+        <foreach item="versionId" collection="array" open="(" separator="," close=")">
+            #{versionId}
+        </foreach>
+    </delete>
+
+<!--    获取最新的版本-->
+    <select id="selectNewVersion" resultMap="SettingAppVersionResult">
+        select version_id, version_no, resource_url, version_title, version_description, update_type, resource_type,
+        open_status, create_time, update_time from setting_app_version where resource_type = #{resourceType} and
+        open_status = 1 order by version_no desc limit 1
+    </select>
+</mapper>

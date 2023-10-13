@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增人员训练模块')"/>
+    <th:block th:include="include :: select2-css"/>
+    <th:block th:include="include :: bootstrap-fileinput-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-trainingModule-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">标题名称：</label>
+            <div class="col-sm-8">
+                <input name="titleName" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">副标题名称：</label>
+            <div class="col-sm-8">
+                <input name="subheadName" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">模块图标：</label>
+            <div class="col-sm-8">
+                <input name="moduleIcon" id="fileUrl" class="form-control" type="text">
+                <div class="file-loading">
+                    <input class="form-control file-upload" id="moduleIcon" name="file" type="file">
+                </div>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 建议尺寸：338px * 208px</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">详情背景图：</label>
+            <div class="col-sm-8">
+                <input name="moduleImage"  class="form-control" type="text">
+                <div class="file-loading">
+                    <input class="form-control file-upload" id="moduleImage" name="file" type="file">
+                </div>
+                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 建议尺寸：750px * 448px</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">排序(排序越小，越靠前)：</label>
+            <div class="col-sm-8">
+                <input name="sortNum" class="form-control" type="text" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">显示状态：</label>
+            <div class="col-sm-8">
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" value="0" name="showStatus"> <i></i> 否</label>
+                </div>
+                <div class="radio check-box">
+                    <label>
+                        <input type="radio" checked value="1" name="showStatus"> <i></i> 显示</label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: select2-js"/>
+<th:block th:include="include :: bootstrap-fileinput-js"/>
+<script th:inline="javascript">
+    var prefix = ctx + "web/trainingModule"
+    $("#form-trainingModule-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-trainingModule-add').serialize());
+        }
+    }
+    //上传文件  图片/视频
+    $(".file-upload").fileinput({
+        uploadUrl: ctx + 'app/upload',
+        maxFileCount: 1,
+        autoReplace: true
+    }).on('fileuploaded', function (event, data, previewId, index) {
+        $("input[name='" + event.currentTarget.id + "']").val(data.response.message)
+    }).on('fileremoved', function (event, id, index) {
+        $("input[name='" + event.currentTarget.id + "']").val('')
+    })
+</script>
+</body>
+</html>

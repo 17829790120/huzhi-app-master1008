@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wlwq.api.mapper.ExamQuestionRecordMapper">
+
+    <resultMap type="ExamQuestionRecord" id="ExamQuestionRecordResult">
+        <result property="examQuestionRecordId" column="exam_question_record_id"/>
+        <result property="questionManagerId" column="question_manager_id"/>
+        <result property="examRecordId" column="exam_record_id"/>
+        <result property="questionStatus" column="question_status"/>
+        <result property="content" column="content"/>
+        <result property="pic" column="pic"/>
+        <result property="analysis" column="analysis"/>
+        <result property="score" column="score"/>
+        <result property="myScore" column="my_score"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="showStatus" column="show_status"/>
+        <result property="complexityStatus" column="complexity_status"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="optionA" column="option_a"/>
+        <result property="optionB" column="option_b"/>
+        <result property="optionC" column="option_c"/>
+        <result property="optionD" column="option_d"/>
+        <result property="optionE" column="option_e"/>
+        <result property="optionF" column="option_f"/>
+        <result property="answerStatus" column="answer_status"/>
+        <result property="myAnswerStatus" column="my_answer_status"/>
+        <result property="chapterId" column="chapter_id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="questionType" column="question_type"/>
+        <result property="testTrainingCategoryId" column="test_training_category_id"/>
+        <result property="testTrainingCategoryTitle" column="test_training_category_title"/>
+        <result property="companyId" column="company_id"/>
+    </resultMap>
+
+    <sql id="selectExamQuestionRecordVo">
+        select exam_question_record_id, question_manager_id, exam_record_id, question_status, content, pic, analysis,
+            score, my_score, del_status, create_time, update_time, show_status, complexity_status, sort_num, option_a,
+            option_b, option_c, option_d, option_e, option_f, answer_status, my_answer_status, chapter_id, course_id ,
+            question_type, test_training_category_id, test_training_category_title, company_id
+        from exam_question_record
+    </sql>
+
+    <select id="selectExamQuestionRecordList" parameterType="ExamQuestionRecord" resultMap="ExamQuestionRecordResult">
+        <include refid="selectExamQuestionRecordVo"/>
+        <where>
+            <if test="questionManagerId != null  and questionManagerId != ''">and question_manager_id =
+                #{questionManagerId}
+            </if>
+            <if test="examRecordId != null  and examRecordId != ''">and exam_record_id = #{examRecordId}</if>
+            <if test="questionStatus != null ">and question_status = #{questionStatus}</if>
+            <if test="content != null  and content != ''">and content like concat('%', #{content}, '%')</if>
+            <if test="pic != null  and pic != ''">and pic = #{pic}</if>
+            <if test="analysis != null  and analysis != ''">and analysis = #{analysis}</if>
+            <if test="score != null ">and score = #{score}</if>
+            <if test="myScore != null ">and my_score = #{myScore}</if>
+            <if test="delStatus != null ">and del_status = #{delStatus}</if>
+            <if test="showStatus != null ">and show_status = #{showStatus}</if>
+            <if test="complexityStatus != null ">and complexity_status = #{complexityStatus}</if>
+            <if test="sortNum != null ">and sort_num = #{sortNum}</if>
+            <if test="optionA != null  and optionA != ''">and option_a = #{optionA}</if>
+            <if test="optionB != null  and optionB != ''">and option_b = #{optionB}</if>
+            <if test="optionC != null  and optionC != ''">and option_c = #{optionC}</if>
+            <if test="optionD != null  and optionD != ''">and option_d = #{optionD}</if>
+            <if test="optionE != null  and optionE != ''">and option_e = #{optionE}</if>
+            <if test="optionF != null  and optionF != ''">and option_f = #{optionF}</if>
+            <if test="answerStatus != null  and answerStatus != ''">and answer_status = #{answerStatus}</if>
+            <if test="myAnswerStatus != null  and myAnswerStatus != ''">and my_answer_status = #{myAnswerStatus}</if>
+            <if test="chapterId != null ">and chapter_id = #{chapterId}</if>
+            <if test="courseId != null ">and course_id = #{courseId}</if>
+            <if test="questionType != null ">and question_type = #{questionType}</if>
+            <if test="testTrainingCategoryId != null  and testTrainingCategoryId != ''">and test_training_category_id =
+                #{testTrainingCategoryId}
+            </if>
+            <if test="testTrainingCategoryTitle != null  and testTrainingCategoryTitle != ''">and
+                test_training_category_title = #{testTrainingCategoryTitle}
+            </if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+        </where>
+    </select>
+
+    <select id="selectExamQuestionRecordById" parameterType="String" resultMap="ExamQuestionRecordResult">
+        <include refid="selectExamQuestionRecordVo"/>
+        where exam_question_record_id = #{examQuestionRecordId}
+    </select>
+    <!--获取考试得分-->
+    <select id="getScore" resultType="java.lang.Double">
+        select sum(my_score) from exam_question_record where exam_record_id = #{examRecordId}
+    </select>
+
+    <insert id="insertExamQuestionRecord" parameterType="ExamQuestionRecord">
+        insert into exam_question_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examQuestionRecordId != null">exam_question_record_id,</if>
+            <if test="questionManagerId != null and questionManagerId != ''">question_manager_id,</if>
+            <if test="examRecordId != null and examRecordId != ''">exam_record_id,</if>
+            <if test="questionStatus != null">question_status,</if>
+            <if test="content != null">content,</if>
+            <if test="pic != null">pic,</if>
+            <if test="analysis != null">analysis,</if>
+            <if test="score != null">score,</if>
+            <if test="myScore != null">my_score,</if>
+            <if test="delStatus != null">del_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="showStatus != null">show_status,</if>
+            <if test="complexityStatus != null">complexity_status,</if>
+            <if test="sortNum != null">sort_num,</if>
+            <if test="optionA != null">option_a,</if>
+            <if test="optionB != null">option_b,</if>
+            <if test="optionC != null">option_c,</if>
+            <if test="optionD != null">option_d,</if>
+            <if test="optionE != null">option_e,</if>
+            <if test="optionF != null">option_f,</if>
+            <if test="answerStatus != null">answer_status,</if>
+            <if test="myAnswerStatus != null">my_answer_status,</if>
+            <if test="chapterId != null">chapter_id,</if>
+            <if test="courseId != null">course_id,</if>
+            <if test="questionType != null">question_type,</if>
+            <if test="testTrainingCategoryId != null">test_training_category_id,</if>
+            <if test="testTrainingCategoryTitle != null">test_training_category_title,</if>
+            <if test="companyId != null">company_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examQuestionRecordId != null">#{examQuestionRecordId},</if>
+            <if test="questionManagerId != null and questionManagerId != ''">#{questionManagerId},</if>
+            <if test="examRecordId != null and examRecordId != ''">#{examRecordId},</if>
+            <if test="questionStatus != null">#{questionStatus},</if>
+            <if test="content != null">#{content},</if>
+            <if test="pic != null">#{pic},</if>
+            <if test="analysis != null">#{analysis},</if>
+            <if test="score != null">#{score},</if>
+            <if test="myScore != null">#{myScore},</if>
+            <if test="delStatus != null">#{delStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="showStatus != null">#{showStatus},</if>
+            <if test="complexityStatus != null">#{complexityStatus},</if>
+            <if test="sortNum != null">#{sortNum},</if>
+            <if test="optionA != null">#{optionA},</if>
+            <if test="optionB != null">#{optionB},</if>
+            <if test="optionC != null">#{optionC},</if>
+            <if test="optionD != null">#{optionD},</if>
+            <if test="optionE != null">#{optionE},</if>
+            <if test="optionF != null">#{optionF},</if>
+            <if test="answerStatus != null">#{answerStatus},</if>
+            <if test="myAnswerStatus != null">#{myAnswerStatus},</if>
+            <if test="chapterId != null">#{chapterId},</if>
+            <if test="courseId != null">#{courseId},</if>
+            <if test="questionType != null">#{questionType},</if>
+            <if test="testTrainingCategoryId != null">#{testTrainingCategoryId},</if>
+            <if test="testTrainingCategoryTitle != null">#{testTrainingCategoryTitle},</if>
+            <if test="companyId != null">#{companyId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamQuestionRecord" parameterType="ExamQuestionRecord">
+        update exam_question_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionManagerId != null and questionManagerId != ''">question_manager_id =
+                #{questionManagerId},
+            </if>
+            <if test="examRecordId != null and examRecordId != ''">exam_record_id = #{examRecordId},</if>
+            <if test="questionStatus != null">question_status = #{questionStatus},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="pic != null">pic = #{pic},</if>
+            <if test="analysis != null">analysis = #{analysis},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="myScore != null">my_score = #{myScore},</if>
+            <if test="delStatus != null">del_status = #{delStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="showStatus != null">show_status = #{showStatus},</if>
+            <if test="complexityStatus != null">complexity_status = #{complexityStatus},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="optionA != null">option_a = #{optionA},</if>
+            <if test="optionB != null">option_b = #{optionB},</if>
+            <if test="optionC != null">option_c = #{optionC},</if>
+            <if test="optionD != null">option_d = #{optionD},</if>
+            <if test="optionE != null">option_e = #{optionE},</if>
+            <if test="optionF != null">option_f = #{optionF},</if>
+            <if test="answerStatus != null">answer_status = #{answerStatus},</if>
+            <if test="myAnswerStatus != null">my_answer_status = #{myAnswerStatus},</if>
+            <if test="chapterId != null">chapter_id = #{chapterId},</if>
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="questionType != null">question_type = #{questionType},</if>
+            <if test="testTrainingCategoryId != null">test_training_category_id = #{testTrainingCategoryId},</if>
+            <if test="testTrainingCategoryTitle != null">test_training_category_title = #{testTrainingCategoryTitle},
+            </if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+        </trim>
+        where exam_question_record_id = #{examQuestionRecordId}
+    </update>
+
+    <update id="deleteExamQuestionRecordById" parameterType="String">
+        update exam_question_record set del_status = 1 where exam_question_record_id = #{examQuestionRecordId}
+    </update>
+
+    <update id="deleteExamQuestionRecordByIds" parameterType="String">
+        update exam_question_record set del_status = 1 where exam_question_record_id in
+        <foreach item="examQuestionRecordId" collection="array" open="(" separator="," close=")">
+            #{examQuestionRecordId}
+        </foreach>
+    </update>
+    <!--    <delete id="deleteExamQuestionRecordById" parameterType="String">
+            delete from exam_question_record where exam_question_record_id = #{examQuestionRecordId}
+        </delete>
+
+        <delete id="deleteExamQuestionRecordByIds" parameterType="String">
+            delete from exam_question_record where exam_question_record_id in
+            <foreach item="examQuestionRecordId" collection="array" open="(" separator="," close=")">
+                #{examQuestionRecordId}
+            </foreach>
+        </delete>-->
+
+</mapper>

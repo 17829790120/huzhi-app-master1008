@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('内部调研问卷记录列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <input type="hidden" name="questionnaireId" id="questionnaireId"/>
+                        <ul>
+                            <li>
+                                <label>问卷得分：</label>
+                                <input type="text" name="score"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="web:questionnaireRecord:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single" onclick="$.operate.edit()" shiro:hasPermission="web:questionnaireRecord:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple" onclick="$.operate.removeAll()" shiro:hasPermission="web:questionnaireRecord:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+<!--                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="web:questionnaireRecord:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('web:questionnaireRecord:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('web:questionnaireRecord:remove')}]];
+        var recordAnswerFlag = [[${@permission.hasPermi('web:questionnaireRecordAnswer:view')}]];
+        var prefix = ctx + "web/questionnaireRecord";
+        var questionnaireId = [[${questionnaireId}]];
+
+        $("#questionnaireId").val(questionnaireId);
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add?questionnaireId="+questionnaireId,
+                updateUrl: prefix + "/edit/{id}/"+questionnaireId,
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "内部调研问卷记录",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'questionnaireRecordId',
+                    title: '问卷记录id',
+                    visible: false
+                },
+                {
+                    field: 'title',
+                    align: 'center',
+                    title: '问卷表'
+                },
+                {
+                    field: 'content',
+                    align: 'center',
+                    title: '问卷内容'
+                },
+                {
+                    field: 'score',
+                    align: 'center',
+                    title: '问卷得分'
+                },
+                {
+                    field: 'creatorName',
+                    align: 'center',
+                    title: '创建者名称'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        //actions.push('<a class="btn btn-primary btn-xs ' + recordAnswerFlag + '" href="javascript:void(0)" onclick="setRecordAnswer(\'' + row.questionnaireRecordId + '\')"><i class="fa fa-book"></i>问卷记录答案</a> ');
+                        actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="setRecordAnswer(\'' + row.questionnaireRecordId + '\')"><i class="fa fa-book"></i>问卷记录答案</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.questionnaireRecordId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.questionnaireRecordId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function setRecordAnswer(questionnaireRecordId) {
+            $.modal.openFull("问卷记录答案", ctx + "web/questionnaireRecordAnswer?questionnaireRecordId=" + questionnaireRecordId);
+        }
+    </script>
+</body>
+</html>
