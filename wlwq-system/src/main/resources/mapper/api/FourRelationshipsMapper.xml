@@ -179,7 +179,7 @@
             <if test="fourRelationshipsList != null  and fourRelationshipsList != ''">and four_relationships_list =
                 #{fourRelationshipsList}
             </if>
-            <if test="date != null and date != ''">and DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+            <if test="date != null and date != ''">and DATE_FORMAT(create_time,'%Y') = #{date}
             </if>
         </where>
         order by create_time desc
@@ -214,6 +214,8 @@
             <if test="title != null  and title != ''">and title = #{title}</if>
             <if test="fourRelationshipsList != null  and fourRelationshipsList != ''">and four_relationships_list =
                 #{fourRelationshipsList}
+            </if>
+            <if test="date != null and date != ''">and DATE_FORMAT(create_time,'%Y') = #{date}
             </if>
         </where>
     </select>
