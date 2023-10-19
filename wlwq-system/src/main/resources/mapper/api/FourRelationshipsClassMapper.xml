@@ -149,7 +149,7 @@
     </insert>
 
     <update id="updateFourRelationshipsClass" parameterType="FourRelationshipsClass">
-        update six_structures_class
+        update four_relationships_class
         <trim prefix="SET" suffixOverrides=",">
             <if test="className != null">class_name = #{className},</if>
             <if test="icon != null">icon = #{icon},</if>

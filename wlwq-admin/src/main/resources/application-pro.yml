@@ -9,7 +9,7 @@ wlwq:
   # 实例演示开关
   demoEnabled: true
   # 文件路径 示例（ Windows配置D:/wlwq/uploadPath，Linux配置 /home/wlwq/uploadPath）
-  profile: D:/wlwq/uploadPath
+  profile: D:/mnt/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 证书上传路径
@@ -17,7 +17,7 @@ wlwq:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为80
-  port: 8414
+  port: 8415
   # 请求头最大值
   maxHttpHeaderSize: 204800
   servlet:

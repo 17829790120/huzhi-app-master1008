@@ -156,7 +156,7 @@
             del_status=0
             <if test="templateType != null ">and template_type = #{templateType}</if>
             <if test="content != null  and content != ''">and content = #{content}</if>
-            <if test="accountId != null  and accountId != ''">and account_id = #{accountId}</if>
+            <if test="tag != null  and tag == 0">and account_id = #{accountId}</if>
             <if test="postIds != null  and postIds != ''">and post_ids = #{postIds}</if>
             <if test="deptId != null ">and dept_id = #{deptId}</if>
             <if test="accountName != null  and accountName != ''">and account_name like concat('%', #{accountName},

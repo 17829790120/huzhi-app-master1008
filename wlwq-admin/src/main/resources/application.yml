@@ -1,5 +1,5 @@
 spring:
   profiles:
-#    active: dev,druid-dev
+    active: dev,druid-dev
     #TODO 上线修改
-    active: pro,druid-pro
+#    active: pro,druid-pro

@@ -84,6 +84,7 @@ public class LocalFileHandler implements FileHandler {
      * @return 上传地址
      */
     private String getWorkDir() {
+//        return "/mnt/uploadPath";
         return "D:/wlwq/uploadPath";
     }
     ReentrantLock lock = new ReentrantLock();

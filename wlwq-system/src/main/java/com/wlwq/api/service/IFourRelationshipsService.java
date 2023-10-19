@@ -1,6 +1,7 @@
 package com.wlwq.api.service;
 
 import com.wlwq.api.domain.FourRelationships;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Map;
  * 
  * @author dxy
  */
+
 public interface IFourRelationshipsService {
     /**
      * 查询四类关系

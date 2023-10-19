@@ -120,6 +120,7 @@ public class FourRelationshipsApiController extends ApiController {
                 .threeStoreClassId(paramVO.getThreeStoreClassId())
                 .date(paramVO.getDate())
                 .month(paramVO.getMonth())
+                .tag(paramVO.getTag())
                 .accountName(paramVO.getKeyword())
                 .build());
         fourRelationshipsList.forEach(e -> {

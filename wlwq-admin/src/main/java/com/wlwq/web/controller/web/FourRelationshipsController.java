@@ -1,21 +1,26 @@
 package com.wlwq.web.controller.web;
 
+import java.util.List;
+
 import com.wlwq.api.domain.FourRelationships;
 import com.wlwq.api.service.IFourRelationshipsService;
-import com.wlwq.common.annotation.Log;
-import com.wlwq.common.core.controller.BaseController;
-import com.wlwq.common.core.domain.AjaxResult;
-import com.wlwq.common.core.page.TableDataInfo;
-import com.wlwq.common.enums.BusinessType;
+import com.wlwq.common.utils.JsonUtils;
 import com.wlwq.common.utils.ShiroUtils;
-import com.wlwq.common.utils.poi.ExcelUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.wlwq.common.annotation.Log;
+import com.wlwq.common.enums.BusinessType;
+import com.wlwq.common.core.controller.BaseController;
+import com.wlwq.common.core.domain.AjaxResult;
+import com.wlwq.common.utils.poi.ExcelUtil;
+import com.wlwq.common.core.page.TableDataInfo;
 
 /**
  * 四类关系Controller
@@ -44,10 +49,10 @@ public class FourRelationshipsController extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(FourRelationships fourRelationships) {
-        startPage();
         if(ShiroUtils.getUserId()!=1){
             fourRelationships.setCompanyId(ShiroUtils.getSysUser().getDeptId());
         }
+        startPage();
         List<FourRelationships> list = fourRelationshipsService.selectWebFourRelationshipsList(fourRelationships);
         return getDataTable(list);
     }
@@ -55,11 +60,14 @@ public class FourRelationshipsController extends BaseController {
     /**
      * 导出四类关系列表
      */
-    @RequiresPermissions("web:fourRelationships:export")
+    @RequiresPermissions("web:fourRelationshipss:export")
     @Log(title = "四类关系", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(FourRelationships fourRelationships) {
+        if(ShiroUtils.getUserId()!=1){
+            fourRelationships.setCompanyId(ShiroUtils.getSysUser().getDeptId());
+        }
         List<FourRelationships> list = fourRelationshipsService.selectFourRelationshipsList(fourRelationships);
         ExcelUtil<FourRelationships> util = new ExcelUtil<FourRelationships>(FourRelationships.class);
         return util.exportExcel(list, "fourRelationships");

@@ -1,8 +1,7 @@
 package com.wlwq.taskService;
 
 
-import com.wlwq.api.domain.ApiAccount;
-import com.wlwq.api.domain.FourRelationships;
+import com.wlwq.api.domain.*;
 import com.wlwq.api.domain.FourRelationshipsReadRecord;
 import com.wlwq.api.service.IApiAccountService;
 import com.wlwq.api.service.IFourRelationshipsReadRecordService;
